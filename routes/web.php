@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
 use Illuminate\Support\Facades\Artisan;
@@ -30,6 +31,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+    Route::resource('product_categories', ProductCategoryController::class);
+    Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore');
 });
 
 require __DIR__.'/auth.php';

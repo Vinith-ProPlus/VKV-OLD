@@ -73,11 +73,8 @@ class StatesController extends Controller{
     }
     public function create(Request $req){
         if($this->general->isCrudAllow($this->CRUD,"add")==true){
-			$OtherCruds=array(
-				"Country"=>$this->general->getCrudOperations(activeMenuNames::Country->value),
-			);
             $FormData=$this->general->UserInfo;
-            $FormData['menus']=$this->Menus;
+            $FormData['menus']=$this->Menus; 
             $FormData['crud']=$this->CRUD;
 			$FormData['OtherCruds']=$OtherCruds;
 			$FormData['ActiveMenuName']=$this->ActiveMenuName;

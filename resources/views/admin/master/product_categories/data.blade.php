@@ -1,6 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
+    @php
+        $PageTitle="Product Category";
+        $ActiveMenuName='Product-Category';
+    @endphp
     <div class="container">
         <h2>{{ $productCategory  ? 'Edit' : 'Create' }} Category</h2>
 

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\admin\master;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductCategoryRequest;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
@@ -31,12 +32,12 @@ class ProductCategoryController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('product_categories.index');
+        return view('admin.master.product_categories.index');
     }
 
     public function create()
     {
-        return view('product_categories.data', ['productCategory' => '']);
+        return view('admin.master.product_categories.data', ['productCategory' => '']);
     }
 
     public function store(ProductCategoryRequest $request)
@@ -56,7 +57,7 @@ class ProductCategoryController extends Controller
 
     public function edit(ProductCategory $productCategory)
     {
-        return view('product_categories.data', compact('productCategory'));
+        return view('admin.master.product_categories.data', compact('productCategory'));
     }
 
     public function update(ProductCategoryRequest $request, ProductCategory $productCategory)

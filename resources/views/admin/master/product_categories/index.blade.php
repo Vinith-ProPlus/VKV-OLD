@@ -1,6 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
+    @php
+        $PageTitle="Product Category";
+        $ActiveMenuName='Product-Category';
+    @endphp
     <div class="container">
         <h2>Product Categories</h2>
         <a href="{{ route('product_categories.create') }}" class="btn btn-success mb-3">Add New Category</a>

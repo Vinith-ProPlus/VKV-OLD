@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\admin\master\ProductCategoryController;
+use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
 use Illuminate\Support\Facades\Artisan;
@@ -55,6 +56,20 @@ Route::group(['prefix'=>'admin'],function (){
         Route::group(['prefix'=>'master'],function (){
             require __DIR__.'/admin/master.php';
         });
+
+//        Route::group(['middleware' => ['can:Roles']], function () {
+//role crud
+            Route::get('roles', [RoleController::class, 'index'])->name('role.index');
+            Route::get('role/create', [RoleController::class, 'create'])->name('role.create');
+            Route::post('role/store', [RoleController::class, 'store'])->name('role.store');
+            Route::get('role/{id}/edit', [RoleController::class, 'edit'])->name('role.edit');
+            Route::get('role/{id}', [RoleController::class, 'show'])->name('role.show');
+            Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
+            Route::delete('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+//        });
+
+        Route::delete('/role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+
         /* Route::group(['prefix'=>'transaction'],function (){
             require __DIR__.'/admin/transaction.php';
         });

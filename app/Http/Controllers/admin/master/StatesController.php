@@ -56,7 +56,7 @@ class StatesController extends Controller{
 			return view('errors.403');
 		} */
 	}
-	
+
     public function TrashView(Request $req){
         if($this->general->isCrudAllow($this->CRUD,"restore")==true){
             $FormData=$this->general->UserInfo;
@@ -74,7 +74,7 @@ class StatesController extends Controller{
     public function create(Request $req){
         if($this->general->isCrudAllow($this->CRUD,"add")==true){
             $FormData=$this->general->UserInfo;
-            $FormData['menus']=$this->Menus; 
+            $FormData['menus']=$this->Menus;
             $FormData['crud']=$this->CRUD;
 			$FormData['OtherCruds']=$OtherCruds;
 			$FormData['ActiveMenuName']=$this->ActiveMenuName;
@@ -132,7 +132,7 @@ class StatesController extends Controller{
 			);
 			$message=array();
 			$validator = Validator::make($req->all(), $rules,$message);
-			
+
 			if ($validator->fails()) {
 				return array('status'=>false,'message'=>"State Create Failed",'errors'=>$validator->errors());
 			}
@@ -186,7 +186,7 @@ class StatesController extends Controller{
 			);
 			$message=array();
 			$validator = Validator::make($req->all(), $rules,$message);
-			
+
 			if ($validator->fails()) {
 				return array('status'=>false,'message'=>"State Update Failed",'errors'=>$validator->errors());
 			}
@@ -221,7 +221,7 @@ class StatesController extends Controller{
 			return array('status'=>false,'message'=>'Access denined');
 		}
 	}
-	
+
 	public function Delete(Request $req,$StateID){
 		$OldData=$NewData=array();
 		if($this->general->isCrudAllow($this->CRUD,"delete")==true){
@@ -231,7 +231,7 @@ class StatesController extends Controller{
 				$OldData=DB::table($this->generalDB.'tbl_states')->where('StateID',$StateID)->get();
 				$status=DB::table($this->generalDB.'tbl_states')->where('StateID',$StateID)->update(array("DFlag"=>1,"DeletedBy"=>$this->UserID,"DeletedOn"=>date("Y-m-d H:i:s")));
 			}catch(Exception $e) {
-				
+
 			}
 			if($status==true){
 				DB::commit();
@@ -255,7 +255,7 @@ class StatesController extends Controller{
 				$OldData=DB::table($this->generalDB.'tbl_states')->where('StateID',$StateID)->get();
 				$status=DB::table($this->generalDB.'tbl_states')->where('StateID',$StateID)->update(array("DFlag"=>0,"UpdatedBy"=>$this->UserID,"UpdatedOn"=>date("Y-m-d H:i:s")));
 			}catch(Exception $e) {
-				
+
 			}
 			if($status==true){
 				DB::commit();
@@ -290,7 +290,7 @@ class StatesController extends Controller{
 						}else{
 							return "<span class='badge badge-danger m-1'>Inactive</span>";
 						}
-					} 
+					}
 				),
 				array( 'db' => 'StateID', 'dt' => '4',
 					'formatter' => function( $d, $row ) {
@@ -302,7 +302,7 @@ class StatesController extends Controller{
 							$html.='<button type="button" data-id="'.$d.'" class="btn  btn-outline-danger '.$this->general->UserInfo['Theme']['button-size'].' m-5 btnDelete" data-original-title="Delete"><i class="fa fa-trash" aria-hidden="true"></i></button>';
 						}
 						return $html;
-					} 
+					}
 				)
 			);
 			$Where = " S.DFlag=0 and S.CountryID = '$req->CountryID'";
@@ -342,13 +342,13 @@ class StatesController extends Controller{
 						}else{
 							return "<span class='badge badge-danger m-1'>Inactive</span>";
 						}
-					} 
+					}
 				),
 				array( 'db' => 'StateID', 'dt' => '4',
 					'formatter' => function( $d, $row ) {
 						$html='<button type="button" data-id="'.$d.'" class="btn btn-outline-success '.$this->general->UserInfo['Theme']['button-size'].'  m-2 btnRestore"> <i class="fa fa-repeat" aria-hidden="true"></i> </button>';
 						return $html;
-					} 
+					}
 				)
 			);
 			$data=array();

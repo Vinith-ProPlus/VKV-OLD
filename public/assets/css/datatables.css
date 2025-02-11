@@ -1726,3 +1726,29 @@ table.dataTable td {
     margin-top: 0.5em;
   }
 }
+
+ table#list_table {
+     margin: 10px 0px 10px 0px !important;
+ }
+
+.dataTables_wrapper .dt-buttons {
+    float: left; /* Show Entries Button */
+}
+
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+    text-align: right; /* Search Box */
+}
+
+.dataTables_wrapper .dataTables_info {
+    float: left; /* Showing X to Y of Z Entries */
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    float: right !important;
+    text-align: right !important; /* Ensure Pagination is on the right */
+}
+.dt-paging {
+    justify-content: flex-end; /* Push pagination to the right */
+    display: flex;
+}

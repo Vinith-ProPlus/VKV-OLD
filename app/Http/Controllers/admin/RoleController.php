@@ -72,16 +72,15 @@ class RoleController extends Controller
      * @param RoleRequest $request
      * @return RedirectResponse
      */
-    public function store(RoleRequest $request)
+    public function store(Request $request)
     {
         DB::beginTransaction();
         try {
             $role = Role::create(['name' => $request['name']]);
-            $role->givePermissionTo([$request['permissions']]);
+            $permissions = Permission::whereIn('id', $request['permissions'])->pluck('name')->toArray();
+            $role->givePermissionTo($permissions);
             DB::commit();
-
             return redirect()->route("role.index")->with("success", "Role Created Successfully.");
-
         } catch (\Exception $exception) {
             DB::rollBack();
             info('Error::Place@RoleController@store - ' . $exception->getMessage());
@@ -131,11 +130,10 @@ class RoleController extends Controller
             $input = $request->only(['name']);
             $role = Role::find($id);
             $role->update($input);
-            $role->syncPermissions($request['permissions']);
+            $permissions = Permission::whereIn('id', $request['permissions'])->pluck('name')->toArray();
+            $role->syncPermissions($permissions);
             DB::commit();
-
             return redirect()->route("role.index")->with("success", "Role Updated Successfully.");
-
         } catch (\Exception $exception) {
             DB::rollBack();
             info('Place@RoleController@update - ' . $exception->getMessage());

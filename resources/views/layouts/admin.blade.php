@@ -29,9 +29,6 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
 		<link rel="stylesheet" type="text/css" href="{{url('/assets/plugins/pplDataTable/pplDataTable.min.css')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/assets/plugins/pplDataTable/pplDataTable.min.css')}}">
-
-
-
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/sweetalert2.css?r={{date('YmdHis')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/select2.css?r={{date('YmdHis')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/toastr.css?r={{date('YmdHis')}}">
@@ -45,6 +42,9 @@
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/loader.css?r={{date('YmdHis')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/custom.css?r={{date('YmdHis')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/custom-n.css?r={{date('YmdHis')}}">
+		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/datatables.css?r={{date('YmdHis')}}">
+		<!-- sweetalert2 -->
+		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	</head>
 	<body>
 		<input type="hidden" style="display:none!important" id="txtRootUrl" value="{{url('/')}}/">
@@ -504,8 +504,30 @@
 
 		<script src="{{url('/')}}/assets/plugins/ckeditor/ckeditor.js"></script>
     	<script src="{{url('/')}}/assets/plugins/ckeditor/custom.js"></script>
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 		@include('common_script.alert_script')
 		@include('common_script.action_script')
+		<script>
+			$.extend($.fn.dataTable.defaults, {
+				processing: true,
+				deferRender: true,
+				responsive: true,
+				dom: "<'row m-1'<'col-md-6 d-flex align-items-center'B><'col-md-6 text-right'f>>" + // Top row
+						"<'row'<'col-md-12'tr>>" + // Table
+						"<'row m-1'<'col-md-6'i><'col-md-6 text-right'p>>", // Bottom row (Info & Pagination)
+				buttons: [
+					{
+						extend: 'pageLength',
+						text: function (dt) {
+							let length = dt.page.len();
+							return `Show ${length} Records`; // Show current page length
+						},
+						className: 'btn btn-secondary dropdown-toggle',
+						attr: { 'data-bs-toggle': 'dropdown', 'data-bs-display': 'static' } // Prevent clipping
+					}
+				]
+			});
+		</script>
 		@yield('script')
 	</body>
 </html>

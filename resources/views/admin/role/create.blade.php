@@ -64,9 +64,9 @@
                                     <div class="col-md-4">
 
                                         <a href="{{ route('role.index') }}">
-                                         <button type="button" class="btn btn-sm px-5 mb-2 btnPrimaryCustomizeBlueOutline mr-4">Cancel</button>
+                                         <button type="button" class="btn btn-sm px-5 mb-2 btn-outline-warning mr-4">Cancel</button>
                                         </a>
-                                        <button type="submit" class="btn btn-sm px-5 mb-2 btnPrimaryCustomizeBlue text-light">Save</button>
+                                        <button type="submit" class="btn btn-sm px-5 mb-2 btn-outline-success">Save</button>
                                     </div>
                                 </div>
                             </div>

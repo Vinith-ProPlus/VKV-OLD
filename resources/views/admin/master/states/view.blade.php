@@ -66,7 +66,7 @@
     $(document).ready(function(){
 
         const LoadTable=async()=>{
-			
+
 			if(tblStates!=null){
 				tblStates.fnDestroy();
 			}
@@ -82,7 +82,7 @@
 				responsive: true,
 				dom: 'Bfrtip',
 				"iDisplayLength": 10,
-				"lengthMenu": [[10, 25, 50,100,250,500, -1], [10, 25, 50,100,250,500, "All"]],
+				"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
 				buttons: [
 					'pageLength'],
 				columnDefs: [

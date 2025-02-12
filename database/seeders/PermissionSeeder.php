@@ -27,28 +27,37 @@ class PermissionSeeder extends Seeder
             ['name' => 'Roles-and-Permissions', 'guard_name' => 'web', 'model' => 'Master'],
 
             // Product Category
-            ['name' => 'Create Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            ['name' => 'View Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            ['name' => 'Edit Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            ['name' => 'Delete Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            ['name' => 'Restore Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
+            // ['name' => 'Create Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
+            // ['name' => 'View Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
+            // ['name' => 'Edit Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
+            // ['name' => 'Delete Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
+            // ['name' => 'Restore Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
 
-            // Product
-            ['name' => 'Create Product', 'guard_name' => 'web', 'model' => 'Product'],
-            ['name' => 'View Product', 'guard_name' => 'web', 'model' => 'Product'],
-            ['name' => 'Edit Product', 'guard_name' => 'web', 'model' => 'Product'],
-            ['name' => 'Delete Product', 'guard_name' => 'web', 'model' => 'Product'],
-            ['name' => 'Import Product', 'guard_name' => 'web', 'model' => 'Product'],
+            // // Product
+            // ['name' => 'Create Product', 'guard_name' => 'web', 'model' => 'Product'],
+            // ['name' => 'View Product', 'guard_name' => 'web', 'model' => 'Product'],
+            // ['name' => 'Edit Product', 'guard_name' => 'web', 'model' => 'Product'],
+            // ['name' => 'Delete Product', 'guard_name' => 'web', 'model' => 'Product'],
+            // ['name' => 'Import Product', 'guard_name' => 'web', 'model' => 'Product'],
         ];
 
+        $newPermissions = [];
+
         foreach ($permissions as $permission) {
-            if (!Permission::whereName($permission['name'])->exists()) {
-                Permission::create($permission);
+            $cruds = ['Add', 'View', 'Delete', 'Update'];
+            foreach ($cruds as $crud) {
+                if (!Permission::whereName($crud.'-'.$permission['name'])->exists()) {
+                    $p = $permission;
+                    $p['name'] = $crud.'-'.$permission['name'];
+                    $newPermissions[] = $p;
+                    $per = Permission::create($p);
+                    logger(json_encode($per));
+                }
             }
         }
 
         $dbPermission = Permission::all()->pluck('name');
-        $collectionPermission = collect($permissions)->pluck('name');
+        $collectionPermission = collect($newPermissions)->pluck('name');
 
         $differenceArray = array_diff($dbPermission->toArray(), $collectionPermission->toArray());
         Permission::whereIn('name', $differenceArray)->delete();
@@ -66,7 +75,7 @@ class PermissionSeeder extends Seeder
                 ],
                 [
                     "name" => 'Naveen',
-                    "email" => 'naveenproplus222@gmail.com',
+                    "email" => 'navinproplus222@gmail.com',
                     "password" => Hash::make('proplus1234$'),
                 ]
             ];

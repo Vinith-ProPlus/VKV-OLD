@@ -5,13 +5,17 @@ namespace App\Http\Controllers\admin\master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductCategoryRequest;
 use App\Models\ProductCategory;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ProductCategoryController extends Controller
 {
+    use AuthorizesRequests;
     public function index(Request $request)
     {
+        $this->authorize('View Product Category');
         if ($request->ajax()) {
             $data = ProductCategory::withTrashed()->get();
             return DataTables::of($data)
@@ -35,13 +39,18 @@ class ProductCategoryController extends Controller
         return view('admin.master.product_categories.index');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function create()
     {
+        $this->authorize('Create Product Category');
         return view('admin.master.product_categories.data', ['productCategory' => '']);
     }
 
     public function store(ProductCategoryRequest $request)
     {
+        $this->authorize('Create Product Category');
         try {
             $request->validate([
                 'category_name' => 'required|unique:product_categories,category_name',
@@ -50,18 +59,21 @@ class ProductCategoryController extends Controller
             ProductCategory::create($request->all());
             return redirect()->route('product_categories.index')->with('success', 'Category created successfully.');
         } catch (\Exception $exception) {
-            info('Error::Place@ProductCategoryController@store - ' . $exception->getMessage());
-            return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
+            $ErrMsg = $exception->getMessage();
+            info('Error::Place@ProductCategoryController@store - ' . $ErrMsg);
+            return redirect()->back()->with("warning", "Something went wrong" . $ErrMsg);
         }
     }
 
     public function edit(ProductCategory $productCategory)
     {
+        $this->authorize('Edit Product Category');
         return view('admin.master.product_categories.data', compact('productCategory'));
     }
 
     public function update(ProductCategoryRequest $request, ProductCategory $productCategory)
     {
+        $this->authorize('Edit Product Category');
         try {
             $productCategory->update($request->validated());
             return redirect()->route('product_categories.index')->with('success', 'Category updated successfully.');
@@ -73,6 +85,7 @@ class ProductCategoryController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('Delete Product Category');
         try {
             $category = ProductCategory::findOrFail($id);
             $category->delete();
@@ -85,6 +98,7 @@ class ProductCategoryController extends Controller
 
     public function restore($id)
     {
+        $this->authorize('Restore Product Category');
         try {
             ProductCategory::withTrashed()->findOrFail($id)->restore();
             return response(['status' => 'success', 'message' => 'Category restored Successfully!']);

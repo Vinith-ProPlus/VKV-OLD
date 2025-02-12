@@ -72,9 +72,11 @@
                             <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
                         </a>
                         <ul class="nav-submenu menu-content" style="display: none;">
+                            @can('Roles-and-Permissions')
                             <li class=""><a
                                     href="{{ route('role.index') }}"  data-active-name="Roles-and-Permissions" data-original-title=""
                                     title="">Roles & Permissions</a></li>
+                            @endcan
                             <li class=""><a
                                     href="http://localhost/VKV-OLD/admin/users-and-permissions/users/"  data-active-name="Users" data-original-title="" title="">Users</a>
                             </li>

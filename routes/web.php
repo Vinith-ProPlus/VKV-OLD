@@ -57,7 +57,7 @@ Route::group(['prefix'=>'admin'],function (){
             require __DIR__.'/admin/master.php';
         });
 
-//        Route::group(['middleware' => ['can:Roles']], function () {
+        Route::group(['middleware' => ['can:Roles-and-Permissions']], function () {
 //role crud
             Route::get('roles', [RoleController::class, 'index'])->name('role.index');
             Route::get('role/create', [RoleController::class, 'create'])->name('role.create');
@@ -66,7 +66,7 @@ Route::group(['prefix'=>'admin'],function (){
             Route::get('role/{id}', [RoleController::class, 'show'])->name('role.show');
             Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
             Route::delete('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
-//        });
+        });
 
         Route::delete('/role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 

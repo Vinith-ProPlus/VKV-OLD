@@ -31,7 +31,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'View Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
             ['name' => 'Edit Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
             ['name' => 'Delete Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            ['name' => 'Import Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
+            ['name' => 'Restore Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
 
             // Product
             ['name' => 'Create Product', 'guard_name' => 'web', 'model' => 'Product'],

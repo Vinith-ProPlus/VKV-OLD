@@ -72,7 +72,7 @@
                             <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
                         </a>
                         <ul class="nav-submenu menu-content" style="display: none;">
-                            @can('Roles-and-Permissions')
+                            @can('View Roles and Permissions')
                             <li class=""><a
                                     href="{{ route('role.index') }}"  data-active-name="Roles-and-Permissions" data-original-title=""
                                     title="">Roles & Permissions</a></li>

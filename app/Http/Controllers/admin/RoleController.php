@@ -7,6 +7,7 @@ use App\Http\Requests\RoleRequest;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -17,6 +18,7 @@ use Yajra\DataTables\DataTables;
 
 class RoleController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      *
@@ -24,6 +26,7 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('View Roles and Permissions');
         if ($request->ajax()) {
             $data = Role::all();
             $user = auth()->user();
@@ -61,6 +64,7 @@ class RoleController extends Controller
      */
     public function create()
     {
+        $this->authorize('Create Roles and Permissions');
         $role = '';
         $permissions = Permission::all()->groupBy('model');
         return view('admin.role.create', compact('permissions', 'role'));
@@ -74,6 +78,7 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('Create Roles and Permissions');
         DB::beginTransaction();
         try {
             $role = Role::create(['name' => $request['name']]);
@@ -96,6 +101,7 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
+        $this->authorize('Edit Roles and Permissions');
         $role = Role::find($id);
         $permissions = Permission::all()->groupBy('model');
 
@@ -110,6 +116,7 @@ class RoleController extends Controller
      */
     public function show($id)
     {
+        $this->authorize('View Roles and Permissions');
         $role = Role::find($id);
         $permissions = Permission::all()->groupBy('model');
 
@@ -125,6 +132,7 @@ class RoleController extends Controller
      */
     public function update(RoleRequest $request, $id)
     {
+        $this->authorize('Edit Roles and Permissions');
         DB::beginTransaction();
         try {
             $input = $request->only(['name']);
@@ -149,6 +157,7 @@ class RoleController extends Controller
      */
     public function destroy(Request $request)
     {
+        $this->authorize('Delete Roles and Permissions');
         try {
             Role::find($request->id)->delete();
             return response(['status' => 'warning', 'message' => 'Role Deleted Successfully!']);

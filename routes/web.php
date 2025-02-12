@@ -57,18 +57,14 @@ Route::group(['prefix'=>'admin'],function (){
             require __DIR__.'/admin/master.php';
         });
 
-        Route::group(['middleware' => ['can:Roles-and-Permissions']], function () {
 //role crud
             Route::get('roles', [RoleController::class, 'index'])->name('role.index');
-            Route::get('role/create', [RoleController::class, 'create'])->name('role.create');
+            Route::get('role/create', [RoleController::class, 'create'])->name('role.create')->middleware('can:Create Roles and Permissions');
             Route::post('role/store', [RoleController::class, 'store'])->name('role.store');
             Route::get('role/{id}/edit', [RoleController::class, 'edit'])->name('role.edit');
             Route::get('role/{id}', [RoleController::class, 'show'])->name('role.show');
             Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
             Route::delete('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
-        });
-
-        Route::delete('/role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 
         /* Route::group(['prefix'=>'transaction'],function (){
             require __DIR__.'/admin/transaction.php';

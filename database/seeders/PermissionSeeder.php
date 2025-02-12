@@ -20,53 +20,46 @@ class PermissionSeeder extends Seeder
      */
         public function run()
     {
-        $permissions = [
+        $modules = [
             // Master
-            ['name' => 'States', 'guard_name' => 'web', 'model' => 'Master'],
-            ['name' => 'Cities', 'guard_name' => 'web', 'model' => 'Master'],
-            ['name' => 'Roles-and-Permissions', 'guard_name' => 'web', 'model' => 'Master'],
+            ['guard_name' => 'web', 'model' => 'States'],
+            ['guard_name' => 'web', 'model' => 'Cities'],
+            ['guard_name' => 'web', 'model' => 'Roles and Permissions', 'SplPermission' => 1],
 
-            // Product Category
-            // ['name' => 'Create Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            // ['name' => 'View Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            // ['name' => 'Edit Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            // ['name' => 'Delete Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-            // ['name' => 'Restore Product Category', 'guard_name' => 'web', 'model' => 'Product Category'],
-
-            // // Product
-            // ['name' => 'Create Product', 'guard_name' => 'web', 'model' => 'Product'],
-            // ['name' => 'View Product', 'guard_name' => 'web', 'model' => 'Product'],
-            // ['name' => 'Edit Product', 'guard_name' => 'web', 'model' => 'Product'],
-            // ['name' => 'Delete Product', 'guard_name' => 'web', 'model' => 'Product'],
-            // ['name' => 'Import Product', 'guard_name' => 'web', 'model' => 'Product'],
+            ['guard_name' => 'web', 'model' => 'Product Category'],
+            ['guard_name' => 'web', 'model' => 'Product'],
         ];
 
-        $newPermissions = [];
+        $updatedModules = [];
 
-        foreach ($permissions as $permission) {
-            $cruds = ['Add', 'View', 'Delete', 'Update'];
-            foreach ($cruds as $crud) {
-                if (!Permission::whereName($crud.'-'.$permission['name'])->exists()) {
-                    $p = $permission;
-                    $p['name'] = $crud.'-'.$permission['name'];
-                    $newPermissions[] = $p;
-                    $per = Permission::create($p);
-                    logger(json_encode($per));
+        foreach ($modules as $module) {
+            $options = ['Create', 'Edit', 'View', 'Delete', 'Restore', 'Excel', 'PDF', 'CSV', 'Copy', 'Print'];
+
+            if(array_key_exists('SplPermission', $module) && $module['SplPermission']){
+                $options[]='Special';
+                unset($module['SplPermission']);
+            }
+            foreach ($options as $option) {
+                if (!Permission::whereName($option.' '.$module['model'])->exists()) {
+                    $permission = $module;
+                    $permission['name'] = $option.' '.$module['model'];
+                    $updatedModules[] = $permission;
+                    Permission::create($permission);
                 }
             }
         }
 
         $dbPermission = Permission::all()->pluck('name');
-        $collectionPermission = collect($newPermissions)->pluck('name');
+        $collectionPermission = collect($updatedModules)->pluck('name');
 
         $differenceArray = array_diff($dbPermission->toArray(), $collectionPermission->toArray());
         Permission::whereIn('name', $differenceArray)->delete();
 
-        $permissionsIds = Permission::all()->pluck('id');
+        $modulesIds = Permission::all()->pluck('id');
 
         if (!Role::whereName('Super Admin')->exists()) {
             $role = Role::create(['name' => 'Super Admin']);
-            $role->givePermissionTo($permissionsIds);
+            $role->givePermissionTo($modulesIds);
             $users = [
                 [
                     "name" => 'Vinith Kumar',
@@ -86,7 +79,7 @@ class PermissionSeeder extends Seeder
             }
         } else {
             $role = Role::whereName('Super Admin')->first();
-            $role->syncPermissions($permissionsIds);
+            $role->syncPermissions($modulesIds);
         }
     }
 }

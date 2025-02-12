@@ -39,20 +39,20 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <h4 class="mt-5">Assign Permissions</h4>
+                                <h4 class="mt-25">Assign Permissions</h4>
                                 <hr>
                                 <div>
                                     @foreach($permissions as $guardName => $guards)
-                                        <div class="mt-3">
+                                        <div class="mt-10">
                                             <h6><b>{{ snakeCaseToTitleCase($guardName) }}</b></h6>
                                         </div>
                                         <div class="row mt-3">
                                             @foreach($guards as $permission)
-                                                <div class="col-md-3">
-                                                    <label class="custom-control custom-checkbox">
+                                                <div class="col-md-2">
+                                                    <label class="custom-control custom-checkbox" for="{{ $permission->id}}">
                                                         <input type="checkbox" class="custom-control-input" name="permissions[]" id="{{ $permission->id}}"
                                                                value="{{ $permission->id}}" {{ ($role && $role->hasPermissionTo($permission->name)) ? "checked" : '' }}>
-                                                        <span class="custom-control-label" for="{{ $permission->id}}">{{ snakeCaseToTitleCase($permission->name) }}</span>
+                                                        <span class="custom-control-label">{{ snakeCaseToTitleCase(trim(str_replace($permission->model, '', $permission->name))) }}</span>
                                                     </label>
                                                 </div>
                                             @endforeach
@@ -62,11 +62,18 @@
 
                                 <div class="row mt-5 justify-content-center">
                                     <div class="col-md-4">
-
                                         <a href="{{ route('role.index') }}">
-                                         <button type="button" class="btn btn-sm px-5 mb-2 btn-outline-warning mr-4">Cancel</button>
+                                            <button type="button" class="btn btn-sm px-5 mb-2 btn-outline-warning mr-4">Cancel</button>
                                         </a>
-                                        <button type="submit" class="btn btn-sm px-5 mb-2 btn-outline-success">Save</button>
+                                        @if(!$role)
+                                            @can('Create Roles and Permissions')
+                                                <button type="submit" class="btn btn-sm px-5 mb-2 btn-outline-success">Save</button>
+                                            @endcan
+                                        @else
+                                            @can('Edit Roles and Permissions')
+                                                <button type="submit" class="btn btn-sm px-5 mb-2 btn-outline-success">Update</button>
+                                            @endcan
+                                        @endif
                                     </div>
                                 </div>
                             </div>

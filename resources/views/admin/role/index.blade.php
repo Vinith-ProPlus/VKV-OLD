@@ -27,8 +27,10 @@
                             <div class="col-sm-4"></div>
                             <div class="col-sm-4 my-2"><h5>{{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right text-md-right">
-                                <a class="btn btn-sm btnPrimaryCustomizeBlue btn-primary add-btn"
-                                   href="{{ route('role.create') }}">Add Roles</a>
+                                @can('Create Roles and Permissions')
+                                    <a class="btn btn-sm btnPrimaryCustomizeBlue btn-primary add-btn"
+                                       href="{{ route('role.create') }}">Add Roles</a>
+                                @endCan
                             </div>
                         </div>
                     </div>
@@ -59,7 +61,8 @@
 
 @section('script')
     <script>
-        $(function () {
+        @can('View Roles and Permissions')
+            $(function () {
             $('#list_table').DataTable({
                 columnDefs: [
                     { className: "dt-center", targets: "_all" }
@@ -81,6 +84,7 @@
             });
 
         });
+        @endcan
     </script>
 @endsection
 

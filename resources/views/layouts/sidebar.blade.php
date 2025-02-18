@@ -49,13 +49,17 @@
                                     title="">Postal Codes</a></li>
                             <li class=""><a href="http://localhost/VKV-OLD/admin/master/general/city"  data-active-name="City" data-original-title="" title="">City</a>
                             </li>
-                            <li class=""><a href="http://localhost/VKV-OLD/admin/master/product/tax"  data-active-name="Tax" data-original-title="" title="">Tax</a></li>
+                            @can('View Tax')
+                            <li class=""><a href="{{ route('taxes.index') }}" data-active-name="Tax" data-original-title="" title="">Tax</a></li>
+                            @endcan
                             <li class=""><a href="http://localhost/VKV-OLD/admin/master/product/unit-of-measurement"  data-active-name="Unit-Of-Measurement" data-original-title=""
                                     title="">Unit of Measurement</a></li>
+                            @can('View Product Category')
                             <li class="">
                                 <a href="{{ route('product_categories.index') }}" data-active-name="Product-Category" data-original-title=""
                                     title="">Product Category</a>
                             </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">

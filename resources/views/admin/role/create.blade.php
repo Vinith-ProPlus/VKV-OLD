@@ -61,7 +61,7 @@
                                 </div>
 
                                 <div class="row mt-5 justify-content-center">
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 d-flex justify-content-center align-items-center">
                                         <a href="{{ route('role.index') }}">
                                             <button type="button" class="btn btn-sm px-5 mb-2 btn-outline-warning mr-4">Cancel</button>
                                         </a>

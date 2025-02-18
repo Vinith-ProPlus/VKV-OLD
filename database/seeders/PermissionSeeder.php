@@ -24,6 +24,7 @@ class PermissionSeeder extends Seeder
             // Master
             ['guard_name' => 'web', 'model' => 'States'],
             ['guard_name' => 'web', 'model' => 'Cities'],
+            ['guard_name' => 'web', 'model' => 'Tax'],
             ['guard_name' => 'web', 'model' => 'Roles and Permissions', 'SplPermission' => 1],
 
             ['guard_name' => 'web', 'model' => 'Product Category'],
@@ -53,7 +54,7 @@ class PermissionSeeder extends Seeder
         $collectionPermission = collect($updatedModules)->pluck('name');
 
         $differenceArray = array_diff($dbPermission->toArray(), $collectionPermission->toArray());
-        Permission::whereIn('name', $differenceArray)->delete();
+//        Permission::whereIn('name', $differenceArray)->delete();
 
         $modulesIds = Permission::all()->pluck('id');
 

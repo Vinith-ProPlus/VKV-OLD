@@ -35,7 +35,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::resource('product_categories', ProductCategoryController::class);
-    Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Roles and Permissions');
+    Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
 });
 
 Route::group(['prefix'=>'admin'],function (){

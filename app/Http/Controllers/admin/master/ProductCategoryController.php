@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin\master;
+namespace App\Http\Controllers\Admin\Master;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductCategoryRequest;

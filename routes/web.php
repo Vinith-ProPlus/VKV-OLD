@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\admin\master\ProductCategoryController;
+use App\Http\Controllers\Admin\Master\ProductCategoryController;
 use App\Http\Controllers\Admin\Master\TaxController;
-use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
 use Illuminate\Support\Facades\Artisan;
@@ -18,7 +18,10 @@ Route::get('/clear', function() {
 });
 
 Route::get('/', function () {
-    return view('welcome');
+    if(auth()->user()){
+        return redirect()->route('dashboard');
+    }
+    return view('auth.login');
 });
 
 Route::get('/import-default-rows', [SqlImportController::class, 'importSqlFiles']);
@@ -35,19 +38,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    Route::resource('product_categories', ProductCategoryController::class);
-    Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
-
-    Route::resource('taxes', TaxController::class);
-    Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
-
 });
 
 Route::group(['prefix'=>'admin'],function (){
     Route::middleware('auth')->group(function () {
         Route::group(['prefix'=>'master'],function (){
-            require __DIR__.'/admin/master.php';
+            Route::resource('product_categories', ProductCategoryController::class);
+            Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
+
+            Route::resource('taxes', TaxController::class);
+            Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
         });
+
 
 //role crud
             Route::get('roles', [RoleController::class, 'index'])->name('role.index');

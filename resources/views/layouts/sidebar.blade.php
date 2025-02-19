@@ -110,9 +110,8 @@
                                             title="">Company</a></li>
                         </ul>
                     </li>
-                    <li class="dropdown CMenus" id="btnLogout"><a class="nav-link menu-title link-nav"
-                                                                  data-active-name="logout"
-                                                                  href="http://localhost/VKV-OLD/">
+                    <li class="dropdown CMenus" id="btnLogout"><a class="nav-link menu-title link-nav" data-active-name="logout"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round"
@@ -123,7 +122,11 @@
                             </svg>
                             <span>Logout</span>
                             <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
-                        </a></li>
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    </li>
                 </ul>
             </div>
             <div class="right-arrow" id="right-arrow">

@@ -55,6 +55,38 @@ class SqlImportController extends Controller
             ], 500);
         }
     }
+    public function importTableRows($TableName)
+    {
+        $sqlFilePath = database_path("sql/{$TableName}.sql");
+
+        if (!File::exists($sqlFilePath)) {
+            return response()->json([
+                "message" => "SQL file for the table '{$TableName}' not found.",
+                "file_path" => $sqlFilePath
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $sql = File::get($sqlFilePath);
+            DB::unprepared($sql);
+
+            DB::commit();
+
+            return response()->json([
+                "message" => "SQL file '{$TableName}.sql' executed successfully"
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                "message" => "Error executing '{$TableName}.sql'",
+                "error" => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function exportMenus()
     {
         try {

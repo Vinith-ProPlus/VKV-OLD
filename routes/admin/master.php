@@ -1,78 +1,35 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\admin\master\StatesController;
-use App\Http\Controllers\web\masters\general\CityController;
-use App\Http\Controllers\web\masters\general\DistrictsController;
-use App\Http\Controllers\web\masters\general\PostalCodesController;
+use App\Http\Controllers\Admin\Master\CityController;
+use App\Http\Controllers\Admin\Master\DistrictController;
+use App\Http\Controllers\Admin\Master\PincodeController;
+use App\Http\Controllers\Admin\Master\StatesController;
+use App\Http\Controllers\Admin\Master\ProductCategoryController;
+use App\Http\Controllers\Admin\Master\TaxController;
 
 
-Route::group(['prefix'=>'states'],function (){
-    Route::controller(StatesController::class)->group(function () {
-        Route::get('/', 'view');
-        Route::get('/trash', 'TrashView');
-        Route::get('/create', 'Create');
-        Route::get('/edit/{ID}', 'Edit');
+Route::resource('states', StatesController::class);
+Route::put('states/restore/{id}', [StatesController::class, 'restore'])->name('states.restore')->middleware('can:Restore States');
 
-        Route::post('/data', 'TableView');
-        Route::post('/create', 'Save');
-        Route::POST('/edit/{ID}', 'Update');
-        Route::POST('/delete/{ID}', 'Delete');
-        Route::POST('/restore/{ID}', 'Restore');
-        Route::post('/trash-data', 'TrashTableView');
+Route::get('/districts/getStates', [DistrictController::class, 'getStates'])->name('district.getstates');
+Route::resource('districts', DistrictController::class);
+Route::put('districts/restore/{id}', [DistrictController::class, 'restore'])->name('districts.restore')->middleware('can:Restore Districts');
 
-    });
-});
+Route::get('/pincodes/getDistricts', [PincodeController::class, 'getDistricts'])->name('pincodes.getDistricts');
+Route::resource('pincodes', PincodeController::class);
+Route::put('pincodes/restore/{id}', [PincodeController::class, 'restore'])->name('pincodes.restore')->middleware('can:Restore Pincodes');
 
-Route::group(['prefix'=>'districts'],function (){
-    Route::controller(DistrictsController::class)->group(function () {
-        Route::get('/', 'view');
-        Route::get('/trash', 'TrashView');
-        Route::get('/create', 'Create');
-        Route::get('/edit/{ID}', 'Edit');
+Route::resource('cities', CityController::class);
+Route::put('cities/restore/{id}', [CityController::class, 'restore'])->name('cities.restore')->middleware('can:Restore Pincodes');
 
-        Route::post('/data', 'TableView');
-        Route::post('/create', 'Save');
-        Route::POST('/edit/{ID}', 'Update');
-        Route::POST('/delete/{ID}', 'Delete');
-        Route::POST('/restore/{ID}', 'Restore');
-        Route::post('/trash-data', 'TrashTableView');
+Route::resource('product_categories', ProductCategoryController::class);
+Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
 
-    });
-});
+Route::resource('taxes', TaxController::class);
+Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
 
 
-Route::group(['prefix'=>'city'],function (){
-    Route::controller(CityController::class)->group(function () {
-        Route::get('/', 'view');
-        Route::get('/trash', 'TrashView');
-        Route::get('/create', 'Create');
-        Route::get('/edit/{ID}', 'Edit');
 
-        Route::post('/data', 'TableView');
-        Route::post('/create', 'Save');
-        Route::POST('/edit/{ID}', 'Update');
-        Route::POST('/delete/{ID}', 'Delete');
-        Route::POST('/restore/{ID}', 'Restore');
-        Route::post('/trash-data', 'TrashTableView');
 
-    });
-});
-
-Route::group(['prefix'=>'postal-codes'],function (){
-    Route::controller(PostalCodesController::class)->group(function () {
-        Route::get('/', 'view');
-        Route::get('/trash', 'TrashView');
-        Route::get('/create', 'Create');
-        Route::get('/edit/{ID}', 'Edit');
-
-        Route::post('/data', 'TableView');
-        Route::post('/create', 'Save');
-        Route::POST('/edit/{ID}', 'Update');
-        Route::POST('/delete/{ID}', 'Delete');
-        Route::POST('/restore/{ID}', 'Restore');
-        Route::post('/trash-data', 'TrashTableView');
-
-    });
-});
 

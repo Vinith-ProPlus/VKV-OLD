@@ -39,16 +39,30 @@
                             <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
                         </a>
                         <ul class="nav-submenu menu-content" style="display: none;">
-                            <li class=""><a href="http://localhost/VKV-OLD/admin/master/general/states" data-active-name="States" data-original-title=""
-                                            title="">States</a></li>
+                            @can('View States')
                             <li class="">
-                                <a href="http://localhost/VKV-OLD/admin/master/general/districts" data-active-name="Districts" data-original-title=""
-                                    title="">Districts</a></li>
-                            <li class=""><a
-                                    href="http://localhost/VKV-OLD/admin/master/general/postal-codes"  data-active-name="Postal-Codes" data-original-title=""
-                                    title="">Postal Codes</a></li>
-                            <li class=""><a href="http://localhost/VKV-OLD/admin/master/general/city"  data-active-name="City" data-original-title="" title="">City</a>
+                                <a href="{{ route('states.index') }}" data-active-name="States" data-original-title=""
+                                    title="">States</a>
                             </li>
+                            @endcan 
+                            @can('View Districts')
+                            <li class="">
+                                <a href="{{ route('districts.index') }}" data-active-name="Districts" data-original-title=""
+                                    title="">Districts</a>
+                            </li>
+                            @endcan  
+                            @can('View Pincodes')
+                            <li class="">
+                                <a href="{{ route('pincodes.index') }}" data-active-name="Pincodes" data-original-title=""
+                                    title="">Pincodes</a>
+                            </li>
+                            @endcan   
+                            @can('View Cities')
+                            <li class="">
+                                <a href="{{ route('cities.index') }}" data-active-name="Cities" data-original-title=""
+                                    title="">City</a>
+                            </li>
+                            @endcan
                             @can('View Tax')
                             <li class=""><a href="{{ route('taxes.index') }}" data-active-name="Tax" data-original-title="" title="">Tax</a></li>
                             @endcan
@@ -59,6 +73,24 @@
                                 <a href="{{ route('product_categories.index') }}" data-active-name="Product-Category" data-original-title=""
                                     title="">Product Category</a>
                             </li>
+                            @endcan
+                        </ul>
+                    </li>
+                    <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M5 3h10l6 6v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+                                <polyline points="14 3 14 8 19 8"></polyline>
+                                <circle cx="12" cy="16" r="3"></circle>
+                                <path d="M12 12v2m0 4v2m4-4h-2m-4 0H8"></path>
+                            </svg>
+                            <span>Manage Projects</span>
+                            <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
+                        </a>
+                        <ul class="nav-submenu menu-content" style="display: none;">
+                            @can('View Project Specifications')
+                                <li class="">
+                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>
+                                </li>
                             @endcan
                         </ul>
                     </li>

@@ -24,7 +24,7 @@
                         <div class="col-sm-12 mt-20">
                             <div class="form-group">
                                 <label class="txtStateName">State Name <span class="required"> * </span></label>
-                                <input type="text" class="form-control  {{$Theme['input-size']}}" id="txtStateName" value="<?php if($isEdit){ echo $EditData[0]->StateName;} ?>">
+                                <input type="text" class="form-control  {{$Theme['input-size']}}" id="txtStateName" value="<?php if($isEdit{ echo $EditData[0]->StateName;} ?>">
                                 <div class="errors" id="txtStateName-err"></div>
                             </div>
                         </div>

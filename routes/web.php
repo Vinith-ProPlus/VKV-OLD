@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\Master\ProductCategoryController;
-use App\Http\Controllers\Admin\Master\TaxController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
@@ -25,6 +23,7 @@ Route::get('/', function () {
 });
 
 Route::get('/import-default-rows', [SqlImportController::class, 'importSqlFiles']);
+Route::get('/import-table-rows/{TableName}', [SqlImportController::class, 'importTableRows']);
 Route::get('/export-menus', [SqlImportController::class, 'exportMenus']);
 
 
@@ -42,16 +41,16 @@ Route::middleware('auth')->group(function () {
 
 Route::group(['prefix'=>'admin'],function (){
     Route::middleware('auth')->group(function () {
-        Route::group(['prefix'=>'master'],function (){
-            Route::resource('product_categories', ProductCategoryController::class);
-            Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
 
-            Route::resource('taxes', TaxController::class);
-            Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
+        Route::group(['prefix'=>'master'],function (){
+            require __DIR__.'/admin/master.php';
+        });
+        Route::group(['prefix'=>'manage-projects'],function (){
+            require __DIR__.'/admin/manage_projects.php';
         });
 
 
-//role crud
+        //role crud
             Route::get('roles', [RoleController::class, 'index'])->name('role.index');
             Route::get('role/create', [RoleController::class, 'create'])->name('role.create')->middleware('can:Create Roles and Permissions');
             Route::post('role/store', [RoleController::class, 'store'])->name('role.store');

@@ -23,12 +23,17 @@ class PermissionSeeder extends Seeder
         $modules = [
             // Master
             ['guard_name' => 'web', 'model' => 'States'],
+            ['guard_name' => 'web', 'model' => 'Districts'],
+            ['guard_name' => 'web', 'model' => 'Pincodes'],
             ['guard_name' => 'web', 'model' => 'Cities'],
             ['guard_name' => 'web', 'model' => 'Tax'],
             ['guard_name' => 'web', 'model' => 'Roles and Permissions', 'SplPermission' => 1],
 
             ['guard_name' => 'web', 'model' => 'Product Category'],
             ['guard_name' => 'web', 'model' => 'Product'],
+
+            // Manage Projects
+            ['guard_name' => 'web', 'model' => 'Project Specifications'],
         ];
 
         $updatedModules = [];
@@ -70,6 +75,11 @@ class PermissionSeeder extends Seeder
                 [
                     "name" => 'Naveen',
                     "email" => 'navinproplus222@gmail.com',
+                    "password" => Hash::make('proplus1234$'),
+                ],
+                [
+                    "name" => 'Anand',
+                    "email" => 'anand@propluslogics.com',
                     "password" => Hash::make('proplus1234$'),
                 ]
             ];

@@ -26,21 +26,28 @@
                     <div class="card-header text-center">
                         <div class="row">
                             <div class="col-sm-4"></div>
-                            <div class="col-sm-4 my-2"><h5>{{ $productCategory  ? 'Edit' : 'Create' }} {{$PageTitle}}</h5></div>
+                            <div class="col-sm-4 my-2">
+                                <h5>{{ $productCategory  ? 'Edit' : 'Create' }} {{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right text-md-right"></div>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 col-sm-12 col-lg-12">
-                                <form action="{{ $productCategory ? route('product_categories.update', $productCategory->id) : route('product_categories.store') }}" method="POST">
+                                <form
+                                    action="{{ $productCategory ? route('product_categories.update', $productCategory->id) : route('product_categories.store') }}"
+                                    method="POST">
                                     @csrf
-                                    @if($productCategory) @method('PUT') @endif
+                                    @if($productCategory)
+                                        @method('PUT')
+                                    @endif
                                     <div class="form-group">
                                         <label>Category Name</label>
-                                        <input type="text" name="category_name" class="form-control @error('category_name') is-invalid @enderror"
-                                               value="{{ $productCategory ? old('category_name', $productCategory->category_name) : old('category_name') }}" required>
-                                        @error('category_name')
+                                        <input type="text" name="name"
+                                               class="form-control @error('name') is-invalid @enderror"
+                                               value="{{ $productCategory ? old('name', $productCategory->name) : old('name') }}"
+                                               required>
+                                        @error('name')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
                                     </div>
@@ -49,16 +56,24 @@
                                         <label>Active Status</label>
                                         <select name="is_active"
                                                 class="form-control @error('is_active') is-invalid @enderror">
-                                            <option value="1" {{ $productCategory && $productCategory->is_active ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ $productCategory && !$productCategory->is_active ? 'selected' : '' }}>Inactive</option>
+                                            <option
+                                                value="1" {{ $productCategory && $productCategory->is_active ? 'selected' : '' }}>
+                                                Active
+                                            </option>
+                                            <option
+                                                value="0" {{ $productCategory && !$productCategory->is_active ? 'selected' : '' }}>
+                                                Inactive
+                                            </option>
                                         </select>
                                         @error('is_active')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
                                     </div>
 
-                                    <div class="row mt-15 justify-content-center">
-                                        <div class="col-md-4">
+                                    <div class="row mt-15 text-end">
+                                        <div>
+                                            <a href="javascript:void(0)" onclick="window.history.back()" type="button"
+                                               class="btn btn-warning">Back</a>
                                             @if(!$productCategory)
                                                 @can('Create Product Category')
                                                     <button type="submit" class="btn btn-primary">Save</button>
@@ -68,7 +83,6 @@
                                                     <button type="submit" class="btn btn-primary">Update</button>
                                                 @endcan
                                             @endif
-                                            <a href="javascript:void(0)" onclick="window.history.back()" type="button" class="btn btn-warning">Back</a>
                                         </div>
                                     </div>
                                 </form>

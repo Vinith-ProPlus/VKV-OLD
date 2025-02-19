@@ -14,7 +14,7 @@
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title link-nav active"
                                                    data-active-name="Dashboard"
-                                                   href="http://localhost/VKV-OLD/admin/dashboard">
+                                                   href="{{ route('dashboard') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round"
@@ -52,7 +52,7 @@
                             @can('View Tax')
                             <li class=""><a href="{{ route('taxes.index') }}" data-active-name="Tax" data-original-title="" title="">Tax</a></li>
                             @endcan
-                            <li class=""><a href="http://localhost/VKV-OLD/admin/master/product/unit-of-measurement"  data-active-name="Unit-Of-Measurement" data-original-title=""
+                            <li class=""><a href="{{ route('units.index') }}"  data-active-name="Unit-Of-Measurement" data-original-title=""
                                     title="">Unit of Measurement</a></li>
                             @can('View Product Category')
                             <li class="">

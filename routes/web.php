@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Master\ProductCategoryController;
 use App\Http\Controllers\Admin\Master\TaxController;
+use App\Http\Controllers\Admin\Master\UnitOfMeasurementController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
@@ -48,6 +49,9 @@ Route::group(['prefix'=>'admin'],function (){
 
             Route::resource('taxes', TaxController::class);
             Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
+
+            Route::resource('units', UnitOfMeasurementController::class);
+            Route::put('units/restore/{id}', [UnitOfMeasurementController::class, 'restore'])->name('units.restore')->middleware('can:Restore Unit of Measurement');
         });
 
 

@@ -52,10 +52,6 @@ class ProductCategoryController extends Controller
     {
         $this->authorize('Create Product Category');
         try {
-            $request->validate([
-                'category_name' => 'required|unique:product_categories,category_name',
-                'is_active' => 'required|boolean',
-            ]);
             ProductCategory::create($request->all());
             return redirect()->route('product_categories.index')->with('success', 'Category created successfully.');
         } catch (\Exception $exception) {

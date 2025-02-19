@@ -2,23 +2,23 @@
 
 @section('content')
     @php
-        $PageTitle="Product Category";
-        $ActiveMenuName='Product-Category';
+        $PageTitle="Unit of Measurement";
+        $ActiveMenuName='Unit of Measurement';
     @endphp
     <div class="container-fluid">
         <div class="page-header">
             <div class="row">
                 <div class="col-sm-12">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ url('/') }}" data-original-title="" title=""><i
-                                    class="f-16 fa fa-home"></i></a></li>
+                        <li class="breadcrumb-item"><a href="{{ url('/') }}" title=""><i class="f-16 fa fa-home"></i></a></li>
                         <li class="breadcrumb-item">Master</li>
-                        <li class="breadcrumb-item">{{$PageTitle}}</li>
+                        <li class="breadcrumb-item">{{ $PageTitle }}</li>
                     </ol>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="container-fluid">
         <div class="row d-flex justify-content-center">
             <div class="col-12 col-sm-12 col-lg-10">
@@ -26,15 +26,18 @@
                     <div class="card-header text-center">
                         <div class="row">
                             <div class="col-sm-4"></div>
-                            <div class="col-sm-4 my-2"><h5>{{$PageTitle}}</h5></div>
+                            <div class="col-sm-4 my-2">
+                                <h5>{{ $PageTitle }}</h5>
+                            </div>
                             <div class="col-sm-4 my-2 text-right text-md-right">
-                                @can('Create Product Category')
+                                @can('Create Unit of Measurement')
                                     <a class="btn btn-sm btnPrimaryCustomizeBlue btn-primary add-btn"
-                                        href="{{ route('product_categories.create') }}">Add New Category</a>
+                                       href="{{ route('units.create') }}">Add New Unit</a>
                                 @endcan
                             </div>
                         </div>
                     </div>
+
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 col-sm-12 col-lg-12">
@@ -43,7 +46,8 @@
                                         <thead class="thead-light">
                                         <tr>
                                             <th>S.No</th>
-                                            <th>Category Name</th>
+                                            <th>Unit Name</th>
+                                            <th>Unit Code</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -60,29 +64,31 @@
         </div>
     </div>
 @endsection
+
 @section('script')
     <script>
-        @can('View Product Category')
-            $(function () {
-                $('#list_table').DataTable({
-                    "columnDefs": [
-                        {"className": "dt-center", "targets": "_all"}
-                    ],
-                    serverSide: true,
-                    iDisplayLength: 10,
-                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-                    ajax: {
-                        url: '{{ route("product_categories.index") }}',
-                        type: 'GET'
-                    },
-                    columns: [
-                        {data: 'DT_RowIndex'},
-                        {data: 'name'},
-                        {data: 'is_active'},
-                        {data: 'action', orderable: false},
-                    ]
-                });
+        @can('View Unit of Measurement')
+        $(function () {
+            $('#list_table').DataTable({
+                "columnDefs": [
+                    {"className": "dt-center", "targets": "_all"}
+                ],
+                serverSide: true,
+                iDisplayLength: 10,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                ajax: {
+                    url: '{{ route("units.index") }}',
+                    type: 'GET'
+                },
+                columns: [
+                    {data: 'DT_RowIndex'},
+                    {data: 'name'},
+                    {data: 'code'},
+                    {data: 'is_active'},
+                    {data: 'action', orderable: false},
+                ]
             });
+        });
         @endcan
     </script>
 @endsection

@@ -14,7 +14,7 @@
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title link-nav active"
                                                    data-active-name="Dashboard"
-                                                   href="http://localhost/VKV-OLD/admin/dashboard">
+                                                   href="{{ route('dashboard') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round"
@@ -66,12 +66,18 @@
                             @can('View Tax')
                             <li class=""><a href="{{ route('taxes.index') }}" data-active-name="Tax" data-original-title="" title="">Tax</a></li>
                             @endcan
-                            <li class=""><a href="http://localhost/VKV-OLD/admin/master/product/unit-of-measurement"  data-active-name="Unit-Of-Measurement" data-original-title=""
+                            <li class=""><a href="{{ route('units.index') }}"  data-active-name="Unit-Of-Measurement" data-original-title=""
                                     title="">Unit of Measurement</a></li>
                             @can('View Product Category')
                             <li class="">
                                 <a href="{{ route('product_categories.index') }}" data-active-name="Product-Category" data-original-title=""
                                     title="">Product Category</a>
+                            </li>
+                            @endcan
+                            @can('View Product')
+                            <li class="">
+                                <a href="{{ route('products.index') }}" data-active-name="Product" data-original-title=""
+                                    title="">Product</a>
                             </li>
                             @endcan
                         </ul>
@@ -113,15 +119,17 @@
                                     href="{{ route('role.index') }}"  data-active-name="Roles-and-Permissions" data-original-title=""
                                     title="">Roles & Permissions</a></li>
                             @endcan
+                            <!--
                             <li class=""><a
                                     href="http://localhost/VKV-OLD/admin/users-and-permissions/users/"  data-active-name="Users" data-original-title="" title="">Users</a>
                             </li>
                             <li class=""><a
                                     href="http://localhost/VKV-OLD/admin/users-and-permissions/change-password/"  data-active-name="Change-Password" data-original-title=""
                                     title="">Change Password</a></li>
+                                    -->
                         </ul>
                     </li>
-                    <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
+                    <!-- <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round"
@@ -142,6 +150,7 @@
                                             title="">Company</a></li>
                         </ul>
                     </li>
+                    -->
                     <li class="dropdown CMenus" id="btnLogout"><a class="nav-link menu-title link-nav" data-active-name="logout"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"

@@ -27,6 +27,7 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Pincodes'],
             ['guard_name' => 'web', 'model' => 'Cities'],
             ['guard_name' => 'web', 'model' => 'Tax'],
+            ['guard_name' => 'web', 'model' => 'Unit of Measurement'],
             ['guard_name' => 'web', 'model' => 'Roles and Permissions', 'SplPermission' => 1],
 
             ['guard_name' => 'web', 'model' => 'Product Category'],
@@ -49,16 +50,16 @@ class PermissionSeeder extends Seeder
                 if (!Permission::whereName($option.' '.$module['model'])->exists()) {
                     $permission = $module;
                     $permission['name'] = $option.' '.$module['model'];
-                    $updatedModules[] = $permission;
+//                    $updatedModules[] = $permission;
                     Permission::create($permission);
                 }
             }
         }
 
-        $dbPermission = Permission::all()->pluck('name');
-        $collectionPermission = collect($updatedModules)->pluck('name');
+//        $dbPermission = Permission::all()->pluck('name');
+//        $collectionPermission = collect($updatedModules)->pluck('name');
 
-        $differenceArray = array_diff($dbPermission->toArray(), $collectionPermission->toArray());
+//        $differenceArray = array_diff($dbPermission->toArray(), $collectionPermission->toArray());
 //        Permission::whereIn('name', $differenceArray)->delete();
 
         $modulesIds = Permission::all()->pluck('id');

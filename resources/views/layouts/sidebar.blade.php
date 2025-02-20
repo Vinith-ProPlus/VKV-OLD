@@ -93,9 +93,16 @@
                             <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
                         </a>
                         <ul class="nav-submenu menu-content" style="display: none;">
+                            @can('View Amenities')
+                                <li class="">
+                                    <a href="{{ route('amenities.index') }}" data-active-name="Amenity" data-original-title="" title="">Amenities</a>
+                                </li>
+                            @endcan
+                        </ul>
+                        <ul class="nav-submenu menu-content" style="display: none;">
                             @can('View Project Specifications')
                                 <li class="">
-{{--                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>--}}
+                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>
                                 </li>
                             @endcan
                         </ul>

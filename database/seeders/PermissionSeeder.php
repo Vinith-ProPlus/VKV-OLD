@@ -35,6 +35,7 @@ class PermissionSeeder extends Seeder
 
             // Manage Projects
             ['guard_name' => 'web', 'model' => 'Project Specifications'],
+            ['guard_name' => 'web', 'model' => 'Amenities'],
         ];
 
         $updatedModules = [];

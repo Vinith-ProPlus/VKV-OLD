@@ -49,6 +49,10 @@ Route::middleware('auth')->group(function () {
 Route::group(['prefix'=>'admin'],function (){
     Route::middleware('auth')->group(function () {
 
+        Route::group(['prefix'=>'manage-projects'],function () {
+            require __DIR__.'/admin/manage_projects.php';
+        });
+
         Route::group(['prefix'=>'master'],function (){
             require __DIR__.'/admin/master.php';
 //            Route::resource('taxes', TaxController::class)->except(['show']);

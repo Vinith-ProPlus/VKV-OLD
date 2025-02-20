@@ -44,19 +44,19 @@
                                 <a href="{{ route('states.index') }}" data-active-name="States" data-original-title=""
                                     title="">States</a>
                             </li>
-                            @endcan 
+                            @endcan
                             @can('View Districts')
                             <li class="">
                                 <a href="{{ route('districts.index') }}" data-active-name="Districts" data-original-title=""
                                     title="">Districts</a>
                             </li>
-                            @endcan  
+                            @endcan
                             @can('View Pincodes')
                             <li class="">
                                 <a href="{{ route('pincodes.index') }}" data-active-name="Pincodes" data-original-title=""
                                     title="">Pincodes</a>
                             </li>
-                            @endcan   
+                            @endcan
                             @can('View Cities')
                             <li class="">
                                 <a href="{{ route('cities.index') }}" data-active-name="Cities" data-original-title=""
@@ -95,7 +95,7 @@
                         <ul class="nav-submenu menu-content" style="display: none;">
                             @can('View Project Specifications')
                                 <li class="">
-                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>
+{{--                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>--}}
                                 </li>
                             @endcan
                         </ul>

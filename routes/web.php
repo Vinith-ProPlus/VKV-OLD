@@ -50,13 +50,14 @@ Route::group(['prefix'=>'admin'],function (){
     Route::middleware('auth')->group(function () {
 
         Route::group(['prefix'=>'master'],function (){
-            Route::resource('taxes', TaxController::class)->except(['show']);
-            Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
+            require __DIR__.'/admin/master.php';
+//            Route::resource('taxes', TaxController::class)->except(['show']);
+//            Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
 
             Route::resource('units', UnitOfMeasurementController::class)->except(['show']);
             Route::put('units/restore/{id}', [UnitOfMeasurementController::class, 'restore'])->name('units.restore')->middleware('can:Restore Unit of Measurement');
-            Route::resource('product_categories', ProductCategoryController::class)->except(['show']);
-            Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
+//            Route::resource('product_categories', ProductCategoryController::class)->except(['show']);
+//            Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
 
             Route::resource('products', ProductController::class)->except(['show']);
             Route::put('products/restore/{id}', [ProductController::class, 'restore'])->name('products.restore')->middleware('can:Restore Product');
@@ -74,7 +75,6 @@ Route::group(['prefix'=>'admin'],function (){
             Route::get('uoms/list', function () {
                 return response()->json(UnitOfMeasurement::select('id', 'name')->get());
             })->name('uoms.list');
-
         });
 
 

@@ -1,11 +1,15 @@
 <?php
 
 use App\Http\Controllers\Admin\Master\ProductCategoryController;
+use App\Http\Controllers\Admin\Master\ProductController;
 use App\Http\Controllers\Admin\Master\TaxController;
 use App\Http\Controllers\Admin\Master\UnitOfMeasurementController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
+use App\Models\ProductCategory;
+use App\Models\Tax;
+use App\Models\UnitOfMeasurement;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -44,14 +48,31 @@ Route::middleware('auth')->group(function () {
 Route::group(['prefix'=>'admin'],function (){
     Route::middleware('auth')->group(function () {
         Route::group(['prefix'=>'master'],function (){
-            Route::resource('product_categories', ProductCategoryController::class);
-            Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
-
-            Route::resource('taxes', TaxController::class);
+            Route::resource('taxes', TaxController::class)->except(['show']);
             Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
 
-            Route::resource('units', UnitOfMeasurementController::class);
+            Route::resource('units', UnitOfMeasurementController::class)->except(['show']);
             Route::put('units/restore/{id}', [UnitOfMeasurementController::class, 'restore'])->name('units.restore')->middleware('can:Restore Unit of Measurement');
+            Route::resource('product_categories', ProductCategoryController::class)->except(['show']);
+            Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
+
+            Route::resource('products', ProductController::class)->except(['show']);
+            Route::put('products/restore/{id}', [ProductController::class, 'restore'])->name('products.restore')->middleware('can:Restore Product');
+
+            Route::get('categories/list', function () {
+                return response()->json(ProductCategory::select('id', 'name')->get());
+            })->name('categories.list');
+
+            Route::get('taxes/list', function () {
+                $t = Tax::select('id', 'name')->get();
+                logger($t);
+                return response()->json(Tax::select('id', 'name')->get());
+            })->name('taxes.list');
+
+            Route::get('uoms/list', function () {
+                return response()->json(UnitOfMeasurement::select('id', 'name')->get());
+            })->name('uoms.list');
+
         });
 
 
@@ -63,19 +84,6 @@ Route::group(['prefix'=>'admin'],function (){
             Route::get('role/{id}', [RoleController::class, 'show'])->name('role.show');
             Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
             Route::delete('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
-
-        /* Route::group(['prefix'=>'transaction'],function (){
-            require __DIR__.'/admin/transaction.php';
-        });
-        Route::group(['prefix'=>'reports'],function (){
-            require __DIR__.'/admin/reports.php';
-        });
-        Route::group(['prefix'=>'users-and-permissions'],function (){
-            require __DIR__.'/admin/users.php';
-        });
-        Route::group(['prefix'=>'settings'],function (){
-            require __DIR__.'/admin/settings.php';
-        }); */
     });
 });
 

@@ -59,7 +59,7 @@
 					<div class="main-header-left">
 						<div class="logo-wrapper">
 							<a href="{{url('/')}}/admin">
-								<img loading="lazy" src="{{-- {{url('/')}}/{{$Company['Logo']}} --}}" alt="" width="50" height="52">
+{{--								<img loading="lazy" src="--}}{{-- {{url('/')}}/{{$Company['Logo']}} --}}{{--" alt="" width="50" height="52">--}}
 							</a>
 						</div>
 					</div>

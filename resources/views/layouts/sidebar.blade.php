@@ -98,18 +98,19 @@
                                     <a href="{{ route('amenities.index') }}" data-active-name="Amenity" data-original-title="" title="">Amenities</a>
                                 </li>
                             @endcan
-                        </ul>
-                        <ul class="nav-submenu menu-content" style="display: none;">
+                            @can('View Project Specifications')
+                                <li class="">
+                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>
+                                </li>
+                            @endcan
                             @can('View Projects')
                                 <li class="">
                                     <a href="{{ route('projects.index') }}" data-active-name="Projects" data-original-title="" title="">Projects</a>
                                 </li>
                             @endcan
-                        </ul>
-                        <ul class="nav-submenu menu-content" style="display: none;">
-                            @can('View Project Specifications')
+                            @can('View Sites')
                                 <li class="">
-                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>
+                                    <a href="{{ route('sites.index') }}" data-active-name="Sites" data-original-title="" title="">Sites</a>
                                 </li>
                             @endcan
                         </ul>

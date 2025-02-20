@@ -100,7 +100,7 @@ class ProjectSpecificationsController extends Controller
     }
 
     public function restore($id)
-    { logger('11');
+    {
         $this->authorize('Restore Project Specifications');
         try {
             ProjectSpecifications::withTrashed()->findOrFail($id)->restore();

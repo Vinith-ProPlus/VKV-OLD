@@ -12,7 +12,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ url('/') }}" data-original-title="" title=""><i
                                     class="f-16 fa fa-home"></i></a></li>
-                        <li class="breadcrumb-item">Master</li>
+                        <li class="breadcrumb-item">Manage Projects</li>
                         <li class="breadcrumb-item">{{$PageTitle}}</li>
                     </ol>
                 </div>

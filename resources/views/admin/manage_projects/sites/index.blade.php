@@ -2,8 +2,8 @@
 
 @section('content')
     @php
-        $PageTitle="Amenity";
-        $ActiveMenuName='Amenity';
+        $PageTitle="Sites";
+        $ActiveMenuName='Sites';
     @endphp
     <div class="container-fluid">
         <div class="page-header">
@@ -28,9 +28,9 @@
                             <div class="col-sm-4"></div>
                             <div class="col-sm-4 my-2"><h5>{{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right text-md-right">
-                                @can('Create Amenities')
+                                @can('Create Sites')
                                     <a class="btn btn-sm btnPrimaryCustomizeBlue btn-primary add-btn"
-                                        href="{{ route('amenities.create') }}">Add New Amenity</a>
+                                        href="{{ route('sites.create') }}">Add Site</a>
                                 @endcan
                             </div>
                         </div>
@@ -43,7 +43,8 @@
                                         <thead class="thead-light">
                                         <tr>
                                             <th>S.No</th>
-                                            <th>Amenity Name</th>
+                                            <th>Site Name</th>
+                                            <th>Project Name</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -62,7 +63,7 @@
 @endsection
 @section('script')
     <script>
-        @can('View Amenities')
+        @can('View Sites')
             $(function () {
                 $('#list_table').DataTable({
                     "columnDefs": [
@@ -72,12 +73,12 @@
                     iDisplayLength: 10,
                     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
                     ajax: {
-                        url: '{{ route("amenities.index") }}',
+                        url: '{{ route("sites.index") }}',
                         type: 'GET'
                     },
                     columns: [
                         {data: 'DT_RowIndex'},
-                        {data: 'name'},
+                        {data: 'spec_name'},
                         {data: 'is_active'},
                         {data: 'action', orderable: false},
                     ]

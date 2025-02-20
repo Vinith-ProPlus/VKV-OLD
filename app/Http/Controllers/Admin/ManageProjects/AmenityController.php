@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\ManageProjects;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AmenityRequest;
 use App\Models\Amenity;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;

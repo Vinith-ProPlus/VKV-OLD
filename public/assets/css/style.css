@@ -6027,8 +6027,8 @@ table tbody .border-bottom-warning td {
 }
 
 .error {
-  margin: 70px 0 100px;
-  color: #000;
+  margin: 3px 0px;
+  color: #dc3545;
 }
 .error .error-title {
   font-size: 9.5rem;

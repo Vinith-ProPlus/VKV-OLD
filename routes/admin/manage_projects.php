@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ManageProjects\AmenityController;
+use App\Http\Controllers\Admin\ManageProjects\ProjectController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectSpecificationsController;
 use Illuminate\Support\Facades\Route;
 
@@ -8,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('amenities', AmenityController::class);
 Route::put('amenities/restore/{id}', [AmenityController::class, 'restore'])->name('amenities.restore')->middleware('can:Restore Amenities');
+
+Route::resource('projects', ProjectController::class);
+Route::put('projects/restore/{id}', [ProjectController::class, 'restore'])->name('projects.restore')->middleware('can:Restore Projects');
 
 
 Route::prefix('project-specifications')->name('project_specifications.')->group(function () {

@@ -58,7 +58,7 @@ class ProjectSpecificationsController extends Controller
             ]);
 
             ProjectSpecifications::create($request->all());
-            // return redirect()->route('project_specifications.index')->with('success', 'Category created successfully.');
+            // return redirect()->route('project_specifications.index')->with('success', 'Project Specification created successfully.');
             return ['status'=>true,'message'=>"Project Specification Created Successfully"];
         } catch (\Exception $exception) {
             $ErrMsg = $exception->getMessage();
@@ -78,7 +78,8 @@ class ProjectSpecificationsController extends Controller
         $this->authorize('Edit Project Specifications');
         try {
             $projectSpecification->update($request->validated());
-            return redirect()->route('project_specifications.index')->with('success', 'Category updated successfully.');
+            // return redirect()->route('project_specifications.index')->with('success', 'Project Specification updated successfully.');
+            return ['status'=>true,'message'=>"Project Specification Updated Successfully"];
         } catch (\Exception $exception) {
             info('Error::Place@ProjectSpecificationsController@update - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
@@ -89,9 +90,9 @@ class ProjectSpecificationsController extends Controller
     {
         $this->authorize('Delete Project Specifications');
         try {
-            $category = ProjectSpecifications::findOrFail($id);
-            $category->delete();
-            return response(['status' => 'warning', 'message' => 'Category deleted Successfully!']);
+            $projectSpecification = ProjectSpecifications::findOrFail($id);
+            $projectSpecification->delete();
+            return response(['status' => 'warning', 'message' => 'Project Specification deleted Successfully!']);
         } catch (\Exception $exception) {
             info('Error::Place@ProjectSpecificationsController@destroy - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
@@ -99,11 +100,11 @@ class ProjectSpecificationsController extends Controller
     }
 
     public function restore($id)
-    {
+    { logger('11');
         $this->authorize('Restore Project Specifications');
         try {
             ProjectSpecifications::withTrashed()->findOrFail($id)->restore();
-            return response(['status' => 'success', 'message' => 'Category restored Successfully!']);
+            return response(['status' => 'success', 'message' => 'Project Specification restored Successfully!']);
         } catch (\Exception $exception) {
             info('Error::Place@ProjectSpecificationsController@restore - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());

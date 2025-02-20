@@ -31,69 +31,11 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        {{-- <div class="row">
-                            <div class="col-12 col-sm-12 col-lg-12">
-                                <form action="{{ $projectSpecification ? route('project_specifications.update', $projectSpecification->id) : route('project_specifications.store') }}" method="POST">
-                                    @csrf
-                                    @if($projectSpecification) @method('PUT') @endif
-                                    <div class="form-group">
-                                        <label>Category Name</label>
-                                        <input type="text" name="category_name" class="form-control @error('category_name') is-invalid @enderror"
-                                               value="{{ $projectSpecification ? old('category_name', $projectSpecification->category_name) : old('category_name') }}" required>
-                                        @error('category_name')
-                                        <span class="error invalid-feedback">{{$message}}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="form-group my-2">
-                                        <label class="txtSpecName">Project Specification Name <span class="required"> * </span></label>
-                                        <input type="text" class="form-control" id="txtSpecName" value="">
-                                        <div class="errors" id="txtSpecName-err"></div>
-                                    </div>
-                                    
-                                    <div class="form-group my-2">
-                                        <label class="txtSpecName">Project Specification Name <span class="required"> * </span></label>
-                                        <input type="text" class="form-control" id="txtSpecName" value="">
-                                        <div class="errors" id="txtSpecName-err"></div>
-                                    </div>
-
-                                    <div class="form-group mt-15">
-                                        <label>Active Status</label>
-                                        <select name="is_active"
-                                                class="form-control @error('is_active') is-invalid @enderror">
-                                            <option value="1" {{ $projectSpecification && $projectSpecification->is_active ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ $projectSpecification && !$projectSpecification->is_active ? 'selected' : '' }}>Inactive</option>
-                                        </select>
-                                        @error('is_active')
-                                        <span class="error invalid-feedback">{{$message}}</span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="row mt-15 justify-content-end">
-                                        <div class="col-md-4 text-end">
-                                            <a href="javascript:void(0)" onclick="window.history.back()" type="button" class="btn btn-warning">Back</a>
-                                            @if(!$projectSpecification)
-                                                @can('Create Project Specifications')
-                                                    <button type="submit" class="btn btn-primary">Save</button>
-                                                @endcan
-                                            @else
-                                                @can('Edit Project Specifications')
-                                                    <button type="submit" class="btn btn-primary">Update</button>
-                                                @endcan
-                                            @endif
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div> --}}
-
-
-
-
                         <div class="row">
                             <div class="col-sm-12 mt-20">
                                 <div class="form-group">
                                     <label class="txtSpecName">Project Specification Name <span class="required"> * </span></label>
-                                    <input type="text" class="form-control" id="txtSpecName" value="@if($projectSpecification && $projectSpecification->spec_name=="Active") selected @endif">
+                                    <input type="text" class="form-control" id="txtSpecName" value="{{ $projectSpecification->spec_name ?? '' }}">
                                     <div class="errors err-sm" id="txtSpecName-err"></div>
                                 </div>
                             </div>
@@ -129,11 +71,14 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if($projectSpecification && is_array($projectSpecification->spec_values))
-                                            @foreach($projectSpecification->spec_values as $Key=>$row)
+                                        @if($projectSpecification)
+                                        @php
+                                            $spec_values = json_decode($projectSpecification->spec_values);
+                                        @endphp
+                                            @foreach($spec_values as $Key=>$row)
                                                 <tr>
                                                     <td>{{$Key + 1}}</td>
-                                                    <td>{{$row->spec_value_name}}</td>
+                                                    <td>{{$row->value_name}}</td>
                                                     <td><button type="button" class="btn btn-sm btn-outline-danger btnDeleteSpecValue"><i class="fa fa-trash"></i></button></td>
                                                 </tr>
                                             @endforeach
@@ -269,8 +214,9 @@
                     swal.close();
                     btnLoading($('#btnSave'));
                     let postUrl="{{ $projectSpecification ? route('project_specifications.update', $projectSpecification->id) : route('project_specifications.store') }}";
+                    let Type= "{{ $projectSpecification ? 'PUT' : 'POST' }}";
                     $.ajax({
-                        type:"post",
+                        type:Type,
                         url:postUrl,
                         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') },
                         data:formData,

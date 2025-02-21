@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\admin\users\CustomerController;
+use App\Http\Controllers\Admin\Users\CustomerController;
+use App\Http\Controllers\Admin\Users\VendorController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
@@ -94,6 +95,9 @@ Route::group(['prefix'=>'admin'],function (){
 
         Route::resource('customers', CustomerController::class);
         Route::put('customers/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore')->middleware('can:Restore Customers');
+
+        Route::resource('vendors', VendorController::class);
+        Route::put('vendors/restore/{id}', [VendorController::class, 'restore'])->name('vendors.restore')->middleware('can:Restore Vendors');
     });
 });
 

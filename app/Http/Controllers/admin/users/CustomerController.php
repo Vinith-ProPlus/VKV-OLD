@@ -1,16 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\admin\users;
+namespace App\Http\Controllers\Admin\Users;
 
 use App\Models\Customer;
-use App\Models\City;
-use App\Models\Pincode;
-use App\Models\District;
-use App\Models\State;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CustomerRequest;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -29,10 +24,7 @@ class CustomerController extends Controller
             ->editColumn('is_active', function ($data) {
                 return $data->is_active ? 'Active' : 'Inactive';
             })
-            ->addColumn('district_name', fn($data) => $data->district ? $data->district->name : 'N/A')
             ->addColumn('city_name', fn($data) => $data->city ? $data->city->name : 'N/A')
-            ->addColumn('pincode_name', fn($data) => $data->pincode ? $data->pincode->name : 'N/A')
-            ->addColumn('state_name', fn($data) => $data->state ? $data->state->name : 'N/A')
             ->addColumn('action', function ($data) {
                 $button = '<div class="d-flex justify-content-center">';
                 if ($data->deleted_at) {

@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CustomerRequest extends FormRequest
+class VendorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class CustomerRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => [
                 'required', 'email', 'max:225',
-                Rule::unique('users')->ignore($this->route('customer'))
+                Rule::unique('users')->ignore($this->route('vendor'))
             ],
             'dob' => 'required|date',
             'mobile' => 'required|digits_between:7,12',

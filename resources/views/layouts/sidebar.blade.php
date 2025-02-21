@@ -133,6 +133,12 @@
                                     href="{{ route('role.index') }}"  data-active-name="Roles-and-Permissions" data-original-title=""
                                     title="">Roles & Permissions</a></li>
                             @endcan
+                            @can('View Customers')
+                                <li class="">
+                                    <a href="{{ route('customers.index') }}" data-active-name="Customers" data-original-title=""
+                                       title="">Customers</a>
+                                </li>
+                            @endcan
                             <!--
                             <li class=""><a
                                     href="http://localhost/VKV-OLD/admin/users-and-permissions/users/"  data-active-name="Users" data-original-title="" title="">Users</a>

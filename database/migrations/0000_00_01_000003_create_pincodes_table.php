@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('pincodes', function (Blueprint $table) {
             $table->id();
             $table->string('pincode')->unique();
-            $table->foreignId('district_id')->constrained('districts');
             $table->boolean('is_active')->default(1);
             $table->softDeletes();
             $table->timestamps();

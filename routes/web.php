@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\Master\ProductController;
 use App\Http\Controllers\Admin\Master\TaxController;
 use App\Http\Controllers\Admin\Master\UnitOfMeasurementController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\admin\users\CustomerController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
 use App\Models\ProductCategory;
@@ -42,8 +44,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-
 });
 
 Route::group(['prefix'=>'admin'],function (){
@@ -67,17 +67,15 @@ Route::group(['prefix'=>'admin'],function (){
             Route::put('products/restore/{id}', [ProductController::class, 'restore'])->name('products.restore')->middleware('can:Restore Product');
 
             Route::get('categories/list', function () {
-                return response()->json(ProductCategory::select('id', 'name')->get());
+                return response()->json(ProductCategory::select('id', 'name')->where('is_active', 1)->get());
             })->name('categories.list');
 
             Route::get('taxes/list', function () {
-                $t = Tax::select('id', 'name')->get();
-                logger($t);
-                return response()->json(Tax::select('id', 'name')->get());
+                return response()->json(Tax::select('id', 'name')->where('is_active', 1)->get());
             })->name('taxes.list');
 
             Route::get('uoms/list', function () {
-                return response()->json(UnitOfMeasurement::select('id', 'name')->get());
+                return response()->json(UnitOfMeasurement::select('id', 'name')->where('is_active', 1)->get());
             })->name('uoms.list');
         });
 
@@ -90,7 +88,15 @@ Route::group(['prefix'=>'admin'],function (){
             Route::get('role/{id}', [RoleController::class, 'show'])->name('role.show');
             Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
             Route::delete('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+
+        Route::resource('customers', CustomerController::class);
+        Route::put('customers/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore')->middleware('can:Restore Customers');
     });
 });
+
+Route::get('/getDistricts', [Controller::class, 'getDistricts'])->name('getDistricts');
+Route::get('/getCities', [Controller::class, 'getCities'])->name('getCities');
+Route::get('/getStates', [Controller::class, 'getStates'])->name('getStates');
+Route::get('/getPinCodes', [Controller::class, 'getPinCodes'])->name('getPinCodes');
 
 require __DIR__.'/auth.php';

@@ -29,6 +29,7 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Tax'],
             ['guard_name' => 'web', 'model' => 'Unit of Measurement'],
             ['guard_name' => 'web', 'model' => 'Roles and Permissions', 'SplPermission' => 1],
+            ['guard_name' => 'web', 'model' => 'Customers', 'SplPermission' => 1],
 
             ['guard_name' => 'web', 'model' => 'Product Category'],
             ['guard_name' => 'web', 'model' => 'Product'],

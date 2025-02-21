@@ -3,7 +3,7 @@
 @section('content')
     @php
         $PageTitle="Taxes";
-        $ActiveMenuName='Taxes';
+        $ActiveMenuName='Tax';
     @endphp
 
     <div class="container-fluid">
@@ -48,6 +48,9 @@
         @can('View Tax')
         $(function () {
             $('#list_table').DataTable({
+                "columnDefs": [
+                    {"className": "dt-center", "targets": "_all"}
+                ],
                 serverSide: true,
                 ajax: '{{ route("taxes.index") }}',
                 columns: [

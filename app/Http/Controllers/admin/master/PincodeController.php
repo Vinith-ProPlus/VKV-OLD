@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PincodeController extends Controller
 {
-    use AuthorizesRequests; 
+    use AuthorizesRequests;
     public function index(Request $request)
     {
         $this->authorize('View Pincodes');
@@ -43,13 +43,13 @@ class PincodeController extends Controller
         }
         return view('admin.master.pincodes.index');
     }
- 
+
     public function create()
     {
         $this->authorize('Create Pincodes');
         return view('admin.master.pincodes.data', ['pincode' => '']);
     }
- 
+
     public function store(PincodeRequest $request)
     {
         $this->authorize('Create Pincodes');
@@ -61,14 +61,14 @@ class PincodeController extends Controller
             info('Error::Place@PincodeController@store - ' . $ErrMsg);
             return redirect()->back()->with("warning", "Something went wrong" . $ErrMsg);
         }
-    } 
- 
+    }
+
     public function edit(Pincode $pincode)
     {
         $this->authorize('Edit Pincodes');
         return view('admin.master.pincodes.data', compact('pincode'));
     }
- 
+
     public function update(PincodeRequest $request, Pincode $pincode)
     {
         $this->authorize('Edit Pincodes');
@@ -80,7 +80,7 @@ class PincodeController extends Controller
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
     }
- 
+
     public function destroy($id)
     {
         $this->authorize('Delete Pincodes');
@@ -104,11 +104,5 @@ class PincodeController extends Controller
             info('Error::Place@PincodeController@restore - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
-    }
-
-    public function getDistricts()
-    {
-        $districts = District::where('is_active','1')->get(); 
-        return response()->json($districts);
     }
 }

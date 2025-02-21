@@ -227,14 +227,21 @@
                 }
             });
 
-            // Crop and update preview
             $("#cropImage").click(function () {
-                let canvas = cropper.getCroppedCanvas();
-                canvas.toBlob((blob) => {
-                    let url = URL.createObjectURL(blob);
-                    updatePreview(url);
-                    $("#cropperModal").modal("hide");
-                });
+                if (cropper) {
+                    cropper.getCroppedCanvas().toBlob(function (blob) {
+                        let croppedFile = new File([blob], selectedFile.name, { type: "image/jpeg" });
+
+                        let dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(croppedFile);
+                        $("#image-input")[0].files = dataTransfer.files;
+
+                        let objectURL = URL.createObjectURL(croppedFile);
+                        updatePreview(objectURL);
+
+                        $("#cropperModal").modal("hide");
+                    }, "image/jpeg");
+                }
             });
 
             // Destroy cropper on modal close
@@ -255,7 +262,6 @@
 
             function loadOptions(url, elementId, selectedValue) {
                 $.get(url, function (response) {
-                    console.log(response);
                     let options = '<option value="">Select</option>';
                     response.forEach(item => {
                         options += `<option value="${item.id}" ${selectedValue == item.id ? 'selected' : ''}>${item.name}</option>`;

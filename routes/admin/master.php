@@ -26,7 +26,7 @@ Route::put('cities/restore/{id}', [CityController::class, 'restore'])->name('cit
 Route::resource('product_categories', ProductCategoryController::class);
 Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
 
-Route::resource('taxes', TaxController::class);
+Route::resource('taxes', TaxController::class)->except(['show']);
 Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
 
 

@@ -98,7 +98,7 @@ class PincodeController extends Controller
     {
         $this->authorize('Restore Pincodes');
         try {
-            Pincode::withTrashed()->findOrFail($id)->restore();
+            Pincode::withTrashed()->findOrFail($id)?->restore();
             return response(['status' => 'success', 'message' => 'Pincode restored Successfully!']);
         } catch (\Exception $exception) {
             info('Error::Place@PincodeController@restore - ' . $exception->getMessage());

@@ -33,6 +33,7 @@ class PermissionSeeder extends Seeder
 
             ['guard_name' => 'web', 'model' => 'Product Category'],
             ['guard_name' => 'web', 'model' => 'Product'],
+            ['guard_name' => 'web', 'model' => 'Warehouse'],
 
             // Manage Projects
             ['guard_name' => 'web', 'model' => 'Project Specifications'],

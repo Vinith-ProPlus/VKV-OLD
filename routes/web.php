@@ -1,17 +1,18 @@
 <?php
 
-use App\Http\Controllers\Admin\Master\ProductCategoryController;
-use App\Http\Controllers\Admin\Master\ProductController;
-use App\Http\Controllers\Admin\Master\TaxController;
-use App\Http\Controllers\Admin\Master\UnitOfMeasurementController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\admin\users\CustomerController;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
+use App\Models\Admin\Master\City;
+use App\Models\Admin\Master\District;
+use App\Models\Admin\Master\Pincode;
+use App\Models\Admin\Master\State;
 use App\Models\ProductCategory;
 use App\Models\Tax;
 use App\Models\UnitOfMeasurement;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -55,17 +56,6 @@ Route::group(['prefix'=>'admin'],function (){
 
         Route::group(['prefix'=>'master'],function (){
             require __DIR__.'/admin/master.php';
-//            Route::resource('taxes', TaxController::class)->except(['show']);
-//            Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes.restore')->middleware('can:Restore Tax');
-
-            Route::resource('units', UnitOfMeasurementController::class)->except(['show']);
-            Route::put('units/restore/{id}', [UnitOfMeasurementController::class, 'restore'])->name('units.restore')->middleware('can:Restore Unit of Measurement');
-//            Route::resource('product_categories', ProductCategoryController::class)->except(['show']);
-//            Route::put('product_categories/restore/{id}', [ProductCategoryController::class, 'restore'])->name('product_categories.restore')->middleware('can:Restore Product Category');
-
-            Route::resource('products', ProductController::class)->except(['show']);
-            Route::put('products/restore/{id}', [ProductController::class, 'restore'])->name('products.restore')->middleware('can:Restore Product');
-
             Route::get('categories/list', function () {
                 return response()->json(ProductCategory::select('id', 'name')->where('is_active', 1)->get());
             })->name('categories.list');
@@ -77,6 +67,19 @@ Route::group(['prefix'=>'admin'],function (){
             Route::get('uoms/list', function () {
                 return response()->json(UnitOfMeasurement::select('id', 'name')->where('is_active', 1)->get());
             })->name('uoms.list');
+            Route::get('states/list', function () {
+                return response()->json(State::select('id', 'name')->where('is_active', 1)->get());
+            })->name('states.list');
+            Route::get('districts/list', function (Request $request) {
+                logger("districts: ".$request);
+                return response()->json(District::select('id', 'name')->where('is_active', 1)->get());
+            })->name('districts.list');
+            Route::get('cities/list', function () {
+                return response()->json(City::select('id', 'name')->where('is_active', 1)->get());
+            })->name('cities.list');
+            Route::get('pincodes/list', function () {
+                return response()->json(Pincode::select('id', 'name')->where('is_active', 1)->get());
+            })->name('pincodes.list');
         });
 
 
@@ -94,9 +97,9 @@ Route::group(['prefix'=>'admin'],function (){
     });
 });
 
-Route::get('/getDistricts', [Controller::class, 'getDistricts'])->name('getDistricts');
-Route::get('/getCities', [Controller::class, 'getCities'])->name('getCities');
-Route::get('/getStates', [Controller::class, 'getStates'])->name('getStates');
-Route::get('/getPinCodes', [Controller::class, 'getPinCodes'])->name('getPinCodes');
+Route::get('/getDistricts', [GeneralController::class, 'getDistricts'])->name('getDistricts');
+Route::get('/getCities', [GeneralController::class, 'getCities'])->name('getCities');
+Route::get('/getStates', [GeneralController::class, 'getStates'])->name('getStates');
+Route::get('/getPinCodes', [GeneralController::class, 'getPinCodes'])->name('getPinCodes');
 
 require __DIR__.'/auth.php';

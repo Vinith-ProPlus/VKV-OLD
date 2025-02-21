@@ -2,16 +2,17 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class DistrictRequest extends FormRequest
+class WarehouseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -19,16 +20,20 @@ class DistrictRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array|string>
+     * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
             'name' => [
                 'required', 'string', 'max:100',
-                Rule::unique('districts')->ignore($this->route('district'))
+                Rule::unique('warehouses')->ignore($this->route('warehouse'))
             ],
+            'address' => 'required|string|max:500',
             'state_id' => 'required|integer|exists:states,id',
+            'district_id' => 'required|integer|exists:districts,id',
+            'city_id' => 'required|integer|exists:cities,id',
+            'pincode_id' => 'required|integer|exists:pincodes,id',
             'is_active' => 'required|boolean',
         ];
     }

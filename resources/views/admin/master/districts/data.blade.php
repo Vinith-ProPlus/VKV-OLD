@@ -103,7 +103,7 @@
             $('#lststate').append('<option value="">--Select a State--</option>');
 
             $.ajax({
-                url:"{{route('district.getstates')}}",
+                url:"{{route('getStates')}}",
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {

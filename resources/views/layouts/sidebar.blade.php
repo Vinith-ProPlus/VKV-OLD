@@ -80,6 +80,12 @@
                                     title="">Product</a>
                             </li>
                             @endcan
+                            @can('View Warehouse')
+                            <li class="">
+                                <a href="{{ route('warehouses.index') }}" data-active-name="Warehouses" data-original-title=""
+                                    title="">Warehouse</a>
+                            </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">

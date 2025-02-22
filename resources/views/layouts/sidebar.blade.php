@@ -80,6 +80,12 @@
                                     title="">Product</a>
                             </li>
                             @endcan
+                            @can('View Warehouse')
+                            <li class="">
+                                <a href="{{ route('warehouses.index') }}" data-active-name="Warehouses" data-original-title=""
+                                    title="">Warehouse</a>
+                            </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
@@ -133,6 +139,18 @@
                             <li class=""><a
                                     href="{{ route('role.index') }}"  data-active-name="Roles-and-Permissions" data-original-title=""
                                     title="">Roles & Permissions</a></li>
+                            @endcan
+                            @can('View Customers')
+                                <li class="">
+                                    <a href="{{ route('customers.index') }}" data-active-name="Customers" data-original-title=""
+                                       title="">Customers</a>
+                                </li>
+                            @endcan
+                            @can('View Vendors')
+                                <li class="">
+                                    <a href="{{ route('vendors.index') }}" data-active-name="Vendors" data-original-title=""
+                                       title="">Vendors</a>
+                                </li>
                             @endcan
                             <!--
                             <li class=""><a

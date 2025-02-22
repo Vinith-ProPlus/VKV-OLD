@@ -24,11 +24,15 @@ return new class extends Migration
             $table->date('dob')->nullable();
             $table->date('doj')->nullable();
             $table->enum('gender', ['Male', 'Female', 'Others'])->default('Male');
-            $table->string('address', 50)->nullable();
-            $table->string('state_id', 50)->nullable();
-            $table->string('district_id', 50)->nullable();
-            $table->string('city_id', 50)->nullable();
-            $table->string('postal_id', 50)->nullable();
+            $table->string('address',255)->nullable();
+            $table->foreignId('state_id')->nullable()->constrained('states');
+            $table->foreignId('district_id')->nullable()->constrained('districts');
+            $table->foreignId('city_id')->nullable()->constrained('cities');
+            $table->foreignId('pincode_id')->nullable()->constrained('pincodes');
+            // $table->string('state_id', 50)->nullable();
+            // $table->string('district_id', 50)->nullable();
+            // $table->string('city_id', 50)->nullable();
+            // $table->string('postal_id', 50)->nullable();
             $table->string('role_id', 50)->nullable();
             $table->string('login_type', 50)->nullable();
             $table->timestamp('email_verified_at')->nullable();
@@ -37,6 +41,7 @@ return new class extends Migration
             $table->enum('active_status', ['Active', 'Inactive'])->default('Active');
             $table->tinyInteger('d_flag')->default(0);
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
 

@@ -47,8 +47,6 @@
                                     <th>Product Name</th>
                                     <th>Code</th>
                                     <th>Category</th>
-                                    <th>Tax</th>
-                                    <th>Unit</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -81,8 +79,6 @@
                     {data: 'name'},
                     {data: 'code'},
                     {data: 'category_id'},
-                    {data: 'tax_id'},
-                    {data: 'uom_id'},
                     {data: 'is_active'},
                     {data: 'action', orderable: false},
                 ]

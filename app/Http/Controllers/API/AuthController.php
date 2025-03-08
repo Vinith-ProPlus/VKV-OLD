@@ -5,12 +5,14 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\ApiResponse;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -33,7 +35,7 @@ class AuthController extends Controller
             $token = $user->createToken('API Token')->plainTextToken;
             DB::commit();
             return $this->successResponse(compact('user', 'token'), "User registered successfully!");
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             DB::rollBack();
             Log::error('Error::Place@AuthController@register - ' . $exception->getMessage());
             return $this->errorResponse($exception->getMessage(), "Registration failed!", 422);
@@ -107,10 +109,10 @@ class AuthController extends Controller
                 'message' => 'Profile updated successfully',
                 'data' => ['user' => $user->fresh()]
             ]);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             DB::rollBack();
             Log::error('Error::AuthController@updateProfile - ' . $exception->getMessage());
-            return $this->errorResponse($exception->getMessage(), "Profile updation failed!", 500);
+            return $this->errorResponse($exception->getMessage(), "Profile update failed!", 500);
         }
     }
 

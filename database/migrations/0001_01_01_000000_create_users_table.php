@@ -29,10 +29,6 @@ return new class extends Migration
             $table->foreignId('district_id')->nullable()->constrained('districts');
             $table->foreignId('city_id')->nullable()->constrained('cities');
             $table->foreignId('pincode_id')->nullable()->constrained('pincodes');
-            // $table->string('state_id', 50)->nullable();
-            // $table->string('district_id', 50)->nullable();
-            // $table->string('city_id', 50)->nullable();
-            // $table->string('postal_id', 50)->nullable();
             $table->string('role_id', 50)->nullable();
             $table->string('login_type', 50)->nullable();
             $table->timestamp('email_verified_at')->nullable();

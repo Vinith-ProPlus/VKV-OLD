@@ -104,11 +104,9 @@ class AuthController extends Controller
 
             $user->update($validatedData);
             DB::commit();
-            return response()->json([
-                'status' => true,
-                'message' => 'Profile updated successfully',
-                'data' => ['user' => $user->fresh()]
-            ]);
+            return $this->successResponse([
+                'user' => $user->fresh()
+            ], "Profile updated successfully");
         } catch (Exception $exception) {
             DB::rollBack();
             Log::error('Error::AuthController@updateProfile - ' . $exception->getMessage());

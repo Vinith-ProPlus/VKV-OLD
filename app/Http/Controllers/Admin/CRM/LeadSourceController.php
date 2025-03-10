@@ -8,6 +8,8 @@ use App\Models\LeadSource;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class LeadSourceController extends Controller
@@ -51,6 +53,7 @@ class LeadSourceController extends Controller
     public function store(LeadSourceRequest $request)
     {
         $this->authorize('Create Lead Source');
+        DB::beginTransaction();
         try {
             $data = $request->validated();
             if ($request->hasFile('image')) {
@@ -58,8 +61,10 @@ class LeadSourceController extends Controller
             }
 
             LeadSource::create($data);
+            DB::commit();
             return redirect()->route('lead_sources.index')->with('success', 'Lead source created successfully.');
         } catch (\Exception $exception) {
+            DB::rollBack();
             $ErrMsg = $exception->getMessage();
             info('Error::Place@LeadSourceController@store - ' . $ErrMsg);
             return redirect()->back()->with("warning", "Something went wrong" . $ErrMsg);
@@ -78,15 +83,25 @@ class LeadSourceController extends Controller
     public function update(LeadSourceRequest $request, LeadSource $lead_source)
     {
         $this->authorize('Edit Lead Source');
+        DB::beginTransaction();
         try {
             $data = $request->validated();
             if ($request->hasFile('image')) {
-                $data['image'] = $request->file('image')->store('lead_sources', 'public');
+                $oldImage = $lead_source->image;
+                $newImage = $data['image'] = $request->file('image')->store('lead_sources', 'public');
             }
 
             $lead_source->update($data);
+            DB::commit();
+            if (isset($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
+            }
             return redirect()->route('lead_sources.index')->with('success', 'Lead source updated successfully.');
         } catch (\Exception $exception) {
+            DB::rollBack();
+            if(isset($newImage)){
+                Storage::disk('public')->delete($newImage);
+            }
             info('Error::Place@LeadSourceController@update - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }

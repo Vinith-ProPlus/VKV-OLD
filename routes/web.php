@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CRM\LeadSourceController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Users\CustomerController;
 use App\Http\Controllers\Admin\Users\VendorController;
@@ -98,6 +99,10 @@ Route::group(['prefix'=>'admin'],function (){
 
         Route::resource('vendors', VendorController::class);
         Route::put('vendors/restore/{id}', [VendorController::class, 'restore'])->name('vendors.restore')->middleware('can:Restore Vendors');
+
+        Route::resource('lead_sources', LeadSourceController::class);
+        Route::put('lead_sources/restore/{id}', [LeadSourceController::class, 'restore'])->name('lead_sources.restore')->middleware('can:Restore Lead Source');
+
     });
 });
 

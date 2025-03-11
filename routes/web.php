@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CRM\LeadController;
 use App\Http\Controllers\Admin\CRM\LeadSourceController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Users\CustomerController;
@@ -103,6 +104,9 @@ Route::group(['prefix'=>'admin'],function (){
         Route::resource('lead_sources', LeadSourceController::class);
         Route::put('lead_sources/restore/{id}', [LeadSourceController::class, 'restore'])->name('lead_sources.restore')->middleware('can:Restore Lead Source');
 
+        Route::resource('leads', LeadController::class);
+        Route::put('leads/restore/{id}', [LeadController::class, 'restore'])->name('leads.restore')->middleware('can:Restore Lead');
+
     });
 });
 
@@ -110,5 +114,8 @@ Route::get('/getDistricts', [GeneralController::class, 'getDistricts'])->name('g
 Route::get('/getCities', [GeneralController::class, 'getCities'])->name('getCities');
 Route::get('/getStates', [GeneralController::class, 'getStates'])->name('getStates');
 Route::get('/getPinCodes', [GeneralController::class, 'getPinCodes'])->name('getPinCodes');
+Route::get('/getLeadSource', [GeneralController::class, 'getLeadSource'])->name('getLeadSource');
+Route::get('/getLeadStatus', [GeneralController::class, 'getLeadStatus'])->name('getLeadStatus');
+Route::get('/getUsers', [GeneralController::class, 'getUsers'])->name('getUsers');
 
 require __DIR__.'/auth.php';

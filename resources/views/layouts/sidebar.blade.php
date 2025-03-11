@@ -180,9 +180,9 @@
                                     href="{{ route('lead_sources.index') }}"  data-active-name="Lead-Source" data-original-title=""
                                     title="">Lead Source</a></li>
                             @endcan
-                            @can('View Customers')
+                            @can('View Lead')
                                 <li class="">
-                                    <a href="{{ route('customers.index') }}" data-active-name="Customers" data-original-title=""
+                                    <a href="{{ route('leads.index') }}" data-active-name="Lead" data-original-title=""
                                        title="">Leads</a>
                                 </li>
                             @endcan

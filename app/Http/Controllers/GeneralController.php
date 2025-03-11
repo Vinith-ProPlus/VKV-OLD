@@ -6,6 +6,9 @@ use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
 use App\Models\Admin\Master\State;
+use App\Models\LeadSource;
+use App\Models\LeadStatus;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class GeneralController extends Controller
@@ -36,6 +39,21 @@ class GeneralController extends Controller
         }
 
         return response()->json($pincode->get());
+    }
+
+    public function getLeadSource()
+    {
+        return response()->json(LeadSource::where('is_active','1')->get());
+    }
+
+    public function getLeadStatus()
+    {
+        return response()->json(LeadStatus::where('is_active','1')->get());
+    }
+
+    public function getUsers()
+    {
+        return response()->json(User::where('active_status','Active')->get());
     }
 
     public function getDistricts(Request $req)

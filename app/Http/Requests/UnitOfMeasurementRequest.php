@@ -25,8 +25,14 @@ class UnitOfMeasurementRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255|unique:unit_of_measurements,name,' . $this->route('unit'),
-            'code' => 'required|string|max:50|unique:unit_of_measurements,code,' . $this->route('unit'),
+            'name' => [
+                'required', 'string', 'max:100',
+                Rule::unique('unit_of_measurements')->ignore($this->route('unit'))
+            ],
+            'code' => [
+                'required', 'string', 'max:50',
+                Rule::unique('unit_of_measurements')->ignore($this->route('unit'))
+            ],
             'is_active' => 'required|boolean',
         ];
     }

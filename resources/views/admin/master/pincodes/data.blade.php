@@ -96,14 +96,14 @@
     $(document).ready(function(){
 
         const getStates = () =>{
-        
+
             let StateID = $('#lstDistrict').attr('data-selected');
             $('#lstDistrict').select2('destroy');
             $('#lstDistrict option').remove();
             $('#lstDistrict').append('<option value="">--Select a District--</option>');
-            
+
             $.ajax({
-                url:"{{route('pincodes.getDistricts')}}",
+                url:"{{route('getDistricts')}}",
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {
@@ -115,7 +115,8 @@
                             $('#lstDistrict').append('<option value="' + item.id
                                 + '">'  + item.name + '</option>');
                         }
-                    }); 
+                    });
+                    $('#lstDistrict').select2();
                 },
                 error: function(xhr) {}
             });

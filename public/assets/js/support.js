@@ -8,7 +8,7 @@ $(document).ready(function(){
         let CountryName=$('#txtMCountryName').val();
         let CallingCode=$('#txtMCallingCode').val();
         let PhoneLength=$('#txtMPhoneLength').val();
-        
+
         if(ShortName==""){
             $('#txtMShortName-err').html('Short Name is required');status=false;
         }else if(ShortName.length<2){
@@ -97,7 +97,7 @@ $(document).ready(function(){
         $('#'+elem).select2({
             dropdownParent: isModal == 1 ? $('.bootbox-body') : $('.page-body')
         });
-        
+
     }
     $('#btnReloadCountry').click(function(){
         let id=$(this).parent().attr('for');
@@ -136,7 +136,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateCountry'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -183,7 +183,7 @@ $(document).ready(function(){
         let CountryName=$('#lstMCountry').val();
         let StateName=$('#txtMStateName').val();
         let stateCode=$('#txtMStateCode').val();
-        
+
         if(CountryName==""){
             $('#lstMCountry-err').html('Country Name is required');status=false;
         }
@@ -219,7 +219,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadState i').removeClass('fa-spin');  
+                    $('#btnReloadState i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -296,7 +296,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateState'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -342,7 +342,7 @@ $(document).ready(function(){
         let CountryName=$('#lstMCountry').val();
         let StateName=$('#lstMState').val();
         let District=$('#txtMDistrictName').val();
-        
+
         if(CountryName==""){
             $('#lstMCountry-err').html('Country Name is required');status=false;
         }
@@ -380,7 +380,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajax_errors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadDistrict i').removeClass('fa-spin');  
+                    $('#btnReloadDistrict i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -460,7 +460,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateDistrict'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -507,7 +507,7 @@ $(document).ready(function(){
         let StateName=$('#lstMState').val();
         let DistrictName=$('#lstMDistrict').val();
         let Taluk=$('#txtMTalukName').val();
-        
+
         if(CountryName==""){
             $('#lstMCountry-err').html('Country Name is required');status=false;
         }
@@ -553,7 +553,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajax_errors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadTaluk i').removeClass('fa-spin');  
+                    $('#btnReloadTaluk i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -633,7 +633,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateTaluk'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -683,7 +683,7 @@ $(document).ready(function(){
         let TalukName=$('#lstMTaluk').val();
         let PostalCode=$('#lstMPostalCode').val();
         let City=$('#txtMCityName').val();
-        
+
         if(CountryName==""){
             $('#lstMCountry-err').html('Country Name is required');status=false;
         }
@@ -739,7 +739,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajax_errors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadCity i').removeClass('fa-spin');  
+                    $('#btnReloadCity i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -825,7 +825,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateCity'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -866,7 +866,7 @@ $(document).ready(function(){
             });
         }
     });
-    
+
     /*** Postal Code  **********/
     const validatePostalCode=async()=>{
         let status=true;
@@ -875,7 +875,7 @@ $(document).ready(function(){
         let StateName=$('#lstMState').val();
         let DistrictName=$('#lstMDistrict').val();
         let PostalCode=$('#txtMPostalCode').val();
-        
+
         if(CountryName==""){
             $('#lstMCountry-err').html('Country Name is required');status=false;
         }
@@ -917,7 +917,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajax_errors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadPostalCode i').removeClass('fa-spin');  
+                    $('#btnReloadPostalCode i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -997,7 +997,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreatePostalCode'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -1036,13 +1036,13 @@ $(document).ready(function(){
             });
         }
     });
-    
+
     /*** Gender  **********/
     const validateGender=async()=>{
         let status=true;
         $('.New-Gender-err').html('');
         let Gender=$('#txtMGender').val();
-        
+
         if(Gender==""){
             $('#txtMGender-err').html('Gender is required');status=false;
         }else if(Gender.length<3){
@@ -1076,7 +1076,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajax_errors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadPostalCode i').removeClass('fa-spin');  
+                    $('#btnReloadPostalCode i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -1144,7 +1144,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateGender'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -1197,9 +1197,9 @@ $(document).ready(function(){
     $(document).on('change','#lstState',function(){
         getDistricts('lstDistrict');
     });
-    $(document).on('change','#lstDistrict',function(){
-        getTaluks('lstTaluk');
-    });
+    // $(document).on('change','#lstDistrict',function(){
+    //     getTaluks('lstTaluk');
+    // });
     /* $(document).on('change','#lstMTaluk',function(){
         getCity('lstMCity');
     }); */
@@ -1337,7 +1337,7 @@ $(document).ready(function(){
                     },
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateVCategory'));ajaxIndicatorStop();},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -1512,7 +1512,7 @@ $(document).ready(function(){
                     },
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateVSubCategory'));ajaxIndicatorStop();},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -1677,7 +1677,7 @@ $(document).ready(function(){
                     },
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreatePCategory'));ajaxIndicatorStop();},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -1851,7 +1851,7 @@ $(document).ready(function(){
                     },
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreatePSubCategory'));ajaxIndicatorStop();},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -1902,7 +1902,7 @@ $(document).ready(function(){
         }else if(TaxName.length>100){
             $('#txtMTaxName-err').html('Tax Name may not be greater than 100 characters');status=false;
         }
-            
+
         if(Percentage==""){
             $('#txtMPercentage-err').html('The Percentage is required.');status=false;
         }else if($.isNumeric(Percentage)==false){
@@ -2015,7 +2015,7 @@ $(document).ready(function(){
                     },
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateTax'));ajaxIndicatorStop();},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -2065,7 +2065,7 @@ $(document).ready(function(){
             $('#txtMUCode-err').html('Unit Code  may not be greater than 100 characters');status=false;
         }
         if(UName==''){
-            $('#txtMUName-err').html('The Unit Name name is required.');status=false; 
+            $('#txtMUName-err').html('The Unit Name name is required.');status=false;
         }
         return status;
     }
@@ -2172,7 +2172,7 @@ $(document).ready(function(){
                     },
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateUOM'));ajaxIndicatorStop();},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -2215,7 +2215,7 @@ $(document).ready(function(){
         let status=true;
         $('.New-VehicleType-err').html('');
         let VehicleType=$('#txtMVehicleType').val();
-        
+
         if(VehicleType==""){
             $('#txtMVehicleType-err').html('Vehicle Type is required');status=false;
         }else if(VehicleType.length<3){
@@ -2262,7 +2262,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadVehicleType i').removeClass('fa-spin');  
+                    $('#btnReloadVehicleType i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -2279,7 +2279,7 @@ $(document).ready(function(){
         $('#'+elem).select2({
             dropdownParent: isModal == 1 ? $('.bootbox-body') : $('.page-body')
         });
-        
+
     }
     $(document).on('click','.btnReloadVehicleType',async function(){
         let id=$(this).parent().attr('for');
@@ -2315,7 +2315,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateVehicleType'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -2358,7 +2358,7 @@ $(document).ready(function(){
         $('.New-VehicleBrand-err').html('');
         let VehicleType=$('#lstMVehicleType').val();
         let VehicleBrandName=$('#txtMVehicleBrandName').val();
-        
+
         if(VehicleType==""){
             $('#lstMVehicleType-err').html('Vehicle Type is required');status=false;
         }
@@ -2391,7 +2391,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadVehicleBrand i').removeClass('fa-spin');  
+                    $('#btnReloadVehicleBrand i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -2467,7 +2467,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateVehicleBrand'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -2512,7 +2512,7 @@ $(document).ready(function(){
         let VehicleType=$('#lstMVehicleType').val();
         let VehicleBrand=$('#lstMVehicleBrand').val();
         let VehicleModel=$('#txtMVehicleModel').val();
-        
+
         if(VehicleType==""){
             $('#lstMVehicleType-err').html('Vehicle Type is required');status=false;
         }
@@ -2550,7 +2550,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadVehicleModel i').removeClass('fa-spin');  
+                    $('#btnReloadVehicleModel i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -2592,7 +2592,7 @@ $(document).ready(function(){
                 });
             }
         })
-    }    
+    }
     $(document).on('click','.btnAddVehicleModel',async function(){
         let id=$(this).parent().attr('for');
         CreateVehicleModelForm(id);
@@ -2629,7 +2629,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateVehicleModel'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -2673,7 +2673,7 @@ $(document).ready(function(){
         let status=true;
         $('.New-BankType-err').html('');
         let BankType=$('#txtMBankType').val();
-        
+
         if(BankType==""){
             $('#txtMBankType-err').html('Bank Type is required');status=false;
         }else if(BankType.length<3){
@@ -2720,7 +2720,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadBankType i').removeClass('fa-spin');  
+                    $('#btnReloadBankType i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -2737,7 +2737,7 @@ $(document).ready(function(){
         $('#'+elem).select2({
             dropdownParent: isModal == 1 ? $('.dynamicValueModal') : $('.page-body')
         });
-        
+
     }
     $(document).on('click','.btnReloadBankType',async function(){
         let id=$(this).parent().attr('for');
@@ -2773,7 +2773,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateBankType'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -2816,7 +2816,7 @@ $(document).ready(function(){
         $('.New-Bank-err').html('');
         let BankType=$('#lstMBankType').val();
         let BankName=$('#txtMBankName').val();
-        
+
         if(BankType==""){
             $('#lstMBankType-err').html('Bank Type is required');status=false;
         }
@@ -2849,7 +2849,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadBank i').removeClass('fa-spin');  
+                    $('#btnReloadBank i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -2925,7 +2925,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateBank'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -2972,7 +2972,7 @@ $(document).ready(function(){
         let IFSCCode=$('#txtMIFSCCode').val();
         let MICR=$('#txtMMICR').val();
         let BranchEmail=$('#txtMBranchEmail').val();
-        
+
         if(Bank==""){
             $('#lstMBank-err').html('Bank is required');status=false;
         }
@@ -3052,7 +3052,7 @@ $(document).ready(function(){
                 });
             }
         })
-    }    
+    }
     $(document).on('click','.btnAddBankBranch',async function(){
         let id=$(this).parent().attr('for');
         CreateBankBranchForm(id);
@@ -3091,7 +3091,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateBankBranch'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",
@@ -3135,7 +3135,7 @@ $(document).ready(function(){
         let status=true;
         $('.New-BankAccType-err').html('');
         let BankAccType=$('#txtMBankAccType').val();
-        
+
         if(BankAccType==""){
             $('#txtMBankAccType-err').html('Bank Account Type is required');status=false;
         }else if(BankAccType.length<3){
@@ -3182,7 +3182,7 @@ $(document).ready(function(){
             error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
             complete:async()=>{
                 setTimeout(() => {
-                    $('#btnReloadBankAccType i').removeClass('fa-spin');  
+                    $('#btnReloadBankAccType i').removeClass('fa-spin');
                 }, 1000);
             },
             success:function(response){
@@ -3199,7 +3199,7 @@ $(document).ready(function(){
         $('#'+elem).select2({
             dropdownParent: isModal == 1 ? $('.dynamicValueModal') : $('.page-body')
         });
-        
+
     }
     $(document).on('click','.btnReloadBankAccType',async function(){
         let id=$(this).parent().attr('for');
@@ -3235,7 +3235,7 @@ $(document).ready(function(){
                     dataType:"json",
                     error:function(e, x, settings, exception){ajaxErrors(e, x, settings, exception);},
                     complete: function(e, x, settings, exception){btnReset($('#btnCreateBankAccType'));},
-                    success:function(response){ 
+                    success:function(response){
                         if(response.status==true){
                             toastr.success(response.message, "Success", {
                                 positionClass: "toast-top-right",

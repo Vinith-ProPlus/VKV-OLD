@@ -3,7 +3,7 @@
 @section('content')
     @php
         $PageTitle="Unit of Measurement";
-        $ActiveMenuName='Unit of Measurement';
+        $ActiveMenuName='Unit-Of-Measurement';
     @endphp
     <div class="container-fluid">
         <div class="page-header">

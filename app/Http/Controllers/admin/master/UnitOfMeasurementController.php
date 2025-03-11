@@ -64,13 +64,13 @@ class UnitOfMeasurementController extends Controller
     public function destroy(UnitOfMeasurement $unit)
     {
         $unit->delete();
-        return response()->json(['message' => 'Unit of Measurement deleted successfully.']);
+        return response(['status' => 'warning', 'message' => 'Unit of Measurement deleted successfully!']);
     }
 
     public function restore($id)
     {
         $unit = UnitOfMeasurement::withTrashed()->findOrFail($id);
-        $unit->restore();
-        return response()->json(['message' => 'Unit of Measurement restored successfully.']);
+        $unit?->restore();
+        return response(['status' => 'success', 'message' => 'Unit of Measurement restored successfully!']);
     }
 }

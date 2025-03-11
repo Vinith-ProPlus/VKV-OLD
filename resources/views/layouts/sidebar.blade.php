@@ -80,6 +80,12 @@
                                     title="">Product</a>
                             </li>
                             @endcan
+                            @can('View Warehouse')
+                            <li class="">
+                                <a href="{{ route('warehouses.index') }}" data-active-name="Warehouses" data-original-title=""
+                                    title="">Warehouse</a>
+                            </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
@@ -133,6 +139,59 @@
                             <li class=""><a
                                     href="{{ route('role.index') }}"  data-active-name="Roles-and-Permissions" data-original-title=""
                                     title="">Roles & Permissions</a></li>
+                            @endcan
+                            @can('View Customers')
+                                <li class="">
+                                    <a href="{{ route('customers.index') }}" data-active-name="Customers" data-original-title=""
+                                       title="">Customers</a>
+                                </li>
+                            @endcan
+                            @can('View Vendors')
+                                <li class="">
+                                    <a href="{{ route('vendors.index') }}" data-active-name="Vendors" data-original-title=""
+                                       title="">Vendors</a>
+                                </li>
+                            @endcan
+                            <!--
+                            <li class=""><a
+                                    href="http://localhost/VKV-OLD/admin/users-and-permissions/users/"  data-active-name="Users" data-original-title="" title="">Users</a>
+                            </li>
+                            <li class=""><a
+                                    href="http://localhost/VKV-OLD/admin/users-and-permissions/change-password/"  data-active-name="Change-Password" data-original-title=""
+                                    title="">Change Password</a></li>
+                                    -->
+                        </ul>
+                    </li>
+                    <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round"
+                                 class="feather feather-users">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>CRM</span>
+                            <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
+                        </a>
+                        <ul class="nav-submenu menu-content" style="display: none;">
+                            @can('View Lead Source')
+                            <li class=""><a
+                                    href="{{ route('lead_sources.index') }}"  data-active-name="Lead-Source" data-original-title=""
+                                    title="">Lead Source</a></li>
+                            @endcan
+                            @can('View Lead')
+                                <li class="">
+                                    <a href="{{ route('leads.index') }}" data-active-name="Lead" data-original-title=""
+                                       title="">Leads</a>
+                                </li>
+                            @endcan
+                            @can('View Vendors')
+                                <li class="">
+                                    <a href="{{ route('vendors.index') }}" data-active-name="Vendors" data-original-title=""
+                                       title="">Followups</a>
+                                </li>
                             @endcan
                             <!--
                             <li class=""><a

@@ -5,6 +5,11 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
+        <!-- Logo -->
+        <div class="flex justify-center">
+            <img src="{{ url('/assets/images/logo/logo.png') }}" alt="Logo" class="h-16 w-auto">
+        </div>
+
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />

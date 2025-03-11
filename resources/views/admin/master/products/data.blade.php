@@ -111,151 +111,20 @@
             </div>
         </div>
     </div>
-
-    <!-- Cropper Modal -->
-    <div class="modal fade" id="cropperModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Crop Image</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="img-container">
-                        <img id="cropper-image" style="max-width: 100%;" alt="" src="">
-                    </div>
-                    <div class="mt-2">
-                        <button type="button" class="btn btn-secondary btn-sm" id="rotateLeft"><i class="fa fa-undo"></i></button>
-                        <button type="button" class="btn btn-secondary btn-sm" id="rotateRight"><i class="fa fa-redo"></i></button>
-                        <button type="button" class="btn btn-secondary btn-sm" id="flipHorizontal"><i class="fa fa-arrows-alt-h"></i></button>
-                        <button type="button" class="btn btn-secondary btn-sm" id="flipVertical"><i class="fa fa-arrows-alt-v"></i></button>
-{{--                        <button type="button" class="btn btn-secondary btn-sm" id="uploadNewImage"><i class="fa fa-upload"></i></button>--}}
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-sm" id="cropImage">Crop</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 @endsection
 
 @section('script')
-    <!-- Include Cropper.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-
     <script>
         $(document).ready(function () {
-            let cropper;
-            let selectedFile;
-
-            function updatePreview(url) {
-                $("#image-preview").removeClass("d-none").attr("src", url);
-                $("#image-dropzone i, #image-dropzone p").hide(); // Hide text & icon
-            }
-
             @if($product && $product->image)
-                updatePreview("{{ Storage::url($product->image) }}");
+                $("#image-preview").removeClass("d-none").attr("src", "{{ Storage::url($product->image) }}");
+                $("#image-dropzone i, #image-dropzone p").hide();
             @endif
-
-            function resetPreview() {
-                $("#image-preview").addClass("d-none").attr("src", "");
-                $("#image-dropzone i, #image-dropzone p").show(); // Show text & icon again
-            }
-
-            // Click to open file input
-            $("#image-dropzone").click(function () {
-                $("#image-input").click();
-            });
-
-            // Drag & drop functionality
-            $("#image-dropzone").on("dragover", function (e) {
-                e.preventDefault();
-                $(this).css("border-color", "#007bff");
-            }).on("dragleave", function () {
-                $(this).css("border-color", "#ccc");
-            }).on("drop", function (e) {
-                e.preventDefault();
-                let files = e.originalEvent.dataTransfer.files;
-                if (files.length > 0) {
-                    $("#image-input")[0].files = files;
-                    handleFileSelect(files[0]);
-                }
-            });
-
-            function handleFileSelect(file) {
-                if (!file) return;
-
-                selectedFile = file;
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    $("#cropper-image").attr("src", e.target.result);
-                    $("#cropperModal").modal("show");
-                };
-                reader.readAsDataURL(file);
-            }
-
-            // When modal opens, initialize cropper
-            $("#cropperModal").on("shown.bs.modal", function () {
-                let image = document.getElementById("cropper-image");
-                if (cropper) cropper.destroy(); // Ensure cropper resets
-                cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                });
-            });
-
-            // Rotate and flip actions
-            $("#rotateLeft").click(() => cropper.rotate(-90));
-            $("#rotateRight").click(() => cropper.rotate(90));
-            $("#flipHorizontal").click(() => cropper.scaleX(-cropper.getData().scaleX || -1));
-            $("#flipVertical").click(() => cropper.scaleY(-cropper.getData().scaleY || -1));
-
-            // Upload new image inside modal
-            $("#uploadNewImage").click(function () {
-                $("#image-input").val(""); // Clear previous selection
-                $("#image-input").trigger("click"); // Open file selection
-            });
-
-            // Ensure the new file gets handled properly
-            $("#image-input").off("change").on("change", function (event) {
-                let files = event.target.files;
-                if (files && files.length > 0) {
-                    handleFileSelect(files[0]);
-                }
-            });
-
-            // Crop and update preview
-            $("#cropImage").click(function () {
-                let canvas = cropper.getCroppedCanvas();
-                canvas.toBlob((blob) => {
-                    let url = URL.createObjectURL(blob);
-                    updatePreview(url);
-                    $("#cropperModal").modal("hide");
-                });
-            });
-
-            // Destroy cropper on modal close
-            $("#cropperModal").on("hidden.bs.modal", function () {
-                if (cropper) {
-                    cropper.destroy();
-                    cropper = null;
-                }
-            });
-
-            // Reset image when clicking outside
-            $("#image-dropzone").dblclick(function () {
-                resetPreview();
-                $("#image-input").val(""); // Reset file input
-            });
 
             $('.select2').select2({ width: '100%' });
 
             function loadOptions(url, elementId, selectedValue) {
                 $.get(url, function (response) {
-                    console.log(response);
                     let options = '<option value="">Select</option>';
                     response.forEach(item => {
                         options += `<option value="${item.id}" ${selectedValue == item.id ? 'selected' : ''}>${item.name}</option>`;

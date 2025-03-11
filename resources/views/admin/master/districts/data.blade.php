@@ -96,14 +96,14 @@
     $(document).ready(function(){
 
         const getStates = () =>{
-        
+
             let StateID = $('#lststate').attr('data-selected');
             $('#lststate').select2('destroy');
             $('#lststate option').remove();
             $('#lststate').append('<option value="">--Select a State--</option>');
-            
+
             $.ajax({
-                url:"{{route('district.getstates')}}",
+                url:"{{route('getStates')}}",
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {
@@ -115,7 +115,8 @@
                             $('#lststate').append('<option value="' + item.id
                                 + '">'  + item.name + '</option>');
                         }
-                    }); 
+                    });
+                    $('#lststate').select2();
                 },
                 error: function(xhr) {}
             });

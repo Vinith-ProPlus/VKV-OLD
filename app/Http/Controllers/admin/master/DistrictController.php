@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class DistrictController extends Controller
 {
-    use AuthorizesRequests; 
+    use AuthorizesRequests;
     public function index(Request $request)
     {
         $this->authorize('View Districts');
@@ -42,15 +42,15 @@ class DistrictController extends Controller
         }
         return view('admin.master.districts.index');
     }
- 
+
     public function create()
     {
         $this->authorize('Create Districts');
         return view('admin.master.districts.data', ['district' => '']);
     }
- 
+
     public function store(DistrictRequest $request)
-    { 
+    {
         $this->authorize('Create Districts');
         try {
             District::create($request->all());
@@ -60,14 +60,14 @@ class DistrictController extends Controller
             info('Error::Place@DistrictController@store - ' . $ErrMsg);
             return redirect()->back()->with("warning", "Something went wrong" . $ErrMsg);
         }
-    } 
+    }
 
     public function edit(District $district)
     {
         $this->authorize('Edit Districts');
         return view('admin.master.districts.data', compact('district'));
     }
- 
+
     public function update(DistrictRequest $request, District $district)
     {
         $this->authorize('Edit Districts');
@@ -79,7 +79,7 @@ class DistrictController extends Controller
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
     }
- 
+
     public function destroy($id)
     {
         $this->authorize('Delete Districts');
@@ -103,11 +103,5 @@ class DistrictController extends Controller
             info('Error::Place@DistrictController@restore - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
-    }
-
-    public function getStates()
-    {
-        $states = State::where('is_active','1')->get(); 
-        return response()->json($states);
     }
 }

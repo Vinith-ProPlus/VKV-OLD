@@ -28,7 +28,6 @@ return new class extends Migration
             $table->foreignId('lead_status_id')->constrained('lead_statuses')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('lead_owner_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('image')->nullable();
-            $table->boolean('is_active')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

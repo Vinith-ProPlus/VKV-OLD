@@ -14,7 +14,7 @@ class Lead extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['first_name', 'last_name', 'address', 'state_id', 'district_id', 'city_id', 'pincode_id', 'gst_number', 'email', 'mobile_number', 'whatsapp_number', 'lead_source_id', 'lead_status_id', 'lead_owner_id', 'image', 'is_active'];
+    protected $fillable = ['first_name', 'last_name', 'address', 'state_id', 'district_id', 'city_id', 'pincode_id', 'gst_number', 'email', 'mobile_number', 'whatsapp_number', 'lead_source_id', 'lead_status_id', 'lead_owner_id', 'image'];
 
     public function state() {
         return $this->belongsTo(State::class);

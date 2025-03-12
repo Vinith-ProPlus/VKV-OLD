@@ -45,6 +45,7 @@
                                             <th>S.No</th>
                                             <th>Name</th>
                                             <th>Phone</th>
+                                            <th>City</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -78,10 +79,10 @@
                     },
                     columns: [
                         {data: 'DT_RowIndex'},
-                        {data: 'name'},
+                        {data: 'first_name'},
                         {data: 'mobile_number'},
                         {data: 'city_name'},
-                        {data: 'active_status'},
+                        {data: 'lead_status'},
                         {data: 'action', orderable: false},
                     ]
                 });

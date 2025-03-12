@@ -9,6 +9,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -20,10 +21,11 @@ class LeadController extends Controller
         $this->authorize('View Lead');
 
         if ($request->ajax()) {
-            $data = Lead::withTrashed()->get();
+            $data = Lead::with('city', 'leadStatus')->withTrashed()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->editColumn('is_active', fn($data) => $data->is_active ? 'Active' : 'Inactive')
+                ->editColumn('city_name', fn($data) => $data->city && $data->city->name ? $data->city->name : '-')
+                ->editColumn('lead_status', fn($data) => $data->leadStatus && $data->leadStatus->name ? $data->leadStatus->name : '-')
                 ->addColumn('action', function ($data) {
                     $button = '<div class="d-flex justify-content-center">';
                     if ($data->deleted_at) {
@@ -47,7 +49,7 @@ class LeadController extends Controller
     public function create()
     {
         $this->authorize('Create Lead');
-        return view('admin.crm.leads.data', ['leads' => '']);
+        return view('admin.crm.leads.data', ['lead' => '']);
     }
 
     public function store(LeadRequest $request)
@@ -55,51 +57,58 @@ class LeadController extends Controller
         $this->authorize('Create Lead');
         DB::beginTransaction();
         try {
-            $data = $request->validated();
+            $data = $request->all();
             if ($request->hasFile('image')) {
-                $data['image'] = $request->file('image')->store('leads', 'public');
+                $newImage = $data['image'] = $request->file('image')->store('leads', 'public');
             }
-
             Lead::create($data);
             DB::commit();
             return redirect()->route('leads.index')->with('success', 'Lead created successfully.');
         } catch (\Exception $exception) {
             DB::rollBack();
             $ErrMsg = $exception->getMessage();
+            if(isset($newImage)){
+                Storage::disk('public')->delete($newImage);
+            }
             info('Error::Place@LeadController@store - ' . $ErrMsg);
             return redirect()->back()->with("warning", "Something went wrong" . $ErrMsg);
         }
     }
 
-    public function edit(Lead $leads)
+    public function edit(Lead $lead)
     {
         $this->authorize('Edit Lead');
-        return view('admin.crm.leads.data', compact('leads'));
+        return view('admin.crm.leads.data', compact('lead'));
     }
 
     /**
      * @throws AuthorizationException
      */
-    public function update(LeadRequest $request, Lead $leads)
+    public function update(LeadRequest $request, Lead $lead)
     {
         $this->authorize('Edit Lead');
         DB::beginTransaction();
         try {
             $data = $request->validated();
             if ($request->hasFile('image')) {
-                $oldImage = $leads->image;
+                $oldImage = $lead->image;
                 $newImage = $data['image'] = $request->file('image')->store('leads', 'public');
-            }
 
-            $leads->update($data);
+                info("Saved new image");
+            }
+            info($data);
+
+            $lead->update($data);
             DB::commit();
-            if (isset($oldImage)) {
+            if ($oldImage) {
+                info("deleting old image");
                 Storage::disk('public')->delete($oldImage);
             }
             return redirect()->route('leads.index')->with('success', 'Lead updated successfully.');
         } catch (\Exception $exception) {
             DB::rollBack();
-            if(isset($newImage)){
+            if($newImage){
+                info("deleting new image");
                 Storage::disk('public')->delete($newImage);
             }
             info('Error::Place@LeadController@update - ' . $exception->getMessage());

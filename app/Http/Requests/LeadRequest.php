@@ -26,6 +26,10 @@ class LeadRequest extends FormRequest
     {
         return [
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'lead_title' => [
+                'required', 'string', 'max:100',
+                Rule::unique('leads')->ignore($this->route('lead'))
+            ],
             'first_name' => 'required|string|max:50',
             'last_name' => 'nullable|string|max:50',
             'address' => 'required|string|max:255',

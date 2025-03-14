@@ -21,10 +21,11 @@ class LeadController extends Controller
         $this->authorize('View Lead');
 
         if ($request->ajax()) {
-            $data = Lead::with('city', 'leadStatus')->withTrashed()->get();
+            $data = Lead::with('city','leadFollowBy', 'leadStatus')->withTrashed()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('city_name', fn($data) => $data->city && $data->city->name ? $data->city->name : '-')
+                ->editColumn('follow_by', fn($data) => $data->leadFollowBy && $data->leadFollowBy->name ? $data->leadFollowBy->name : '-')
                 ->editColumn('lead_status', fn($data) => $data->leadStatus && $data->leadStatus->name ? $data->leadStatus->name : '-')
                 ->addColumn('action', function ($data) {
                     $button = '<div class="d-flex justify-content-center">';

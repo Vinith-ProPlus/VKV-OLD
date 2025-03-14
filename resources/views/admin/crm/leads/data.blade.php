@@ -51,6 +51,14 @@
                                             @enderror
                                         </div>
                                     </div>
+                                    <div class="form-group col-sm-12 col-lg-12 mt-15">
+                                        <label>Lead Title <span class="text-danger">*</span></label>
+                                        <input type="text" name="lead_title" class="form-control @error('lead_title') is-invalid @enderror"
+                                               value="{{ $lead ? old('lead_title', $lead->lead_title) : old('lead_title') }}" required>
+                                        @error('lead_title')
+                                        <span class="error invalid-feedback">{{$message}}</span>
+                                        @enderror
+                                    </div>
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>First Name <span class="text-danger">*</span></label>
                                         <input type="text" name="first_name" class="form-control @error('first_name') is-invalid @enderror"

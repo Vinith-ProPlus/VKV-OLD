@@ -43,9 +43,11 @@
                                         <thead class="thead-light">
                                         <tr>
                                             <th>S.No</th>
+                                            <th>Lead Title</th>
                                             <th>Name</th>
                                             <th>Phone</th>
                                             <th>City</th>
+                                            <th>Followed By</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -79,9 +81,11 @@
                     },
                     columns: [
                         {data: 'DT_RowIndex'},
+                        {data: 'lead_title'},
                         {data: 'first_name'},
                         {data: 'mobile_number'},
                         {data: 'city_name'},
+                        {data: 'follow_by'},
                         {data: 'lead_status'},
                         {data: 'action', orderable: false},
                     ]

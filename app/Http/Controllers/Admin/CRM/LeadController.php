@@ -71,7 +71,7 @@ class LeadController extends Controller
                 Storage::disk('public')->delete($newImage);
             }
             info('Error::Place@LeadController@store - ' . $ErrMsg);
-            return redirect()->back()->with("warning", "Something went wrong" . $ErrMsg);
+            return redirect()->back()->withInput()->with("warning", "Something went wrong" . $ErrMsg);
         }
     }
 
@@ -112,7 +112,7 @@ class LeadController extends Controller
                 Storage::disk('public')->delete($newImage);
             }
             info('Error::Place@LeadController@update - ' . $exception->getMessage());
-            return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
+            return redirect()->back()->withInput()->with("warning", "Something went wrong" . $exception->getMessage());
         }
     }
 

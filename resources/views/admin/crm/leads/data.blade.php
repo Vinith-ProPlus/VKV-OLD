@@ -188,6 +188,17 @@
                                         @enderror
                                     </div>
 
+                                    <div class="form-group col-sm-6 col-lg-6 mt-15">
+                                        <label>Lead Follow-by <span class="text-danger">*</span></label>
+                                        <select name="lead_follow_by_id" id="lead_follow_by_id" class="form-control select2 @error('lead_follow_by_id') is-invalid @enderror"
+                                                data-selected='{{ $lead ? old('lead_follow_by_id', $lead->lead_follow_by_id) : old('lead_follow_by_id') }}' required>
+                                            <option value="">Select a Lead Follow-by</option>
+                                        </select>
+                                        @error('lead_follow_by_id')
+                                        <span class="error invalid-feedback">{{$message}}</span>
+                                        @enderror
+                                    </div>
+
                                     <div class="row mt-15 text-end">
                                         <div>
                                             <a href="javascript:void(0)" onclick="window.history.back()" type="button" class="btn btn-warning">Back</a>
@@ -286,7 +297,7 @@
             $('#lead_status_id').select2();
         }
         const getLeadOwner = () =>{
-            let LeadOwnerID = $('#lead_owner_id').attr('data-selected');
+            let LeadFollowByID = $('#lead_owner_id').attr('data-selected');
             $('#lead_owner_id').select2('destroy');
             $('#lead_owner_id option').remove();
             $('#lead_owner_id').append('<option value="">Select a Lead Owner</option>');
@@ -297,7 +308,7 @@
                 dataType: 'json',
                 success: function(response) {
                     response.forEach(function(item) {
-                        if ((item.id == LeadOwnerID)) {
+                        if ((item.id == LeadFollowByID)) {
                             $('#lead_owner_id').append('<option selected value="' + item.id
                                 + '">' + item.name + '</option>');
                         } else {
@@ -311,6 +322,33 @@
                 },
             });
             $('#lead_owner_id').select2();
+        }
+        const getLeadFollowedBy = () =>{
+            let LeadOwnerID = $('#lead_follow_by_id').attr('data-selected');
+            $('#lead_follow_by_id').select2('destroy');
+            $('#lead_follow_by_id option').remove();
+            $('#lead_follow_by_id').append('<option value="">Select a Lead Owner</option>');
+
+            $.ajax({
+                url:"{{route('getUsers')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    response.forEach(function(item) {
+                        if ((item.id == LeadOwnerID)) {
+                            $('#lead_follow_by_id').append('<option selected value="' + item.id
+                                + '">' + item.name + '</option>');
+                        } else {
+                            $('#lead_follow_by_id').append('<option value="' + item.id
+                                + '">'  + item.name + '</option>');
+                        }
+                    });
+                },
+                error: function(e, x, settings, exception) {
+                    // ajaxErrors(e, x, settings, exception);
+                },
+            });
+            $('#lead_follow_by_id').select2();
         }
 
         const getStates = () =>{
@@ -442,6 +480,7 @@
         getLeadSource();
         getLeadStatus();
         getLeadOwner();
+        getLeadFollowedBy();
 
     });
 </script>

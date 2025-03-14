@@ -39,7 +39,8 @@ class LeadRequest extends FormRequest
             'whatsapp_number' => 'required|digits_between:7,12',
             'lead_source_id' => 'required|exists:lead_sources,id',
             'lead_status_id' => 'required|exists:lead_statuses,id',
-            'lead_owner_id' => 'required|exists:users,id'
+            'lead_owner_id' => 'required|exists:users,id',
+            'lead_follow_by_id' => 'required|exists:users,id'
         ];
     }
 }

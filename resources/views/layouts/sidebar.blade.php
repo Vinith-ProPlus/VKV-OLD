@@ -145,18 +145,6 @@
                                        title="">Manage Users</a>
                                 </li>
                             @endcan
-                            @can('View Customers')
-                                <li class="">
-                                    <a href="{{ route('customers.index') }}" data-active-name="Customers" data-original-title=""
-                                       title="">Customers</a>
-                                </li>
-                            @endcan
-                            @can('View Vendors')
-                                <li class="">
-                                    <a href="{{ route('vendors.index') }}" data-active-name="Vendors" data-original-title=""
-                                       title="">Vendors</a>
-                                </li>
-                            @endcan
                             <!--
                             <li class=""><a
                                     href="http://localhost/VKV-OLD/admin/users-and-permissions/users/"  data-active-name="Users" data-original-title="" title="">Users</a>

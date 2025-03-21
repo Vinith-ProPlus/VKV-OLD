@@ -96,14 +96,8 @@ Route::group(['prefix'=>'admin'],function (){
             Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
             Route::delete('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 
-        Route::resource('customers', CustomerController::class);
-        Route::put('customers/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore')->middleware('can:Restore Customers');
-
         Route::resource('users', UserController::class);
         Route::put('users/restore/{id}', [UserController::class, 'restore'])->name('users.restore')->middleware('can:Restore Users');
-
-        Route::resource('vendors', VendorController::class);
-        Route::put('vendors/restore/{id}', [VendorController::class, 'restore'])->name('vendors.restore')->middleware('can:Restore Vendors');
 
         Route::resource('lead_sources', LeadSourceController::class);
         Route::put('lead_sources/restore/{id}', [LeadSourceController::class, 'restore'])->name('lead_sources.restore')->middleware('can:Restore Lead Source');

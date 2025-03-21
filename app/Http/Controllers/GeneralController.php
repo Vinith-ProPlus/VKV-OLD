@@ -10,6 +10,7 @@ use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class GeneralController extends Controller
 {
@@ -54,6 +55,10 @@ class GeneralController extends Controller
     public function getUsers()
     {
         return response()->json(User::where('active_status','Active')->get());
+    }
+    public function getRoles()
+    {
+        return response()->json(Role::all());
     }
 
     public function getDistricts(Request $req)

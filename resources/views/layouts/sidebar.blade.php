@@ -139,6 +139,12 @@
                                     href="{{ route('role.index') }}"  data-active-name="Roles-and-Permissions" data-original-title=""
                                     title="">Roles & Permissions</a></li>
                             @endcan
+                            @can('View Users')
+                                <li class="">
+                                    <a href="{{ route('users.index') }}" data-active-name="Users" data-original-title=""
+                                       title="">Manage Users</a>
+                                </li>
+                            @endcan
                             @can('View Customers')
                                 <li class="">
                                     <a href="{{ route('customers.index') }}" data-active-name="Customers" data-original-title=""

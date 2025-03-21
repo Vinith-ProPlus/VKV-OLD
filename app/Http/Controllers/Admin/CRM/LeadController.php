@@ -24,9 +24,9 @@ class LeadController extends Controller
             $data = Lead::with('city','leadFollowBy', 'leadStatus')->withTrashed()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->editColumn('city_name', fn($data) => $data->city && $data->city->name ? $data->city->name : '-')
-                ->editColumn('follow_by', fn($data) => $data->leadFollowBy && $data->leadFollowBy->name ? $data->leadFollowBy->name : '-')
-                ->editColumn('lead_status', fn($data) => $data->leadStatus && $data->leadStatus->name ? $data->leadStatus->name : '-')
+                ->editColumn('city_name', fn($data) => optional($data->city)->name ?? '-')
+                ->editColumn('follow_by', fn($data) => optional($data->leadFollowBy)->name ?? '-')
+                ->editColumn('lead_status', fn($data) => optional($data->leadStatus)->name ?? '-')
                 ->addColumn('action', function ($data) {
                     $button = '<div class="d-flex justify-content-center">';
                     if ($data->deleted_at) {

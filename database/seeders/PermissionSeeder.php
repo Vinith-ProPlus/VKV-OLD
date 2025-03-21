@@ -29,6 +29,7 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Tax'],
             ['guard_name' => 'web', 'model' => 'Unit of Measurement'],
             ['guard_name' => 'web', 'model' => 'Roles and Permissions', 'SplPermission' => 1],
+            ['guard_name' => 'web', 'model' => 'Users', 'SplPermission' => 1],
             ['guard_name' => 'web', 'model' => 'Customers', 'SplPermission' => 1],
             ['guard_name' => 'web', 'model' => 'Vendors', 'SplPermission' => 1],
             ['guard_name' => 'web', 'model' => 'Lead Source', 'SplPermission' => 1],
@@ -100,5 +101,9 @@ class PermissionSeeder extends Seeder
             $role = Role::whereName('Super Admin')->first();
             $role->syncPermissions($modulesIds);
         }
-    }
+
+            foreach (['Customer', 'Vendor', 'Site Supervisor', 'Labour', 'Contractor', 'Accountant', 'User'] as $role) {
+                Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
+            }
+        }
 }

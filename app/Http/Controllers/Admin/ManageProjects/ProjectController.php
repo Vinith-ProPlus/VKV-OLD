@@ -6,9 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
 use App\Models\admin\ManageProjects\ProjectStage;
 use App\Models\Project;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProjectController extends Controller{
@@ -16,7 +24,7 @@ class ProjectController extends Controller{
     /**
      * @throws AuthorizationException
      */
-    public function index(Request $request)
+    public function index(Request $request): Factory|Application|View|JsonResponse
     {
         $this->authorize('View Projects');
         if ($request->ajax()) {
@@ -45,7 +53,7 @@ class ProjectController extends Controller{
     /**
      * @throws AuthorizationException
      */
-    public function create()
+    public function create(): View|Factory|Application
     {
         $this->authorize('Create Projects');
         return view('admin.manage_projects.projects.data', ['project' => '']);
@@ -53,14 +61,14 @@ class ProjectController extends Controller{
     /**
      * @throws AuthorizationException
      */
-    public function store(ProjectRequest $request)
+    public function store(ProjectRequest $request): RedirectResponse
     {
         $this->authorize('Create Projects');
         try {
             $project = Project::create($request->all());
 
             // Save Stages
-            foreach ($request->stages as $index => $stage) {
+            foreach ($request->stages as $stage) {
                 ProjectStage::create([
                     'project_id' => $project->id,
                     'name' => $stage['name'],
@@ -69,7 +77,7 @@ class ProjectController extends Controller{
             }
 
             return redirect()->route('projects.index')->with('success', 'Project created successfully.');
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $ErrMsg = $exception->getMessage();
             info('Error::Place@ProjectController@store - ' . $ErrMsg);
             return redirect()->back()->withInput()->with("warning", "Something went wrong" . $ErrMsg);
@@ -79,7 +87,7 @@ class ProjectController extends Controller{
     /**
      * @throws AuthorizationException
      */
-    public function edit(Project $project)
+    public function edit(Project $project): View|Factory|Application
     {
         $this->authorize('Edit Projects');
         return view('admin.manage_projects.projects.data', compact('project'));
@@ -88,7 +96,7 @@ class ProjectController extends Controller{
     /**
      * @throws AuthorizationException
      */
-    public function update(ProjectRequest $request, Project $project)
+    public function update(ProjectRequest $request, Project $project): RedirectResponse
     {
         $this->authorize('Edit Projects');
         try {
@@ -131,7 +139,7 @@ class ProjectController extends Controller{
             }
 
             return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             info('Error::Place@ProjectController@update - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
@@ -139,14 +147,14 @@ class ProjectController extends Controller{
     /**
      * @throws AuthorizationException
      */
-    public function destroy($id)
+    public function destroy($id): Application|Response|RedirectResponse|ResponseFactory
     {
         $this->authorize('Delete Projects');
         try {
             $category = Project::findOrFail($id);
             $category->delete();
             return response(['status' => 'warning', 'message' => 'Project deleted Successfully!']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             info('Error::Place@ProjectController@destroy - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
@@ -154,13 +162,13 @@ class ProjectController extends Controller{
     /**
      * @throws AuthorizationException
      */
-    public function restore($id)
+    public function restore($id): Application|Response|RedirectResponse|ResponseFactory
     {
         $this->authorize('Restore Projects');
         try {
             Project::withTrashed()->findOrFail($id)?->restore();
             return response(['status' => 'success', 'message' => 'Project restored Successfully!']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             info('Error::Place@ProjectController@restore - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }

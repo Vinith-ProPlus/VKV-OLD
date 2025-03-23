@@ -55,7 +55,6 @@ class ProjectController extends Controller{
      */
     public function store(ProjectRequest $request)
     {
-        info("Store request: ".json_encode($request->all()));
         $this->authorize('Create Projects');
         try {
             $project = Project::create($request->all());
@@ -91,7 +90,6 @@ class ProjectController extends Controller{
      */
     public function update(ProjectRequest $request, Project $project)
     {
-        info("Update request: ".json_encode($request->all()));
         $this->authorize('Edit Projects');
         try {
             $project_id = $project->id;
@@ -107,7 +105,6 @@ class ProjectController extends Controller{
                 info("stage id: ".$stageId);
 
                 if ($stageId && in_array($stageId, $existingStageIds)) {
-                    info("stage id: ".$stageId);
                     $stage = $existingStages->find($stageId);
                     if ($stage->trashed()) {
                         $stage->restore();

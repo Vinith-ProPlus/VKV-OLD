@@ -38,7 +38,9 @@ class ProjectRequest extends FormRequest
             'units'=>'required|integer',
             'target_customers'=>'required|string|max:255',
             'range'=>'required|string|max:255',
-            'is_active' => 'required|boolean'
+            'is_active' => 'required|boolean',
+            'stages' => 'nullable|array',
+            'stages.*.name' => 'required|string',
         ];
     }
 }

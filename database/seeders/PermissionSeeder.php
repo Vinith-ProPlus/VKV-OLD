@@ -26,6 +26,7 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Districts'],
             ['guard_name' => 'web', 'model' => 'Pincodes'],
             ['guard_name' => 'web', 'model' => 'Cities'],
+            ['guard_name' => 'web', 'model' => 'Stages'],
             ['guard_name' => 'web', 'model' => 'Tax'],
             ['guard_name' => 'web', 'model' => 'Unit of Measurement'],
             ['guard_name' => 'web', 'model' => 'Roles and Permissions', 'SplPermission' => 1],

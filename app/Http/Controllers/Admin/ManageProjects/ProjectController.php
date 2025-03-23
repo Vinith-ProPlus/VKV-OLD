@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\ManageProjects;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
+use App\Models\admin\ManageProjects\ProjectStage;
 use App\Models\Project;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -54,14 +55,25 @@ class ProjectController extends Controller{
      */
     public function store(ProjectRequest $request)
     {
+        info("Store request: ".json_encode($request->all()));
         $this->authorize('Create Projects');
         try {
-            Project::create($request->all());
+            $project = Project::create($request->all());
+
+            // Save Stages
+            foreach ($request->stages as $index => $stage) {
+                ProjectStage::create([
+                    'project_id' => $project->id,
+                    'name' => $stage['name'],
+                    'order_no' => $stage['order_no'],
+                ]);
+            }
+
             return redirect()->route('projects.index')->with('success', 'Project created successfully.');
         } catch (\Exception $exception) {
             $ErrMsg = $exception->getMessage();
             info('Error::Place@ProjectController@store - ' . $ErrMsg);
-            return redirect()->back()->with("warning", "Something went wrong" . $ErrMsg);
+            return redirect()->back()->withInput()->with("warning", "Something went wrong" . $ErrMsg);
         }
     }
 
@@ -79,9 +91,48 @@ class ProjectController extends Controller{
      */
     public function update(ProjectRequest $request, Project $project)
     {
+        info("Update request: ".json_encode($request->all()));
         $this->authorize('Edit Projects');
         try {
+            $project_id = $project->id;
             $project->update($request->validated());
+
+            $existingStages = ProjectStage::where('project_id', $project_id)->withTrashed()->get();
+
+            $newStages = collect($request->stages);
+            $existingStageIds = $existingStages->pluck('id')->toArray();
+
+            foreach ($newStages as $stageData) {
+                $stageId = $stageData['id'] ?? null;
+                info("stage id: ".$stageId);
+
+                if ($stageId && in_array($stageId, $existingStageIds)) {
+                    info("stage id: ".$stageId);
+                    $stage = $existingStages->find($stageId);
+                    if ($stage->trashed()) {
+                        $stage->restore();
+                    }
+                    $stage->update([
+                        'name' => $stageData['name'],
+                        'order_no' => $stageData['order_no'],
+                    ]);
+                    $stageData['deleted'] ? $stage->delete() : $stage->restore();
+                } else {
+                    ProjectStage::create([
+                        'project_id' => $project_id,
+                        'name' => $stageData['name'],
+                        'order_no' => $stageData['order_no'],
+                    ]);
+                }
+            }
+
+            // Soft delete missing stages
+            foreach ($existingStages as $stage) {
+                if (!$newStages->pluck('id')->contains($stage->id)) {
+                    $stage->delete();
+                }
+            }
+
             return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
         } catch (\Exception $exception) {
             info('Error::Place@ProjectController@update - ' . $exception->getMessage());

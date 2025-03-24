@@ -2,8 +2,8 @@
 
 @section('content')
     @php
-        $PageTitle="Vendors";
-        $ActiveMenuName='Vendors';
+        $PageTitle="Lead";
+        $ActiveMenuName='Lead';
     @endphp
     <div class="container-fluid">
         <div class="page-header">
@@ -28,9 +28,9 @@
                             <div class="col-sm-4"></div>
                             <div class="col-sm-4 my-2"><h5>{{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right text-md-right">
-                                @can('Create Vendors')
+                                @can('Create Lead')
                                     <a class="btn btn-sm btnPrimaryCustomizeBlue btn-primary add-btn"
-                                        href="{{ route('vendors.create') }}">Add New Vendor</a>
+                                        href="{{ route('leads.create') }}">Add New Lead</a>
                                 @endcan
                             </div>
                         </div>
@@ -43,10 +43,11 @@
                                         <thead class="thead-light">
                                         <tr>
                                             <th>S.No</th>
+                                            <th>Lead Title</th>
                                             <th>Name</th>
-                                            <th>Email</th>
                                             <th>Phone</th>
                                             <th>City</th>
+                                            <th>Followed By</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -65,7 +66,7 @@
 @endsection
 @section('script')
     <script>
-        @can('View Vendors')
+        @can('View Lead')
             $(function () {
                 $('#list_table').DataTable({
                     "columnDefs": [
@@ -75,16 +76,17 @@
                     iDisplayLength: 10,
                     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
                     ajax: {
-                        url: '{{ route("vendors.index") }}',
+                        url: '{{ route("leads.index") }}',
                         type: 'GET'
                     },
                     columns: [
                         {data: 'DT_RowIndex'},
-                        {data: 'name'},
-                        {data: 'email'},
-                        {data: 'mobile'},
+                        {data: 'lead_title'},
+                        {data: 'first_name'},
+                        {data: 'mobile_number'},
                         {data: 'city_name'},
-                        {data: 'active_status'},
+                        {data: 'follow_by'},
+                        {data: 'lead_status'},
                         {data: 'action', orderable: false},
                     ]
                 });

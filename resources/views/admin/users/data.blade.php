@@ -2,8 +2,8 @@
 
 @section('content')
     @php
-        $PageTitle="Customers";
-        $ActiveMenuName='Customers';
+        $PageTitle="Users";
+        $ActiveMenuName='Users';
     @endphp
     <div class="container-fluid">
         <div class="page-header">
@@ -26,20 +26,20 @@
                     <div class="card-header text-center">
                         <div class="row">
                             <div class="col-sm-4"></div>
-                            <div class="col-sm-4 my-2"><h5>{{ $customer  ? 'Edit' : 'Create' }} {{$PageTitle}}</h5></div>
+                            <div class="col-sm-4 my-2"><h5>{{ $user  ? 'Edit' : 'Create' }} {{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right text-md-right"></div>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 col-sm-12 col-lg-12">
-                                <form class="row" action="{{ $customer ? route('customers.update', $customer->id) : route('customers.store') }}" method="POST">
+                                <form class="row" action="{{ $user ? route('users.update', $user->id) : route('users.store') }}" method="POST">
                                     @csrf
-                                    @if($customer) @method('PUT') @endif
+                                    @if($user) @method('PUT') @endif
                                     <div class="form-group col-sm-6 col-lg-6">
                                         <label>Full Name</label>
                                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                               value="{{ $customer ? old('name', $customer->name) : old('name') }}" required>
+                                               value="{{ $user ? old('name', $user->name) : old('name') }}" required>
                                         @error('name')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -48,7 +48,7 @@
                                     <div class="form-group col-sm-6 col-lg-6">
                                         <label>Email Address</label>
                                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                               value="{{ $customer ? old('email', $customer->email) : old('email') }}" required>
+                                               value="{{ $user ? old('email', $user->email) : old('email') }}" required>
                                         @error('email')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -57,7 +57,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Date of Birth</label>
                                         <input type="date" name="dob" class="form-control @error('dob') is-invalid @enderror"
-                                               value="{{ $customer ? old('dob', $customer->dob) : old('dob') }}" max="{{ \Carbon\Carbon::today()->toDateString() }}" required>
+                                               value="{{ $user ? old('dob', $user->dob) : old('dob') }}" max="{{ \Carbon\Carbon::today()->toDateString() }}" required>
                                         @error('dob')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -66,7 +66,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Mobile</label>
                                         <input type="tel" name="mobile" class="form-control @error('mobile') is-invalid @enderror"
-                                               value="{{ $customer ? old('mobile', $customer->mobile) : old('mobile') }}" required>
+                                               value="{{ $user ? old('mobile', $user->mobile) : old('mobile') }}" required>
                                         @error('mobile')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -74,7 +74,7 @@
 
                                     <div class="form-group col-sm-12 col-lg-12 mt-15">
                                         <label>Address</label>
-                                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" required>{{ $customer ? old('address', $customer->address) : old('address') }}</textarea>
+                                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" required>{{ $user ? old('address', $user->address) : old('address') }}</textarea>
                                         @error('address')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -83,7 +83,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>State</label>
                                         <select name="state_id" id="state" class="form-control select2 @error('state_id') is-invalid @enderror"
-                                                data-selected='{{ $customer ? old('state_id', $customer->state_id) : old('state_id') }}' required>
+                                                data-selected='{{ $user ? old('state_id', $user->state_id) : old('state_id') }}' required>
                                             <option value="">Select a State</option>
                                         </select>
                                         @error('state_id')
@@ -94,7 +94,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>District</label>
                                         <select name="district_id" id="district" class="form-control select2 @error('district_id') is-invalid @enderror"
-                                                data-selected='{{ $customer ? old('district_id', $customer->district_id) : old('district_id') }}' required>
+                                                data-selected='{{ $user ? old('district_id', $user->district_id) : old('district_id') }}' required>
                                             <option value="">Select a District</option>
                                         </select>
                                         @error('district_id')
@@ -105,7 +105,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>City</label>
                                         <select name="city_id" id="city" class="form-control select2 @error('city_id') is-invalid @enderror"
-                                                data-selected='{{ $customer ? old('city_id', $customer->city_id) : old('city_id') }}' required>
+                                                data-selected='{{ $user ? old('city_id', $user->city_id) : old('city_id') }}' required>
                                             <option value="">Select a City</option>
                                         </select>
                                         @error('city_id')
@@ -116,7 +116,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Pincode</label>
                                         <select name="pincode_id" id="pincode" class="form-control select2 @error('pincode_id') is-invalid @enderror"
-                                                data-selected='{{ $customer ? old('pincode_id', $customer->pincode_id) : old('pincode_id') }}' required>
+                                                data-selected='{{ $user ? old('pincode_id', $user->pincode_id) : old('pincode_id') }}' required>
                                             <option value="">Select a Pincode</option>
                                         </select>
                                         @error('pincode_id')
@@ -124,9 +124,21 @@
                                         @enderror
                                     </div>
 
+
+                                    <div class="form-group col-sm-6 col-lg-6 mt-15">
+                                        <label>Role</label>
+                                        <select name="role_id" id="role_id" class="form-control select2 @error('role_id') is-invalid @enderror"
+                                                data-selected='{{ $user ? old('role_id', $user->role_id) : old('role_id') }}' required>
+                                            <option value="">Select a Role</option>
+                                        </select>
+                                        @error('role_id')
+                                        <span class="error invalid-feedback">{{$message}}</span>
+                                        @enderror
+                                    </div>
+
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Password</label>
-                                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" {{ $customer ? '' : 'required' }}>
+                                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" {{ $user ? '' : 'required' }}>
                                         @error('password')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -135,8 +147,8 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Active Status</label>
                                         <select name="active_status" class="form-control @error('active_status') is-invalid @enderror" required>
-                                            <option value="1" {{ $customer && $customer->active_status ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ $customer && !$customer->active_status ? 'selected' : '' }}>Inactive</option>
+                                            <option value="1" {{ $user && $user->active_status ? 'selected' : '' }}>Active</option>
+                                            <option value="0" {{ $user && !$user->active_status ? 'selected' : '' }}>Inactive</option>
                                         </select>
                                         @error('active_status')
                                         <span class="error invalid-feedback">{{$message}}</span>
@@ -147,12 +159,12 @@
                                     <div class="row mt-15 text-end">
                                         <div>
                                             <a href="javascript:void(0)" onclick="window.history.back()" type="button" class="btn btn-warning">Back</a>
-                                            @if(!$customer)
-                                                @can('Create Customers')
+                                            @if(!$user)
+                                                @can('Create Users')
                                                     <button type="submit" class="btn btn-primary">Save</button>
                                                 @endcan
                                             @else
-                                                @can('Edit Customers')
+                                                @can('Edit Users')
                                                     <button type="submit" class="btn btn-primary">Update</button>
                                                 @endcan
                                             @endif
@@ -209,6 +221,34 @@
             });
             $('#state').select2();
             getDistricts();
+        }
+        const getRoles = () =>{
+            let RoleID = $('#role_id');
+            let SelectedRoleID = RoleID.attr('data-selected');
+            RoleID.select2('destroy');
+            $('#role_id option').remove();
+            RoleID.append('<option value="">Select a Role</option>');
+
+            $.ajax({
+                url:"{{route('getRoles')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    response.forEach(function(item) {
+                        if ((item.id == SelectedRoleID)) {
+                            RoleID.append('<option selected value="' + item.id
+                                + '">' + item.name + '</option>');
+                        } else {
+                            RoleID.append('<option value="' + item.id
+                                + '">'  + item.name + '</option>');
+                        }
+                    });
+                },
+                error: function(e, x, settings, exception) {
+                    // ajaxErrors(e, x, settings, exception);
+                },
+            });
+            RoleID.select2();
         }
 
         const getDistricts = () =>{
@@ -307,6 +347,7 @@
         }
 
         getStates();
+        getRoles();
 
     });
 </script>

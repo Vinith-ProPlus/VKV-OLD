@@ -1,0 +1,154 @@
+<?php
+
+namespace App\Http\Controllers\Admin\ManageProjects;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ProjectTaskRequest;
+use App\Models\admin\ManageProjects\ProjectTask;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Yajra\DataTables\Facades\DataTables;
+use function Laravel\Prompts\warning;
+
+class ProjectTaskController extends Controller{
+    use AuthorizesRequests;
+    /**
+     * @throws AuthorizationException
+     */
+    public function index(Request $request): Factory|Application|View|JsonResponse
+    {
+        $this->authorize('View Project Tasks');
+
+        if ($request->ajax()) {
+            $query = ProjectTask::with('project', 'stage')->withTrashed();
+
+            // Apply filters
+            if ($request->has('project_id') && !empty($request->project_id)) {
+                $query->where('project_id', $request->project_id);
+            }
+            if ($request->has('stage_id') && !empty($request->stage_id)) {
+                $query->where('stage_id', $request->stage_id);
+            }
+            if ($request->has('status') && !empty($request->status)) {
+                $query->where('status', $request->status);
+            }
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('project_name', function ($data) {
+                    return $data->project?->name;
+                })
+                ->editColumn('stage_name', function ($data) {
+                    return $data->stage?->name;
+                })
+                ->editColumn('status', function ($data) {
+                    return $data->status;
+                })
+                ->addColumn('action', function ($data) {
+                    $button = '<div class="d-flex justify-content-center">';
+                    if ($data->deleted_at) {
+                        $button .= '<a onclick="commonRestore(\'' . route('project_tasks.restore', $data->id) . '\')" class="btn btn-outline-warning"><i class="fa fa-undo"></i></a>';
+                    } else {
+                        $button .= '<a href="' . route('project_tasks.edit', $data->id) . '" class="btn btn-outline-success btn-sm m-1"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
+                        $button .= '<a onclick="commonDelete(\'' . route('project_tasks.destroy', $data->id) . '\')"  class="btn btn-outline-danger btn-sm m-1"><i class="fa fa-trash" style="color: red"></i></a>';
+                    }
+                    $button .= '</div>';
+                    return $button;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('admin.manage_projects.project_tasks.index');
+    }
+
+
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function create(): View|Factory|Application
+    {
+        $this->authorize('Create Project Tasks');
+        return view('admin.manage_projects.project_tasks.data', ['project_task' => '']);
+    }
+    /**
+     * @throws AuthorizationException
+     */
+    public function store(ProjectTaskRequest $request): RedirectResponse
+    {
+        $this->authorize('Create Project Tasks');
+        try {
+            ProjectTask::create($request->all());
+
+            return redirect()->route('project_tasks.index')->with('success', 'Project Task created successfully.');
+        } catch (Exception $exception) {
+            $ErrMsg = $exception->getMessage();
+            warning('Error::Place@ProjectTaskController@store - ' . $ErrMsg);
+            return redirect()->back()->withInput()->with("warning", "Something went wrong" . $ErrMsg);
+        }
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function edit(ProjectTask $project_task): View|Factory|Application
+    {
+        $this->authorize('Edit Project Tasks');
+        return view('admin.manage_projects.project_tasks.data', compact('project_task'));
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(ProjectTaskRequest $request, ProjectTask $project_task): RedirectResponse
+    {
+        $this->authorize('Edit Project Tasks');
+        try {
+            $project_task->update($request->validated());
+
+            return redirect()->route('project_tasks.index')->with('success', 'Project Task updated successfully.');
+        } catch (Exception $exception) {
+            info('Error::Place@ProjectTaskController@update - ' . $exception->getMessage());
+            return redirect()->back()->withInput()->with("warning", "Something went wrong" . $exception->getMessage());
+        }
+    }
+    /**
+     * @throws AuthorizationException
+     */
+    public function destroy($id): Application|Response|RedirectResponse|ResponseFactory
+    {
+        $this->authorize('Delete Project Tasks');
+        try {
+            $category = ProjectTask::findOrFail($id);
+            $category->delete();
+            return response(['status' => 'warning', 'message' => 'Project Task deleted Successfully!']);
+        } catch (Exception $exception) {
+            info('Error::Place@ProjectTaskController@destroy - ' . $exception->getMessage());
+            return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
+        }
+    }
+    /**
+     * @throws AuthorizationException
+     */
+    public function restore($id): Application|Response|RedirectResponse|ResponseFactory
+    {
+        $this->authorize('Restore Project Tasks');
+        try {
+            ProjectTask::withTrashed()->findOrFail($id)?->restore();
+            return response(['status' => 'success', 'message' => 'Project Task restored Successfully!']);
+        } catch (Exception $exception) {
+            info('Error::Place@ProjectTaskController@restore - ' . $exception->getMessage());
+            return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
+        }
+    }
+}

@@ -464,6 +464,8 @@
 				</div>
 			</div>
 		</div>
+        <!-- Cropper Modal -->
+        @include('components.cropper-modal')
 		<script src="{{url('/')}}/assets/js/jquery-3.7.1.min.js?r={{date('YmdHis')}}"></script>
 		<script src="{{url('/')}}/assets/js/bootstrap/bootstrap.bundle.min.js?r={{date('YmdHis')}}"></script>
 		<script src="{{url('/')}}/assets/js/icons/feather-icon/feather.min.js?r={{date('YmdHis')}}"></script>
@@ -505,8 +507,18 @@
 		<script src="{{url('/')}}/assets/plugins/ckeditor/ckeditor.js"></script>
     	<script src="{{url('/')}}/assets/plugins/ckeditor/custom.js"></script>
 		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+        <!-- Include Cropper.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+
+        <!-- Load jQuery UI -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
+
 		@include('common_script.alert_script')
 		@include('common_script.action_script')
+		@include('common_script.cropper-script')
 		<script>
 			$.extend($.fn.dataTable.defaults, {
 				processing: true,

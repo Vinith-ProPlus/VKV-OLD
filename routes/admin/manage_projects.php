@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ManageProjects\AmenityController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectSpecificationsController;
+use App\Http\Controllers\Admin\ManageProjects\ProjectTaskController;
 use App\Http\Controllers\Admin\ManageProjects\SitesController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,9 @@ Route::put('amenities/restore/{id}', [AmenityController::class, 'restore'])->nam
 
 Route::resource('projects', ProjectController::class);
 Route::put('projects/restore/{id}', [ProjectController::class, 'restore'])->name('projects.restore')->middleware('can:Restore Projects');
+
+Route::resource('project_tasks', ProjectTaskController::class);
+Route::put('project_tasks/restore/{id}', [ProjectTaskController::class, 'restore'])->name('project_tasks.restore')->middleware('can:Restore Project Tasks');
 
 Route::resource('project_specifications', ProjectSpecificationsController::class);
 Route::put('project_specifications/restore/{id}', [ProjectSpecificationsController::class, 'restore'])->name('project_specifications.restore')->middleware('can:Restore Projects Specifications');

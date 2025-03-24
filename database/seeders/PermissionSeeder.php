@@ -26,11 +26,15 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Districts'],
             ['guard_name' => 'web', 'model' => 'Pincodes'],
             ['guard_name' => 'web', 'model' => 'Cities'],
+            ['guard_name' => 'web', 'model' => 'Stages'],
             ['guard_name' => 'web', 'model' => 'Tax'],
             ['guard_name' => 'web', 'model' => 'Unit of Measurement'],
             ['guard_name' => 'web', 'model' => 'Roles and Permissions', 'SplPermission' => 1],
+            ['guard_name' => 'web', 'model' => 'Users', 'SplPermission' => 1],
             ['guard_name' => 'web', 'model' => 'Customers', 'SplPermission' => 1],
             ['guard_name' => 'web', 'model' => 'Vendors', 'SplPermission' => 1],
+            ['guard_name' => 'web', 'model' => 'Lead Source', 'SplPermission' => 1],
+            ['guard_name' => 'web', 'model' => 'Lead', 'SplPermission' => 1],
 
             ['guard_name' => 'web', 'model' => 'Product Category'],
             ['guard_name' => 'web', 'model' => 'Product'],
@@ -39,8 +43,9 @@ class PermissionSeeder extends Seeder
             // Manage Projects
             ['guard_name' => 'web', 'model' => 'Project Specifications'],
             ['guard_name' => 'web', 'model' => 'Amenities'],
-            ['guard_name' => 'web', 'model' => 'Projects'],
             ['guard_name' => 'web', 'model' => 'Sites'],
+            ['guard_name' => 'web', 'model' => 'Projects'],
+            ['guard_name' => 'web', 'model' => 'Project Tasks'],
         ];
 
         $updatedModules = [];
@@ -99,5 +104,9 @@ class PermissionSeeder extends Seeder
             $role = Role::whereName('Super Admin')->first();
             $role->syncPermissions($modulesIds);
         }
-    }
+
+            foreach (['Customer', 'Vendor', 'Site Supervisor', 'Labour', 'Contractor', 'Accountant', 'User'] as $role) {
+                Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
+            }
+        }
 }

@@ -11,24 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sites', static function (Blueprint $table) {
+        Schema::create('site_supervisor', static function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('location');
-            $table->decimal('latitude', 10, 8);
-            $table->decimal('longitude', 11, 8);
-            $table->boolean('is_active')->default(1);
+            $table->foreignId('site_id')->constrained('sites')->cascadeOnDelete();
+            $table->foreignId('supervisor_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('sites');
+        Schema::dropIfExists('site_supervisor');
     }
 };

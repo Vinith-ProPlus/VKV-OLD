@@ -43,8 +43,8 @@
                                         <thead class="thead-light">
                                         <tr>
                                             <th>S.No</th>
-                                            <th>Site Name</th>
-                                            <th>Project Name</th>
+                                            <th>Name</th>
+                                            <th>Location</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -78,8 +78,9 @@
                     },
                     columns: [
                         {data: 'DT_RowIndex'},
-                        {data: 'spec_name'},
-                        {data: 'is_active'},
+                        {data: 'name'},
+                        {data: 'location'},
+                        {data: 'status'},
                         {data: 'action', orderable: false},
                     ]
                 });

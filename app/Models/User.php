@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Admin\ManageProjects\Site;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
@@ -93,5 +94,10 @@ class User extends Authenticatable
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function sites()
+    {
+        return $this->belongsToMany(Site::class, 'site_supervisor', 'supervisor_id', 'site_id');
     }
 }

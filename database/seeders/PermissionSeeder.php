@@ -83,6 +83,7 @@ class PermissionSeeder extends Seeder
                     "name" => 'Vinith Kumar',
                     "email" => 'vinithkumarpropluslogics@gmail.com',
                     "password" => Hash::make('proplus1234$'),
+                    "role_id" => Hash::make('proplus1234$'),
                 ],
                 [
                     "name" => 'Naveen',
@@ -105,8 +106,6 @@ class PermissionSeeder extends Seeder
             $role->syncPermissions($modulesIds);
         }
 
-            foreach (['Customer', 'Vendor', 'Site Supervisor', 'Labour', 'Contractor', 'Accountant', 'User'] as $role) {
-                Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
-            }
+
         }
 }

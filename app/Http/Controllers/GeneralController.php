@@ -58,6 +58,22 @@ class GeneralController extends Controller
     {
         return response()->json(User::where('active_status','Active')->get());
     }
+    public function getSiteSupervisors()
+    {
+        $supervisor_role_id = Role::where('name', SITE_SUPERVISOR_ROLE_NAME)->pluck('id')->first();
+
+        if ($supervisor_role_id) {
+            $supervisors = User::where('active_status', 'Active')
+                ->whereHas('roles', function ($query) use ($supervisor_role_id) {
+                    $query->where('role_id', $supervisor_role_id);
+                })
+                ->get();
+            return response()->json($supervisors);
+        }
+
+        return response()->json([]);
+    }
+
     public function getRoles()
     {
         return response()->json(Role::all());

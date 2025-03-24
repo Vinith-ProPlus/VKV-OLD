@@ -113,6 +113,13 @@
                             @endcan
                         </ul>
                         <ul class="nav-submenu menu-content" style="display: none;">
+                            @can('View Project Tasks')
+                                <li class="">
+                                    <a href="{{ route('project_tasks.index') }}" data-active-name="Project Tasks" data-original-title="" title="">Project Tasks</a>
+                                </li>
+                            @endcan
+                        </ul>
+                        <ul class="nav-submenu menu-content" style="display: none;">
                             @can('View Project Specifications')
                                 <li class="">
                                     <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>

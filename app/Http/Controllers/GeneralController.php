@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\admin\ManageProjects\ProjectStage;
+use App\Models\Admin\ManageProjects\Site;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
@@ -90,6 +91,11 @@ class GeneralController extends Controller
         }
 
         return response()->json([]);
+    }
+
+    public function getSites()
+    {
+            return response()->json(Site::where('is_active', 1)->get());
     }
 
     public function getDistricts(Request $req)

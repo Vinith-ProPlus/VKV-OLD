@@ -35,11 +35,22 @@
                             @endif
 
                             <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="site_id">Site Name <span class="text-danger">*</span></label>
+                                        <select name="site_id" id="site_id" class="form-control select2" data-selected="{{ old('site_id', $project->site_id ?? '') }}" required></select>
+                                        @error('site_id')
+                                        <span class="text-danger mt-1">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-10">
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Project ID</label>
-                                        <input type="text" name="project_id" class="form-control"
-                                               value="{{ old('project_id', $project->project_id ?? '') }}" required>
+                                        <label>Project ID <span class="text-danger">*</span></label>
+                                        <input type="text" name="project_id" class="form-control" value="{{ old('project_id', $project->project_id ?? '') }}" required>
                                         @error('project_id')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
@@ -47,9 +58,8 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Project Name</label>
-                                        <input type="text" name="name" class="form-control"
-                                               value="{{ old('name', $project->name ?? '') }}" required>
+                                        <label>Project Name <span class="text-danger">*</span></label>
+                                        <input type="text" name="name" class="form-control" value="{{ old('name', $project->name ?? '') }}" required>
                                         @error('name')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
@@ -60,9 +70,8 @@
                             <div class="row mt-10">
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Location</label>
-                                        <input type="text" name="location" class="form-control"
-                                               value="{{ old('location', $project->location ?? '') }}" required>
+                                        <label>Location <span class="text-danger">*</span></label>
+                                        <input type="text" name="location" class="form-control" value="{{ old('location', $project->location ?? '') }}" required>
                                         @error('location')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
@@ -70,7 +79,7 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Type</label>
+                                        <label>Type <span class="text-danger">*</span></label>
                                         <input type="text" name="type" class="form-control"
                                                value="{{ old('type', $project->type ?? '') }}" required>
                                         @error('type')
@@ -83,7 +92,7 @@
                             <div class="row mt-10">
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Units</label>
+                                        <label>Units <span class="text-danger">*</span></label>
                                         <input type="number" name="units" class="form-control"
                                                value="{{ old('units', $project->units ?? '') }}" required>
                                         @error('units')
@@ -93,7 +102,7 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Target Customers</label>
+                                        <label>Target Customers <span class="text-danger">*</span></label>
                                         <input type="text" name="target_customers" class="form-control"
                                                value="{{ old('target_customers', $project->target_customers ?? '') }}" required>
                                         @error('target_customers')
@@ -106,7 +115,7 @@
                             <div class="row mt-10">
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Range</label>
+                                        <label>Range <span class="text-danger">*</span></label>
                                         <input type="text" name="range" class="form-control"
                                                value="{{ old('range', $project->range ?? '') }}" required>
                                         @error('range')
@@ -116,7 +125,7 @@
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Active Status</label>
+                                        <label>Active Status <span class="text-danger">*</span></label>
                                         <select name="is_active" class="form-control">
                                             <option value="1" {{ old('is_active', $project->is_active ?? 1) == 1 ? 'selected' : '' }}>Active</option>
                                             <option value="0" {{ old('is_active', $project->is_active ?? 1) == 0 ? 'selected' : '' }}>Inactive</option>
@@ -280,6 +289,35 @@
                     $(this).find("input[name*='[order_no]']").val(index + 1);
                 });
             }
+            const getSites = () =>{
+                let SiteID = $('#site_id');
+                let SelectedSiteID = SiteID.attr('data-selected');
+                SiteID.select2('destroy');
+                $('#site_id option').remove();
+                SiteID.append('<option value="">--Select a Site--</option>');
+
+                $.ajax({
+                    url:"{{route('getSites')}}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        response.forEach(function(item) {
+                            if ((item.id == SelectedSiteID)) {
+                                SiteID.append('<option selected value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            } else {
+                                SiteID.append('<option value="' + item.id
+                                    + '">'  + item.name + '</option>');
+                            }
+                        });
+                        SiteID.select2();
+                    },
+                    error: function(xhr) {}
+                });
+            }
+
+            getSites();
+
         });
     </script>
 @endsection

@@ -119,5 +119,6 @@ Route::get('/getSiteSupervisors', [GeneralController::class, 'getSiteSupervisors
 Route::get('/getRoles', [GeneralController::class, 'getRoles'])->name('getRoles');
 Route::get('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
 Route::get('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
+Route::get('/getSites', [GeneralController::class, 'getSites'])->name('getSites');
 
 require __DIR__.'/auth.php';

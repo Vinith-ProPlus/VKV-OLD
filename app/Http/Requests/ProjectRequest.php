@@ -25,6 +25,7 @@ class ProjectRequest extends FormRequest
     public function rules()
     {
         return [
+            'site_id' => 'required|integer|exists:sites,id',
             'project_id' => [
                 'required', 'string', 'max:100',
                 Rule::unique('projects')->ignore($this->route('project'))

@@ -35,8 +35,10 @@ Route::middleware('auth:sanctum')->group(static function () {
     Route::post('attendance/history', [MobileUserAttendanceController::class, 'getAttendanceHistory']);
 
     // Manage Task
+    Route::post('manage-task/get-task', [GeneralController::class, 'getTask']);
     Route::post('manage-task/list', [GeneralController::class, 'getTasks']);
     Route::post('manage-task/create-task', [GeneralController::class, 'createProjectTask']);
+    Route::post('manage-task/update-task-status/{task}', [GeneralController::class, 'updateTaskStatus']);
 
     Route::post('HomeScreen', [GeneralController::class, 'HomeScreen']);
 });

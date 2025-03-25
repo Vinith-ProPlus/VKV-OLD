@@ -161,12 +161,24 @@ class GeneralController extends Controller
         return $this->successResponse(dataFormatter($query), "Products fetched successfully!");
     }
 
+    public function getTask(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        $userId = $user->id;
+        $task = ProjectTask::with('project:id,name', 'stage:id,name', 'created_by:id,name')
+            ->whereHas('project.site.supervisors', static fn($q) => $q->where('users.id', $userId))
+            ->where('id', $request->task_id)->first();
+        $task->image = generate_file_url($task->image);
+        $task->is_in_progress = in_array($task->status, [ON_HOLD, COMPLETED, DELETED], true) ? 0 : 1;
+        return $this->successResponse(compact('task'), "Task fetched successfully!");
+    }
+
     public function getTasks(Request $request): JsonResponse
     {
         $user = auth()->user();
         $userId = $user->id;
         $today = today();
-        $tasks = ProjectTask::with('project:id,name')
+        $tasks = ProjectTask::with('project:id,name', 'stage:id,name', 'created_by:id,name')
             ->whereHas('project.site.supervisors', static fn($q) => $q->where('users.id', $userId))
             ->where(static function ($q) use ($today) {
                 $q->where(static function ($subQuery) use ($today) {
@@ -205,6 +217,19 @@ class GeneralController extends Controller
             return $this->errorResponse($ErrMsg, "Task creation failed!", 500);
         }
     }
+    public function updateTaskStatus(ProjectTask $task): JsonResponse
+    {
+        if (in_array($task->status, [ON_HOLD, COMPLETED, DELETED])) {
+            return $this->errorResponse([], "Task status update failed!", 400);
+        }
+
+        DB::transaction(static function () use ($task) {
+            $task->update(['status' => COMPLETED]);
+        });
+
+        return $this->successResponse(compact('task'), "Task status updated successfully!");
+    }
+
 
     public function HomeScreen(): JsonResponse
     {

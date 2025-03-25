@@ -60,5 +60,11 @@ const SYSTEM_ROLES = ['Super Admin', 'Customer', 'Vendor', 'Site Supervisor', 'L
 
 const USER_ROLE_NAME = 'User';
 
+const CREATED = 'Created';
+const IN_PROGRESS = 'In-progress';
+const ON_HOLD = 'On-hold';
+const COMPLETED = 'Completed';
+const DELETED = 'Deleted';
+
 const PROJECT_TASK_STATUSES = ['Created', 'In-progress', 'On-hold', 'Completed', 'Deleted'];
 

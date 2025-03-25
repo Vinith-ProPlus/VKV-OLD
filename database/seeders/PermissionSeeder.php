@@ -83,7 +83,6 @@ class PermissionSeeder extends Seeder
                     "name" => 'Vinith Kumar',
                     "email" => 'vinithkumarpropluslogics@gmail.com',
                     "password" => Hash::make('proplus1234$'),
-                    "role_id" => Hash::make('proplus1234$'),
                 ],
                 [
                     "name" => 'Naveen',

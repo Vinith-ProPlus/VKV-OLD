@@ -92,8 +92,7 @@ class AuthController extends Controller
                 'district_id' => 'required|exists:districts,id',
                 'city_id' => 'required|exists:cities,id',
                 'pincode_id' => 'required|exists:pincodes,id',
-                'password' => 'nullable|string|min:6',
-                'active_status' => 'required|boolean',
+                'password' => 'nullable|string|min:6'
             ]);
 
             if (!empty($validatedData['password'])) {

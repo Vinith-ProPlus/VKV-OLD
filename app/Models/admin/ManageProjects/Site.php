@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin\ManageProjects;
 
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,4 +22,8 @@ class Site extends Model
         return $this->belongsToMany(User::class, 'site_supervisor', 'site_id', 'supervisor_id');
     }
 
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
 }

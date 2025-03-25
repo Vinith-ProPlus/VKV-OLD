@@ -15,6 +15,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -67,17 +69,21 @@ class UserController extends Controller
      */
     public function store(UserRequest $request): RedirectResponse
     {
-        info($request);
         $this->authorize('Create Users');
+        DB::beginTransaction();
         try {
             $data = $request->validated();
             $data['password'] = Hash::make($data['password']);
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')?->store('users', 'public');
+            }
             $user = User::create($data);
             $role = Role::findOrFail($data['role_id']);
-            info($role);
             $user->assignRole($role->name);
+            DB::commit();
             return redirect()->route('users.index')->with('success', 'User created successfully.');
         } catch (Exception $exception) {
+            DB::rollBack();
             $ErrMsg = $exception->getMessage();
             info('Error::Place@UserController@store - ' . $ErrMsg);
             return redirect()->back()->withInput()->with("warning", "Something went wrong: " . $ErrMsg);
@@ -89,7 +95,6 @@ class UserController extends Controller
      */
     public function edit(User $user): View|Factory|Application
     {
-        info($user);
         $this->authorize('Edit Users');
         return view('admin.users.data', compact('user'));
     }
@@ -100,6 +105,7 @@ class UserController extends Controller
     public function update(UserRequest $request, User $user): RedirectResponse
     {
         $this->authorize('Edit Users');
+        DB::beginTransaction();
         try {
             $data = $request->validated();
             if (!empty($data['password'])) {
@@ -107,14 +113,24 @@ class UserController extends Controller
             } else {
                 unset($data['password']);
             }
+            if ($request->hasFile('image')) {
+                $oldImage = $user->image;
+                $newImage = $data['image'] = $request->file('image')?->store('users', 'public');
+            }
 
             $user->update($data);
             $role = Role::findOrFail($data['role_id']);
-            info($role);
             $user->assignRole($role->name);
-
+            DB::commit();
+            if (isset($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
+            }
             return redirect()->route('users.index')->with('success', 'User updated successfully.');
         } catch (Exception $exception) {
+            DB::rollBack();
+            if(isset($newImage)){
+                Storage::disk('public')->delete($newImage);
+            }
             info('Error::Place@UserController@update - ' . $exception->getMessage());
             return redirect()->back()->withInput()->with("warning", "Something went wrong: " . $exception->getMessage());
         }

@@ -14,7 +14,7 @@ Route::get('/user', [AuthController::class, 'profile'])->middleware('auth:sanctu
 Route::post('/updateProfile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::group(['prefix'=>'master'],function (){
+Route::group(['prefix'=>'master'], static function (){
     Route::post('/getCategories', [GeneralController::class, 'getCategories'])->name('getCategories');
     Route::post('/getProducts', [GeneralController::class, 'getProducts'])->name('getProducts');
     Route::post('/getStates', [GeneralController::class, 'getStates'])->name('getStates');
@@ -33,4 +33,6 @@ Route::middleware('auth:sanctum')->group(static function () {
     // Attendance
     Route::post('attendance/record-attendance', [MobileUserAttendanceController::class, 'recordAttendance']);
     Route::post('attendance/history', [MobileUserAttendanceController::class, 'getAttendanceHistory']);
+
+    Route::post('HomeScreen', [GeneralController::class, 'HomeScreen']);
 });

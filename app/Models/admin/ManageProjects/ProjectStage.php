@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Models\admin\ManageProjects;
+namespace App\Models\Admin\ManageProjects;
 
 use App\Models\Project;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 

@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\admin\ManageProjects\ProjectStage;
+use App\Models\Admin\ManageProjects\ProjectStage;
+use App\Models\Admin\ManageProjects\ProjectTask;
+use App\Models\Admin\ManageProjects\Site;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,6 +33,15 @@ class Project extends Model
     public function stages(): HasMany
     {
         return $this->HasMany(ProjectStage::class);
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(ProjectTask::class);
+    }
+    public function site()
+    {
+        return $this->belongsTo(Site::class);
     }
 }
 

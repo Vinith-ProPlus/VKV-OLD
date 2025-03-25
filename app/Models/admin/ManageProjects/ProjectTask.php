@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\admin\ManageProjects;
+namespace App\Models\Admin\ManageProjects;
 
 use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +13,7 @@ use Yajra\DataTables\Html\Editor\Fields\BelongsTo;
 /**
  * @method static findOrFail($id)
  * @method static create(array $all)
+ * @method static whereHas(string $string, \Closure $param)
  */
 class ProjectTask extends Model
 {

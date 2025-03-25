@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\admin\ManageProjects\ProjectStage;
+use App\Models\Admin\ManageProjects\ProjectStage;
+use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
@@ -15,7 +16,6 @@ use App\Models\ProductCategory;
 use App\Models\Project;
 use App\Models\User;
 use App\Traits\ApiResponse;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -51,8 +51,8 @@ class GeneralController extends Controller
     {
         $query = Pincode::where('is_active', 1);
 
-        $query->when($request->filled('district_id'), function ($q) use ($request) {
-            $q->where('district_id', $request->district_id);
+        $query->when($request->filled('city_id'), function ($q) use ($request) {
+            $q->where('city_id', $request->city_id);
         });
 
         $pinCodes = dataFilter($query, $request, ['pincode']);

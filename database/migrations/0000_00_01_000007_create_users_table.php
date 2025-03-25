@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('password1')->nullable();
             $table->enum('active_status', ['Active', 'Inactive'])->default('Active');
+            $table->string('image')->nullable();
             $table->tinyInteger('d_flag')->default(0);
             $table->rememberToken();
             $table->softDeletes();

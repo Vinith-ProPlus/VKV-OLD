@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -77,12 +78,12 @@ class AuthController extends Controller
      */
     public function profile(Request $request)
     {
-        return $this->successResponse([
-            'user' => $request->user(),
-        ], "Profile detail fetched successfully");
+        $user = $request->user();
+        $user->image = generate_file_url($user->image);
+        return $this->successResponse(compact('user'), "Profile detail fetched successfully");
     }
 
-    public function updateProfile(Request $request)
+    public function updateProfile(Request $request): JsonResponse
     {
         DB::beginTransaction();
         try {

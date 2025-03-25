@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\admin\ManageProjects\ProjectStage;
+use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Admin\ManageProjects\Site;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
@@ -34,12 +34,12 @@ class GeneralController extends Controller
         return response()->json($state);
     }
 
-    public function getPinCodes(Request $req)
+    public function getPinCodes(Request $request)
     {
         $pincode = Pincode::where('is_active','1');
 
-        if($req->filled('district_id')){
-            $pincode->where('district_id', $req->district_id);
+        if($request->filled('city_id')){
+            $pincode->where('city_id', $request->city_id);
         }
 
         return response()->json($pincode->get());

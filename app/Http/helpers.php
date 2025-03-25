@@ -1,10 +1,16 @@
 <?php
 
     use Carbon\Carbon;
-    use Illuminate\Http\Request;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
-    /**
+/**
      * Get carbon from date string.
      *
      * @param $date
@@ -429,7 +435,7 @@
      * This will make the message only
      *
      * @param $error
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function errorResponseForModelNotFound($error)
     {
@@ -566,7 +572,7 @@
      */
     function commonLogError($location, $errorMessage, $params, $errorTrace = [], $message = 'error')
     {
-        \Log::error([
+        Log::error([
             $message => [
                 'location' => $location,
                 'message' => $errorMessage,
@@ -785,7 +791,7 @@
     /**
      * Success response in json.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function successResponse()
     {
@@ -896,7 +902,7 @@
      * @param $razorpayPaymentId
      * @param $amount
      * @return array|mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     function paymentCaptureRazorpayApi($razorpayPaymentId, $amount)
     {
@@ -906,10 +912,10 @@
             $razorpayPaymentKeySecret = $razorpayPaymentKey['razorpay_payment_key_secret'];
             $url = 'https://' . $razorpayPaymentKeyId . ':' . $razorpayPaymentKeySecret . '@api.razorpay.com/v1/payments/' . $razorpayPaymentId . '/capture';
 
-            $client = new \GuzzleHttp\Client();
+            $client = new Client();
             $response = $client->post($url, ['json' => ['amount' => $amount]]);
             return json_decode($response->getBody(), true) ?? null;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             logError($exception, 'Error while calling razorpay payment api!', 'helpers@paymentCaptureRazorpayApi', ['input' => [$razorpayPaymentId, $amount]]);
             return null;
         }
@@ -937,10 +943,10 @@
                 'notes' => $notes,
             ];
 
-            $client = new \GuzzleHttp\Client();
+            $client = new Client();
             $response = $client->post($url, ['json' => $data]);
             return json_decode($response->getBody(), true) ?? null;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             logError($exception, 'Error while calling razorpay payment api!', 'helpers@transferCapturedRazorpayApi', ['input' => [$razorpayPaymentId, $amount, $data]]);
             return null;
         }
@@ -1201,4 +1207,9 @@
             'per_page' => $query->perPage(),
             'last_page' => $query->lastPage(),
         ];
+    }
+
+    function generate_file_url($file_path): Application|string|UrlGenerator
+    {
+        return url(Storage::url($file_path));
     }

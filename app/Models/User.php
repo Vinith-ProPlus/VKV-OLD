@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\Admin\ManageProjects\Site;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
@@ -45,7 +46,8 @@ class User extends Authenticatable
         'district_id',
         'role_id',
         'password',
-        'active_status'
+        'active_status',
+        'image',
     ];
 
     /**
@@ -99,5 +101,12 @@ class User extends Authenticatable
     public function sites()
     {
         return $this->belongsToMany(Site::class, 'site_supervisor', 'supervisor_id', 'site_id');
+    }
+
+    public function tasks()
+    {
+        return ProjectTask::whereHas('project.site.supervisors', function ($query) {
+            $query->where('users.id', $this->id);
+        });
     }
 }

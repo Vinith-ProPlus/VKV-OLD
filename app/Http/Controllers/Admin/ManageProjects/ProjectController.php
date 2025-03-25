@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\ManageProjects;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
-use App\Models\admin\ManageProjects\ProjectStage;
+use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Project;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;

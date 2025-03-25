@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\GeneralController;
+use App\Http\Controllers\API\MobileUserAttendanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -28,4 +29,8 @@ Route::group(['prefix'=>'master'],function (){
     Route::post('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
 })->middleware('auth:sanctum');
 
-
+Route::middleware('auth:sanctum')->group(static function () {
+    // Attendance
+    Route::post('attendance/record-attendance', [MobileUserAttendanceController::class, 'recordAttendance']);
+    Route::post('attendance/history', [MobileUserAttendanceController::class, 'getAttendanceHistory']);
+});

@@ -24,63 +24,6 @@ class GeneralController extends Controller
 {
     use ApiResponse;
 
-    /**
-     * @param $query
-     * @param Request $request
-     * @param array $searchColumns
-     * @return mixed
-     */
-    public function dataFilter($query, Request $request, array $searchColumns = []): mixed
-    {
-        // Get only non-empty request inputs
-        $inputs = collect($request->all())->filter();
-
-        // Search filter
-        $query->when($inputs->has('search') && !empty($searchColumns), function ($q) use ($inputs, $searchColumns) {
-            $search = $inputs->get('search');
-            $q->where(function ($subQuery) use ($searchColumns, $search) {
-                foreach ($searchColumns as $column) {
-                    $subQuery->orWhere($column, 'like', "%{$search}%");
-                }
-            });
-        });
-
-        // Date filter
-        $query->when($inputs->has('created_from') && $inputs->has('created_to'), function ($q) use ($inputs) {
-            $q->whereBetween('created_at', [
-                Carbon::parse($inputs->get('created_from'))->startOfDay(),
-                Carbon::parse($inputs->get('created_to'))->endOfDay()
-            ]);
-        });
-
-        // Sorting
-        $sortBy = $inputs->get('sort_by', 'created_at');
-        $sortOrder = $inputs->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Pagination
-        $perPage = $inputs->get('per_page', 10);
-        $page = $inputs->get('page', 1);
-
-        return $query->paginate($perPage, ['*'], 'page', $page);
-    }
-
-    /**
-     * Format paginated data into an array.
-     *
-     * @param $query
-     * @return array
-     */
-    public function dataFormatter($query): array
-    {
-        return [
-            'current_page' => $query->currentPage(),
-            'data' => $query->items(),
-            'total' => $query->total(),
-            'per_page' => $query->perPage(),
-            'last_page' => $query->lastPage(),
-        ];
-    }
 
     public function getCities(Request $request): JsonResponse
     {
@@ -90,18 +33,18 @@ class GeneralController extends Controller
             $q->where('district_id', $request->district_id);
         });
 
-        $cities = $this->dataFilter($query, $request, ['name']);
+        $cities = dataFilter($query, $request, ['name']);
 
-        return $this->successResponse($this->dataFormatter($cities), "Cities fetched successfully!");
+        return $this->successResponse(dataFormatter($cities), "Cities fetched successfully!");
     }
 
     public function getStates(Request $request): JsonResponse
     {
         $query = State::where('is_active', 1);
 
-        $states = $this->dataFilter($query, $request, ['name']);
+        $states = dataFilter($query, $request, ['name']);
 
-        return $this->successResponse($this->dataFormatter($states), "States fetched successfully!");
+        return $this->successResponse(dataFormatter($states), "States fetched successfully!");
     }
 
     public function getPinCodes(Request $request): JsonResponse
@@ -112,9 +55,9 @@ class GeneralController extends Controller
             $q->where('district_id', $request->district_id);
         });
 
-        $pinCodes = $this->dataFilter($query, $request, ['pincode']);
+        $pinCodes = dataFilter($query, $request, ['pincode']);
 
-        return $this->successResponse($this->dataFormatter($pinCodes), "Pincodes fetched successfully!");
+        return $this->successResponse(dataFormatter($pinCodes), "Pincodes fetched successfully!");
     }
 
 
@@ -122,45 +65,45 @@ class GeneralController extends Controller
     {
         $query = LeadSource::where('is_active', 1);
 
-        $states = $this->dataFilter($query, $request, ['name']);
+        $states = dataFilter($query, $request, ['name']);
 
-        return $this->successResponse($this->dataFormatter($states), "Lead Source fetched successfully!");
+        return $this->successResponse(dataFormatter($states), "Lead Source fetched successfully!");
     }
 
     public function getLeadStatus(Request $request): JsonResponse
     {
         $query = LeadStatus::where('is_active', 1);
 
-        $states = $this->dataFilter($query, $request, ['name']);
+        $states = dataFilter($query, $request, ['name']);
 
-        return $this->successResponse($this->dataFormatter($states), "Lead Status fetched successfully!");
+        return $this->successResponse(dataFormatter($states), "Lead Status fetched successfully!");
     }
 
     public function getUsers(Request $request): JsonResponse
     {
         $query = User::where('active_status', 'Active');
 
-        $states = $this->dataFilter($query, $request, ['name', 'email']);
+        $states = dataFilter($query, $request, ['name', 'email']);
 
-        return $this->successResponse($this->dataFormatter($states), "User fetched successfully!");
+        return $this->successResponse(dataFormatter($states), "User fetched successfully!");
     }
 
     public function getRoles(Request $request): JsonResponse
     {
         $query = Role::query();
 
-        $roles = $this->dataFilter($query, $request, ['name']);
+        $roles = dataFilter($query, $request, ['name']);
 
-        return $this->successResponse($this->dataFormatter($roles), "Roles fetched successfully!");
+        return $this->successResponse(dataFormatter($roles), "Roles fetched successfully!");
     }
 
     public function getProjects(Request $request): JsonResponse
     {
         $query = Project::with('stages');
 
-        $roles = $this->dataFilter($query, $request, ['name']);
+        $roles = dataFilter($query, $request, ['name']);
 
-        return $this->successResponse($this->dataFormatter($roles), "Project fetched successfully!");
+        return $this->successResponse(dataFormatter($roles), "Project fetched successfully!");
     }
 
     public function getStages(Request $request): JsonResponse
@@ -171,9 +114,9 @@ class GeneralController extends Controller
             $q->where('project_id', $request->project_id);
         });
 
-        $stages = $this->dataFilter($query, $request, ['name']);
+        $stages = dataFilter($query, $request, ['name']);
 
-        return $this->successResponse($this->dataFormatter($stages), "Project stages fetched successfully!");
+        return $this->successResponse(dataFormatter($stages), "Project stages fetched successfully!");
     }
 
     public function getDistricts(Request $request): JsonResponse
@@ -184,17 +127,17 @@ class GeneralController extends Controller
             $q->where('state_id', $request->state_id);
         });
 
-        $districts = $this->dataFilter($query, $request, ['name']);
+        $districts = dataFilter($query, $request, ['name']);
 
-        return $this->successResponse($this->dataFormatter($districts), "Districts fetched successfully!");
+        return $this->successResponse(dataFormatter($districts), "Districts fetched successfully!");
     }
 
     public function getCategories(Request $request): JsonResponse
     {
         $query = ProductCategory::where('is_active', 1);
 
-        $query = $this->dataFilter($query, $request, ['name']);
-        return $this->successResponse($this->dataFormatter($query), "Categories fetched successfully!");
+        $query = dataFilter($query, $request, ['name']);
+        return $this->successResponse(dataFormatter($query), "Categories fetched successfully!");
     }
 
     public function getProducts(Request $request): JsonResponse
@@ -205,13 +148,13 @@ class GeneralController extends Controller
             $q->where('category_id', $request->category_id);
         });
 
-        $query = $this->dataFilter($query, $request, ['name', 'code']);
+        $query = dataFilter($query, $request, ['name', 'code']);
 
         $query->getCollection()->transform(static function ($product) {
             $product->image = $product->image ? url('storage/' . $product->image) : null;
             return $product;
         });
-        return $this->successResponse($this->dataFormatter($query), "Products fetched successfully!");
+        return $this->successResponse(dataFormatter($query), "Products fetched successfully!");
     }
 
     public function HomeScreen(Request $request): JsonResponse
@@ -222,13 +165,13 @@ class GeneralController extends Controller
             $q->where('category_id', $request->category_id);
         });
 
-        $query = $this->dataFilter($query, $request, ['name', 'code']);
+        $query = dataFilter($query, $request, ['name', 'code']);
 
         $query->getCollection()->transform(static function ($product) {
             $product->image = $product->image ? url('storage/' . $product->image) : null;
             return $product;
         });
-        return $this->successResponse($this->dataFormatter($query), "Products fetched successfully!");
+        return $this->successResponse(dataFormatter($query), "Products fetched successfully!");
     }
 
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->bigInteger('units');
             $table->string('target_customers');
             $table->string('range');
+            $table->foreignId('engineer_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->boolean('is_active')->default(1);
             $table->softDeletes();
             $table->timestamps();

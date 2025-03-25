@@ -20,4 +20,9 @@ class ProjectStage extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(ProjectTask::class, 'stage_id');
+    }
 }

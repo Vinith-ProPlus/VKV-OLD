@@ -103,25 +103,61 @@ class GeneralController extends Controller
 
     public function getProjects(Request $request): JsonResponse
     {
-        $query = Project::with('stages');
+        $query = Project::with('stages', 'engineer:id,name', 'site:id,name');
 
         $roles = dataFilter($query, $request, ['name']);
 
         return $this->successResponse(dataFormatter($roles), "Project fetched successfully!");
     }
-
     public function getStages(Request $request): JsonResponse
     {
-        $query = ProjectStage::query();
-
-        $query->when($request->filled('project_id'), static function ($q) use ($request) {
-            $q->where('project_id', $request->project_id);
-        });
+        $query = ProjectStage::with(['tasks' => fn($q) => $q->whereIn('status', ['Created', 'In-progress', 'Completed']), 'project:id,name'])
+            ->when($request->filled('project_id'), fn($q) => $q->where('project_id', $request->project_id));
 
         $stages = dataFilter($query, $request, ['name']);
 
+        $stages->getCollection()->transform(static function ($stage) {
+            $totalTasks = $stage->tasks->count();
+            $completedTasks = $stage->tasks->where('status', 'Completed')->count();
+            $hasCompleted = $completedTasks > 0;
+            $hasPending = $stage->tasks->whereNotIn('status', ['Completed'])->isNotEmpty();
+
+            $status = match (true) {
+                $hasCompleted && $hasPending => "In Progress",
+                !$hasCompleted => "Not Started",
+                default => "Completed",
+            };
+
+            $completionPercentage = ($totalTasks === 0 ? 0.0 : round(($completedTasks / $totalTasks) * 100, 2))."%";
+
+            return [
+                'id' => $stage->id,
+                'project_id' => $stage->project_id,
+                'project_name' => optional($stage->project)->name ?? "N/A",
+                'name' => $stage->name,
+                'order_no' => $stage->order_no,
+                'status' => $status,
+                'completion_percentage' => $completionPercentage,
+//                'tasks' => $stage->tasks,
+            ];
+        });
+
         return $this->successResponse(dataFormatter($stages), "Project stages fetched successfully!");
     }
+
+
+//    public function getStages(Request $request): JsonResponse
+//    {
+//        $query = ProjectStage::query();
+//
+//        $query->when($request->filled('project_id'), static function ($q) use ($request) {
+//            $q->where('project_id', $request->project_id);
+//        });
+//
+//        $stages = dataFilter($query, $request, ['name']);
+//
+//        return $this->successResponse(dataFormatter($stages), "Project stages fetched successfully!");
+//    }
 
     public function getDistricts(Request $request): JsonResponse
     {

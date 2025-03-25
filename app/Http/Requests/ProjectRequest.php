@@ -12,7 +12,7 @@ class ProjectRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -39,6 +39,7 @@ class ProjectRequest extends FormRequest
             'units'=>'required|integer',
             'target_customers'=>'required|string|max:255',
             'range'=>'required|string|max:255',
+            'engineer_id'=>'required|integer|exists:users,id',
             'is_active' => 'required|boolean',
             'stages' => 'nullable|array',
             'stages.*.name' => 'required|string',

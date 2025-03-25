@@ -78,32 +78,33 @@ class PermissionSeeder extends Seeder
             $role = Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
             $role->givePermissionTo($modulesIds);
         }
-        $super_admin_id = Role::where('name', SUPER_ADMIN_ROLE_NAME)->first()->id;
-        $supervisor_id = Role::where('name', SITE_SUPERVISOR_ROLE_NAME)->first()->id;
+        $super_admin_role_id = Role::where('name', SUPER_ADMIN_ROLE_NAME)->first()->id;
+        $supervisor_role_id = Role::where('name', SITE_SUPERVISOR_ROLE_NAME)->first()->id;
+        $engineer_role_id = Role::where('name', ENGINEER_ROLE_NAME)->first()->id;
         $users = [
             [
                 "name" => 'Vinith Kumar',
                 "email" => 'vinithkumarpropluslogics@gmail.com',
                 "password" => Hash::make('proplus1234$'),
-                "role_id" => $super_admin_id,
+                "role_id" => $super_admin_role_id,
             ],
             [
                 "name" => 'Naveen',
                 "email" => 'navinproplus222@gmail.com',
                 "password" => Hash::make('proplus1234$'),
-                "role_id" => $super_admin_id,
+                "role_id" => $super_admin_role_id,
             ],
             [
                 "name" => 'Anand',
                 "email" => 'anand@propluslogics.com',
                 "password" => Hash::make('proplus1234$'),
-                "role_id" => $super_admin_id,
+                "role_id" => $super_admin_role_id,
             ]
         ];
 
         foreach ($users as $userData) {
             $user = User::create($userData);
-            $user->assignRole($super_admin_id);
+            $user->assignRole($super_admin_role_id);
         }
 
         $supervisors = [
@@ -111,25 +112,51 @@ class PermissionSeeder extends Seeder
                 "name" => 'Supervisor 1',
                 "email" => 'vinithkumarpropluslogics+s1@gmail.com',
                 "password" => Hash::make('proplus1234$'),
-                "role_id" => $supervisor_id,
+                "role_id" => $supervisor_role_id,
             ],
             [
                 "name" => 'Supervisor 2',
                 "email" => 'vinithkumarpropluslogics+s2@gmail.com',
                 "password" => Hash::make('proplus1234$'),
-                "role_id" => $supervisor_id,
+                "role_id" => $supervisor_role_id,
             ],
             [
                 "name" => 'Supervisor 3',
                 "email" => 'vinithkumarpropluslogics+s3@gmail.com',
                 "password" => Hash::make('proplus1234$'),
-                "role_id" => $supervisor_id,
+                "role_id" => $supervisor_role_id,
             ]
         ];
 
         foreach ($supervisors as $supervisorData) {
             $supervisor = User::create($supervisorData);
-            $supervisor->assignRole($supervisor_id);
+            $supervisor->assignRole($supervisor_role_id);
+        }
+
+        $engineers = [
+            [
+                "name" => 'Engineer 1',
+                "email" => 'vinithkumarpropluslogics+engineer1@gmail.com',
+                "password" => Hash::make('proplus1234$'),
+                "role_id" => $engineer_role_id,
+            ],
+            [
+                "name" => 'Engineer 2',
+                "email" => 'vinithkumarpropluslogics+engineer2@gmail.com',
+                "password" => Hash::make('proplus1234$'),
+                "role_id" => $engineer_role_id,
+            ],
+            [
+                "name" => 'Engineer 3',
+                "email" => 'vinithkumarpropluslogics+engineer3@gmail.com',
+                "password" => Hash::make('proplus1234$'),
+                "role_id" => $engineer_role_id,
+            ]
+        ];
+
+        foreach ($engineers as $engineerData) {
+            $engineer = User::create($engineerData);
+            $engineer->assignRole($engineer_role_id);
         }
     }
 }

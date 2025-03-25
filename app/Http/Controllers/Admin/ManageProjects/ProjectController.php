@@ -110,7 +110,6 @@ class ProjectController extends Controller{
 
             foreach ($newStages as $stageData) {
                 $stageId = $stageData['id'] ?? null;
-                info("stage id: ".$stageId);
 
                 if ($stageId && in_array($stageId, $existingStageIds)) {
                     $stage = $existingStages->find($stageId);

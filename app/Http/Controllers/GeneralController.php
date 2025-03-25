@@ -75,6 +75,21 @@ class GeneralController extends Controller
 
         return response()->json([]);
     }
+    public function getEngineers(): JsonResponse
+    {
+        $engineer_role_id = Role::where('name', ENGINEER_ROLE_NAME)->pluck('id')->first();
+
+        if ($engineer_role_id) {
+            $engineers = User::where('active_status', 'Active')
+                ->whereHas('roles', static function ($query) use ($engineer_role_id) {
+                    $query->where('role_id', $engineer_role_id);
+                })
+                ->get();
+            return response()->json($engineers);
+        }
+
+        return response()->json([]);
+    }
 
     public function getRoles(): JsonResponse
     {
@@ -83,7 +98,7 @@ class GeneralController extends Controller
 
     public function getProjects(): JsonResponse
     {
-        return response()->json(Project::all());
+        return response()->json(Project::with('stages')->all());
     }
     public function getStages(Request $request)
     {

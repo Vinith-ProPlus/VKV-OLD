@@ -35,11 +35,20 @@
                             @endif
 
                             <div class="row">
-                                <div class="col-12">
+                                <div class="col-6">
                                     <div class="form-group">
                                         <label for="site_id">Site Name <span class="text-danger">*</span></label>
                                         <select name="site_id" id="site_id" class="form-control select2" data-selected="{{ old('site_id', $project->site_id ?? '') }}" required></select>
                                         @error('site_id')
+                                        <span class="text-danger mt-1">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label for="engineer_id">Engineer Name <span class="text-danger">*</span></label>
+                                        <select name="engineer_id" id="engineer_id" class="form-control select2" data-selected="{{ old('engineer_id', $project->engineer_id ?? '') }}" required></select>
+                                        @error('engineer_id')
                                         <span class="text-danger mt-1">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -315,8 +324,35 @@
                     error: function(xhr) {}
                 });
             }
+            const getEngineers = () =>{
+                let EngineerID = $('#engineer_id');
+                let SelectedEngineerID = EngineerID.attr('data-selected');
+                EngineerID.select2('destroy');
+                $('#engineer_id option').remove();
+                EngineerID.append('<option value="">--Select a Engineer--</option>');
+
+                $.ajax({
+                    url:"{{route('getEngineers')}}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        response.forEach(function(item) {
+                            if ((item.id == SelectedEngineerID)) {
+                                EngineerID.append('<option selected value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            } else {
+                                EngineerID.append('<option value="' + item.id
+                                    + '">'  + item.name + '</option>');
+                            }
+                        });
+                        EngineerID.select2();
+                    },
+                    error: function(xhr) {}
+                });
+            }
 
             getSites();
+            getEngineers();
 
         });
     </script>

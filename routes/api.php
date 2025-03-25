@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/sendForgotPasswordOTP', [AuthController::class, 'sendForgotPasswordOTP']);
+Route::post('/verifyForgotPasswordOTP', [AuthController::class, 'verifyForgotPasswordOTP']);
+Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 Route::get('/user', [AuthController::class, 'profile'])->middleware('auth:sanctum');
 Route::post('/updateProfile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -23,6 +26,6 @@ Route::group(['prefix'=>'master'],function (){
     Route::post('/getRoles', [GeneralController::class, 'getRoles'])->name('getRoles');
     Route::post('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
     Route::post('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
-});
+})->middleware('auth:sanctum');
 
 

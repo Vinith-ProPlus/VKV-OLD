@@ -23,6 +23,65 @@ use Spatie\Permission\Models\Role;
 class GeneralController extends Controller
 {
     use ApiResponse;
+
+    /**
+     * @param $query
+     * @param Request $request
+     * @param array $searchColumns
+     * @return mixed
+     */
+    public function dataFilter($query, Request $request, array $searchColumns = []): mixed
+    {
+        // Get only non-empty request inputs
+        $inputs = collect($request->all())->filter();
+
+        // Search filter
+        $query->when($inputs->has('search') && !empty($searchColumns), function ($q) use ($inputs, $searchColumns) {
+            $search = $inputs->get('search');
+            $q->where(function ($subQuery) use ($searchColumns, $search) {
+                foreach ($searchColumns as $column) {
+                    $subQuery->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        });
+
+        // Date filter
+        $query->when($inputs->has('created_from') && $inputs->has('created_to'), function ($q) use ($inputs) {
+            $q->whereBetween('created_at', [
+                Carbon::parse($inputs->get('created_from'))->startOfDay(),
+                Carbon::parse($inputs->get('created_to'))->endOfDay()
+            ]);
+        });
+
+        // Sorting
+        $sortBy = $inputs->get('sort_by', 'created_at');
+        $sortOrder = $inputs->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $perPage = $inputs->get('per_page', 10);
+        $page = $inputs->get('page', 1);
+
+        return $query->paginate($perPage, ['*'], 'page', $page);
+    }
+
+    /**
+     * Format paginated data into an array.
+     *
+     * @param $query
+     * @return array
+     */
+    public function dataFormatter($query): array
+    {
+        return [
+            'current_page' => $query->currentPage(),
+            'data' => $query->items(),
+            'total' => $query->total(),
+            'per_page' => $query->perPage(),
+            'last_page' => $query->lastPage(),
+        ];
+    }
+
     public function getCities(Request $request): JsonResponse
     {
         $query = City::where('is_active', 1);
@@ -155,62 +214,22 @@ class GeneralController extends Controller
         return $this->successResponse($this->dataFormatter($query), "Products fetched successfully!");
     }
 
-
-    /**
-     * @param $query
-     * @param Request $request
-     * @param array $searchColumns
-     * @return mixed
-     */
-    public function dataFilter($query, Request $request, array $searchColumns = []): mixed
+    public function HomeScreen(Request $request): JsonResponse
     {
-        // Get only non-empty request inputs
-        $inputs = collect($request->all())->filter();
+        $query = Product::with('category', 'unit')->where('is_active', 1);
 
-        // Search filter
-        $query->when($inputs->has('search') && !empty($searchColumns), function ($q) use ($inputs, $searchColumns) {
-            $search = $inputs->get('search');
-            $q->where(function ($subQuery) use ($searchColumns, $search) {
-                foreach ($searchColumns as $column) {
-                    $subQuery->orWhere($column, 'like', "%{$search}%");
-                }
-            });
+        $query->when($request->filled('category_id'), static function ($q) use ($request) {
+            $q->where('category_id', $request->category_id);
         });
 
-        // Date filter
-        $query->when($inputs->has('created_from') && $inputs->has('created_to'), function ($q) use ($inputs) {
-            $q->whereBetween('created_at', [
-                Carbon::parse($inputs->get('created_from'))->startOfDay(),
-                Carbon::parse($inputs->get('created_to'))->endOfDay()
-            ]);
+        $query = $this->dataFilter($query, $request, ['name', 'code']);
+
+        $query->getCollection()->transform(static function ($product) {
+            $product->image = $product->image ? url('storage/' . $product->image) : null;
+            return $product;
         });
-
-        // Sorting
-        $sortBy = $inputs->get('sort_by', 'created_at');
-        $sortOrder = $inputs->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Pagination
-        $perPage = $inputs->get('per_page', 10);
-        $page = $inputs->get('page', 1);
-
-        return $query->paginate($perPage, ['*'], 'page', $page);
+        return $this->successResponse($this->dataFormatter($query), "Products fetched successfully!");
     }
 
-    /**
-     * Format paginated data into an array.
-     *
-     * @param $query
-     * @return array
-     */
-    public function dataFormatter($query): array
-    {
-        return [
-            'current_page' => $query->currentPage(),
-            'data' => $query->items(),
-            'total' => $query->total(),
-            'per_page' => $query->perPage(),
-            'last_page' => $query->lastPage(),
-        ];
-    }
+
 }

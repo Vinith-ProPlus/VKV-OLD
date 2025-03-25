@@ -12,7 +12,7 @@ class ProjectTaskRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -43,6 +43,7 @@ class ProjectTaskRequest extends FormRequest
                 'required', 'string',
                 Rule::in(['Created', 'In-progress', 'On-hold', 'Completed', 'Deleted']),
             ],
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }

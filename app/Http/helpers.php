@@ -1209,7 +1209,30 @@ use Illuminate\Support\Facades\Storage;
         ];
     }
 
-    function generate_file_url($file_path): Application|string|UrlGenerator
-    {
+function generate_file_url($file_path): Application|string|UrlGenerator
+{
+    if ($file_path && Storage::disk('public')->exists($file_path)) {
         return url(Storage::url($file_path));
     }
+
+    $extension = pathinfo($file_path, PATHINFO_EXTENSION) ?? 'png';
+
+    $dummyFiles = [
+        'jpg'  => 'images/dummy.jpg',
+        'jpeg' => 'images/dummy.jpg',
+        'png'  => 'images/dummy.png',
+        'gif'  => 'images/dummy.png',
+        'pdf'  => 'files/dummy.pdf',
+        'doc'  => 'files/dummy.doc',
+        'docx' => 'files/dummy.docx',
+        'xls'  => 'files/dummy.xls',
+        'xlsx' => 'files/dummy.xlsx',
+        'txt'  => 'files/dummy.txt',
+        'mp4'  => 'videos/dummy.mp4',
+        'mp3'  => 'audio/dummy.mp3',
+    ];
+
+    $dummyFile = $dummyFiles[$extension] ?? 'images/dummy.png';
+
+    return url(Storage::url($dummyFile));
+}

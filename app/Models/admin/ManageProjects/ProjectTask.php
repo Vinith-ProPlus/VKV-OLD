@@ -3,6 +3,7 @@
 namespace App\Models\Admin\ManageProjects;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as BelongsToAlias;
@@ -24,8 +25,10 @@ class ProjectTask extends Model
         'stage_id',
         'name',
         'date',
+        'image',
         'description',
         'status',
+        'created_by_id',
     ];
 
     /**
@@ -42,6 +45,14 @@ class ProjectTask extends Model
     public function project(): BelongsToAlias
     {
         return $this->BelongsTo(Project::class);
+    }
+
+    /**
+     * @return BelongsToAlias
+     */
+    public function created_by(): BelongsToAlias
+    {
+        return $this->BelongsTo(User::class);
     }
 }
 

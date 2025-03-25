@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProjectTaskRequest;
 use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\Admin\Master\City;
@@ -16,9 +17,12 @@ use App\Models\ProductCategory;
 use App\Models\Project;
 use App\Models\User;
 use App\Traits\ApiResponse;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use function Laravel\Prompts\warning;
 
 class GeneralController extends Controller
 {
@@ -151,10 +155,55 @@ class GeneralController extends Controller
         $query = dataFilter($query, $request, ['name', 'code']);
 
         $query->getCollection()->transform(static function ($product) {
-            $product->image = $product->image ? url('storage/' . $product->image) : null;
+            $product->image = generate_file_url($product->image);
             return $product;
         });
         return $this->successResponse(dataFormatter($query), "Products fetched successfully!");
+    }
+
+    public function getTasks(Request $request): JsonResponse
+    {
+        $user = auth()->user();
+        $userId = $user->id;
+        $today = today();
+        $tasks = ProjectTask::with('project:id,name')
+            ->whereHas('project.site.supervisors', static fn($q) => $q->where('users.id', $userId))
+            ->where(static function ($q) use ($today) {
+                $q->where(static function ($subQuery) use ($today) {
+                    $subQuery->where('date', '<', $today)
+                        ->whereIn('status', ['Created', 'In-progress']);
+                })->orWhere(static function ($subQuery) use ($today) {
+                    $subQuery->where('date', $today)
+                        ->whereIn('status', ['Created', 'In-progress', 'Completed']);
+                });
+            });
+        $tasks = dataFilter($tasks, $request);
+
+        $tasks->transform(static function ($task) {
+            $task->image = generate_file_url($task->image);
+            return $task;
+        });
+        return $this->successResponse(dataFormatter($tasks), "Tasks fetched successfully!");
+    }
+
+    public function createProjectTask(ProjectTaskRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->validated();
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')?->store('project_tasks', 'public');
+            }
+            $data['created_by_id'] = auth()->id();
+            $task = ProjectTask::create($data);
+            DB::commit();
+            return $this->successResponse(compact('task'), "Task created successfully!");
+        } catch (Exception $exception) {
+            DB::rollBack();
+            $ErrMsg = $exception->getMessage();
+            warning('Error::Place@GeneralController@createProjectTask - ' . $ErrMsg);
+            return $this->errorResponse($ErrMsg, "Task creation failed!", 500);
+        }
     }
 
     public function HomeScreen(): JsonResponse
@@ -169,10 +218,15 @@ class GeneralController extends Controller
             ->whereDate('date', today());
 
         $today_tasks = (clone $query)->limit(2)->get();
+        $today_tasks->transform(static function ($today_task) {
+            $today_task->image = generate_file_url($today_task->image);
+            return $today_task;
+        });
         $total_today_task = $query->count();
+        $notification_count = 0;
 
         return $this->successResponse(
-            compact('user', 'today_tasks', 'total_today_task'),
+            compact('user', 'today_tasks', 'total_today_task', 'notification_count'),
             "Home Screen data fetched successfully!"
         );
     }

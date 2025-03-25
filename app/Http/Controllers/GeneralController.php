@@ -12,6 +12,7 @@ use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
@@ -28,13 +29,13 @@ class GeneralController extends Controller
         return response()->json($cities->get());
     }
 
-    public function getStates()
+    public function getStates(): JsonResponse
     {
         $state = State::where('is_active','1')->get();
         return response()->json($state);
     }
 
-    public function getPinCodes(Request $request)
+    public function getPinCodes(Request $request): JsonResponse
     {
         $pincode = Pincode::where('is_active','1');
 
@@ -45,21 +46,21 @@ class GeneralController extends Controller
         return response()->json($pincode->get());
     }
 
-    public function getLeadSource()
+    public function getLeadSource(): JsonResponse
     {
         return response()->json(LeadSource::where('is_active','1')->get());
     }
 
-    public function getLeadStatus()
+    public function getLeadStatus(): JsonResponse
     {
         return response()->json(LeadStatus::where('is_active','1')->get());
     }
 
-    public function getUsers()
+    public function getUsers(): JsonResponse
     {
         return response()->json(User::where('active_status','Active')->get());
     }
-    public function getSiteSupervisors()
+    public function getSiteSupervisors(): JsonResponse
     {
         $supervisor_role_id = Role::where('name', SITE_SUPERVISOR_ROLE_NAME)->pluck('id')->first();
 
@@ -75,12 +76,12 @@ class GeneralController extends Controller
         return response()->json([]);
     }
 
-    public function getRoles()
+    public function getRoles(): JsonResponse
     {
         return response()->json(Role::all());
     }
 
-    public function getProjects()
+    public function getProjects(): JsonResponse
     {
         return response()->json(Project::all());
     }

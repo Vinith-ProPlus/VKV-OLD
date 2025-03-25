@@ -28,13 +28,29 @@
                         <h5>{{ $project_task ? 'Edit' : 'Create' }} {{$PageTitle}}</h5>
                     </div>
                     <div class="card-body">
-                        <form action="{{ $project_task ? route('project_tasks.update', $project_task->id) : route('project_tasks.store') }}" method="POST">
+                        <form action="{{ $project_task ? route('project_tasks.update', $project_task->id) : route('project_tasks.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @if($project_task)
                                 @method('PUT')
                             @endif
 
-                            <div class="row">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div class="text-center">
+                                    <label class="d-block">Task Image</label>
+                                    <div id="image-dropzone" class="image-box border rounded d-flex align-items-center justify-content-center flex-column text-center"
+                                         style="width: 200px; height: 200px; cursor: pointer; background: #f8f9fa; border: 2px dashed #ccc;">
+                                        <i class="fa fa-upload fa-2x text-secondary"></i>
+                                        <p class="text-muted m-0">Drag &amp; drop a file here or click</p>
+                                        <img id="image-preview" src="" class="img-fluid d-none" style="max-width: 100%; max-height: 100%;" alt="">
+                                    </div>
+                                    <input type="file" id="image-input" name="image" class="d-none" accept="image/*">
+                                </div>
+                                @error('image')
+                                <span class="error invalid-feedback">{{$message}}</span>
+                                @enderror
+                            </div>
+
+                            <div class="row mt-10">
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label>Project</label>
@@ -127,6 +143,11 @@
 @section('script')
     <script>
         $(document).ready(function () {
+            @if($project_task && $project_task->image)
+                $("#image-preview").removeClass("d-none").attr("src", "{{ Storage::url($project_task->image) }}");
+                $("#image-dropzone i, #image-dropzone p").hide();
+            @endif
+
             $('#project_id').change(() => getProjectStages());
             $('#status').select2();
 

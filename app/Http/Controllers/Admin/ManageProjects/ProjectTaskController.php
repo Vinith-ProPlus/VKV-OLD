@@ -17,6 +17,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use function Laravel\Prompts\warning;
 
@@ -93,11 +95,18 @@ class ProjectTaskController extends Controller{
     public function store(ProjectTaskRequest $request): RedirectResponse
     {
         $this->authorize('Create Project Tasks');
+        DB::beginTransaction();
         try {
-            ProjectTask::create($request->all());
-
+            $data = $request->validated();
+            if ($request->hasFile('image')) {
+                $data['image'] = $request->file('image')?->store('project_tasks', 'public');
+            }
+            $data->created_by_id = auth()->id();
+            ProjectTask::create($data);
+            DB::commit();
             return redirect()->route('project_tasks.index')->with('success', 'Project Task created successfully.');
         } catch (Exception $exception) {
+            DB::rollBack();
             $ErrMsg = $exception->getMessage();
             warning('Error::Place@ProjectTaskController@store - ' . $ErrMsg);
             return redirect()->back()->withInput()->with("warning", "Something went wrong" . $ErrMsg);
@@ -119,11 +128,24 @@ class ProjectTaskController extends Controller{
     public function update(ProjectTaskRequest $request, ProjectTask $project_task): RedirectResponse
     {
         $this->authorize('Edit Project Tasks');
+        DB::beginTransaction();
         try {
-            $project_task->update($request->validated());
-
+            $data = $request->validated();
+            if ($request->hasFile('image')) {
+                $oldImage = $project_task->image;
+                $newImage = $data['image'] = $request->file('image')?->store('project_tasks', 'public');
+            }
+            $project_task->update($data);
+            DB::commit();
+            if (isset($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
+            }
             return redirect()->route('project_tasks.index')->with('success', 'Project Task updated successfully.');
         } catch (Exception $exception) {
+            DB::rollBack();
+            if(isset($newImage)){
+                Storage::disk('public')->delete($newImage);
+            }
             info('Error::Place@ProjectTaskController@update - ' . $exception->getMessage());
             return redirect()->back()->withInput()->with("warning", "Something went wrong" . $exception->getMessage());
         }

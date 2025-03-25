@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('project_id')->constrained('projects')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('stage_id')->constrained('project_stages')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('name');
+            $table->timestamp('date');
             $table->text('description')->nullable();
             $table->string('status')->default('Created'); // default Created, options: Created, In-progress, On-hold, Completed, Deleted
             $table->softDeletes();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\ManageProjects;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectTaskRequest;
 use App\Models\admin\ManageProjects\ProjectTask;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -29,23 +30,28 @@ class ProjectTaskController extends Controller{
         $this->authorize('View Project Tasks');
 
         if ($request->ajax()) {
-            $query = ProjectTask::with('project', 'stage')->withTrashed();
+            $query = ProjectTask::with('project', 'stage')->withTrashed()
+                ->when($request->get('project_id'), function ($q) use ($request) {
+                    $q->where('project_id', $request->project_id);
+                })
+                ->when($request->get('stage_id'), function ($q) use ($request) {
+                    $q->where('stage_id', $request->stage_id);
+                })
+                ->when($request->get('status'), function ($q) use ($request) {
+                    $q->where('status', $request->status);
+                })
+                ->when($request->get('date'), function ($q) use ($request) {
+                    $q->whereDate('date', $request->date); // Ensure filter_date is used correctly
+                });
 
-            // Apply filters
-            if ($request->has('project_id') && !empty($request->project_id)) {
-                $query->where('project_id', $request->project_id);
-            }
-            if ($request->has('stage_id') && !empty($request->stage_id)) {
-                $query->where('stage_id', $request->stage_id);
-            }
-            if ($request->has('status') && !empty($request->status)) {
-                $query->where('status', $request->status);
-            }
 
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->editColumn('project_name', function ($data) {
                     return $data->project?->name;
+                })
+                ->editColumn('date', function ($data) {
+                    return Carbon::parse($data->stage?->date)->format('d-m-Y');
                 })
                 ->editColumn('stage_name', function ($data) {
                     return $data->stage?->name;

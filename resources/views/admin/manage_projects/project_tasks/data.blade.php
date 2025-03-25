@@ -62,12 +62,22 @@
                             </div>
 
                             <div class="row mt-10">
-                                <div class="col-12">
+                                <div class="col-6">
                                     <div class="form-group">
                                         <label>Task Name</label>
                                         <input type="text" name="name" class="form-control"
                                                value="{{ old('name', $project_task->name ?? '') }}" required>
                                         @error('name')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>Task Date</label>
+                                        <input type="date" name="date" class="form-control" min="{{ now()->format('Y-m-d') }}"
+                                               value="{{ Carbon\Carbon::parse(old('date', $project_task->date ?? ''))->format('Y-m-d') }}" required>
+                                        @error('date')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
                                     </div>

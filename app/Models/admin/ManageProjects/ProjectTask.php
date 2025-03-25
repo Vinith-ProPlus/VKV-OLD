@@ -22,6 +22,7 @@ class ProjectTask extends Model
         'project_id',
         'stage_id',
         'name',
+        'date',
         'description',
         'status',
     ];

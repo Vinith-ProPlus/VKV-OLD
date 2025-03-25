@@ -68,6 +68,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-2">
+                                <div class="form-group text-center mh-60">
+                                    <label class="mb-0">Date</label>
+                                    <div id="divDate">
+                                        <input type="date" class="form-control form-control-sm text-center" id="date_filter" value="">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-sm-2 d-flex align-items-center justify-content-center">
                                 <button class="btn btn-sm btn-danger mt-3" id="clearFilters">Clear Filters</button>
                             </div>
@@ -83,6 +91,7 @@
                                             <th>S.No</th>
                                             <th>Task Name</th>
                                             <th>Project Name</th>
+                                            <th>Date</th>
                                             <th>Stage</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -132,12 +141,14 @@
                         d.project_id = $('#project_id').val();
                         d.stage_id = $('#stage_id').val();
                         d.status = $('#status').val();
+                        d.date = $('#date_filter').val();
                     }
                 },
                 columns: [
                     {data: 'DT_RowIndex', orderable: false, searchable: false},
                     {data: 'name'},
                     {data: 'project_name'},
+                    {data: 'date'},
                     {data: 'stage_name'},
                     {data: 'status'},
                     {data: 'action', orderable: false},
@@ -193,12 +204,13 @@
                 }
             }
 
-            $('#project_id, #stage_id, #status, #lstReportStatus').on('change', reloadTable);
+            $('#project_id, #stage_id, #status, #date_filter, #lstReportStatus').on('change', reloadTable);
 
             function clearFilter() {
                 $('#project_id').val('').multiselect('refresh');
                 $('#stage_id').val('').multiselect('refresh');
                 $('#status').val('').multiselect('refresh');
+                $('#date_filter').val('');
                 reloadTable();
             }
 

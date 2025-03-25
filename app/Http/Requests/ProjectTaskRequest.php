@@ -37,6 +37,7 @@ class ProjectTaskRequest extends FormRequest
                 'required', 'string', 'max:100',
                 Rule::unique('project_tasks')->ignore($this->route('project_task'))
             ],
+            'date' => 'required|date',
             'description' => 'nullable|string|max:255',
             'status' => [
                 'required', 'string',

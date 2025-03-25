@@ -31,35 +31,35 @@ class ProjectTaskController extends Controller{
 
         if ($request->ajax()) {
             $query = ProjectTask::with('project', 'stage')->withTrashed()
-                ->when($request->get('project_id'), function ($q) use ($request) {
+                ->when($request->get('project_id'), static function ($q) use ($request) {
                     $q->where('project_id', $request->project_id);
                 })
-                ->when($request->get('stage_id'), function ($q) use ($request) {
+                ->when($request->get('stage_id'), static function ($q) use ($request) {
                     $q->where('stage_id', $request->stage_id);
                 })
-                ->when($request->get('status'), function ($q) use ($request) {
+                ->when($request->get('status'), static function ($q) use ($request) {
                     $q->where('status', $request->status);
                 })
-                ->when($request->get('date'), function ($q) use ($request) {
+                ->when($request->get('date'), static function ($q) use ($request) {
                     $q->whereDate('date', $request->date); // Ensure filter_date is used correctly
                 });
 
 
             return DataTables::of($query)
                 ->addIndexColumn()
-                ->editColumn('project_name', function ($data) {
+                ->editColumn('project_name', static function ($data) {
                     return $data->project?->name;
                 })
-                ->editColumn('date', function ($data) {
+                ->editColumn('date', static function ($data) {
                     return Carbon::parse($data->stage?->date)->format('d-m-Y');
                 })
-                ->editColumn('stage_name', function ($data) {
+                ->editColumn('stage_name', static function ($data) {
                     return $data->stage?->name;
                 })
-                ->editColumn('status', function ($data) {
+                ->editColumn('status', static function ($data) {
                     return $data->status;
                 })
-                ->addColumn('action', function ($data) {
+                ->addColumn('action', static function ($data) {
                     $button = '<div class="d-flex justify-content-center">';
                     if ($data->deleted_at) {
                         $button .= '<a onclick="commonRestore(\'' . route('project_tasks.restore', $data->id) . '\')" class="btn btn-outline-warning"><i class="fa fa-undo"></i></a>';

@@ -157,21 +157,24 @@ class GeneralController extends Controller
         return $this->successResponse(dataFormatter($query), "Products fetched successfully!");
     }
 
-    public function HomeScreen(Request $request): JsonResponse
+    public function HomeScreen(): JsonResponse
     {
-        $query = Product::with('category', 'unit')->where('is_active', 1);
+        $user = auth()->user();
+        $user->role_name = Role::find($user->role_id)->name ?? 'N/A';
+        $user->image = generate_file_url($user->image);
 
-        $query->when($request->filled('category_id'), static function ($q) use ($request) {
-            $q->where('category_id', $request->category_id);
-        });
+        $userId = $user->id;
+        $query = ProjectTask::with('project:id,name')
+            ->whereHas('project.site.supervisors', static fn($q) => $q->where('users.id', $userId))
+            ->whereDate('date', today());
 
-        $query = dataFilter($query, $request, ['name', 'code']);
+        $today_tasks = (clone $query)->limit(2)->get();
+        $total_today_task = $query->count();
 
-        $query->getCollection()->transform(static function ($product) {
-            $product->image = $product->image ? url('storage/' . $product->image) : null;
-            return $product;
-        });
-        return $this->successResponse(dataFormatter($query), "Products fetched successfully!");
+        return $this->successResponse(
+            compact('user', 'today_tasks', 'total_today_task'),
+            "Home Screen data fetched successfully!"
+        );
     }
 
 

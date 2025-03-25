@@ -41,26 +41,22 @@
                         <ul class="nav-submenu menu-content" style="display: none;">
                             @can('View States')
                             <li class="">
-                                <a href="{{ route('states.index') }}" data-active-name="States" data-original-title=""
-                                    title="">States</a>
+                                <a href="{{ route('states.index') }}" data-active-name="States" data-original-title="" title="">States</a>
                             </li>
                             @endcan
                             @can('View Districts')
                             <li class="">
-                                <a href="{{ route('districts.index') }}" data-active-name="Districts" data-original-title=""
-                                    title="">Districts</a>
-                            </li>
-                            @endcan
-                            @can('View Pincodes')
-                            <li class="">
-                                <a href="{{ route('pincodes.index') }}" data-active-name="Pincodes" data-original-title=""
-                                    title="">Pincodes</a>
+                                <a href="{{ route('districts.index') }}" data-active-name="Districts" data-original-title="" title="">Districts</a>
                             </li>
                             @endcan
                             @can('View Cities')
+                                <li class="">
+                                    <a href="{{ route('cities.index') }}" data-active-name="Cities" data-original-title="" title="">City</a>
+                                </li>
+                            @endcan
+                            @can('View Pincodes')
                             <li class="">
-                                <a href="{{ route('cities.index') }}" data-active-name="Cities" data-original-title=""
-                                    title="">City</a>
+                                <a href="{{ route('pincodes.index') }}" data-active-name="Pincodes" data-original-title="" title="">Pincodes</a>
                             </li>
                             @endcan
                             @can('View Tax')

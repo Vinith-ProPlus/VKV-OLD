@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('site_supervisor', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('site_id')->constrained('sites')->cascadeOnDelete();
-            $table->foreignId('supervisor_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('site_id')->constrained('sites')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('supervisor_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps();
         });
     }

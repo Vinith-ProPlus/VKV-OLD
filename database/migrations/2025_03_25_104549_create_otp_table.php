@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('otps', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('otp');
             $table->string('module')->nullable(); // Optional: Identify OTP purpose (e.g., "forgot_password")
             $table->timestamp('expires_at');

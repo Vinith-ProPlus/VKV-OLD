@@ -79,6 +79,7 @@ class PermissionSeeder extends Seeder
             $role->givePermissionTo($modulesIds);
         }
         $super_admin_id = Role::where('name', SUPER_ADMIN_ROLE_NAME)->first()->id;
+        $supervisor_id = Role::where('name', SITE_SUPERVISOR_ROLE_NAME)->first()->id;
         $users = [
             [
                 "name" => 'Vinith Kumar',
@@ -103,6 +104,32 @@ class PermissionSeeder extends Seeder
         foreach ($users as $userData) {
             $user = User::create($userData);
             $user->assignRole($super_admin_id);
+        }
+
+        $supervisors = [
+            [
+                "name" => 'Supervisor 1',
+                "email" => 'vinithkumarpropluslogics+s1@gmail.com',
+                "password" => Hash::make('proplus1234$'),
+                "role_id" => $supervisor_id,
+            ],
+            [
+                "name" => 'Supervisor 2',
+                "email" => 'vinithkumarpropluslogics+s2@gmail.com',
+                "password" => Hash::make('proplus1234$'),
+                "role_id" => $supervisor_id,
+            ],
+            [
+                "name" => 'Supervisor 3',
+                "email" => 'vinithkumarpropluslogics+s3@gmail.com',
+                "password" => Hash::make('proplus1234$'),
+                "role_id" => $supervisor_id,
+            ]
+        ];
+
+        foreach ($supervisors as $supervisorData) {
+            $supervisor = User::create($supervisorData);
+            $supervisor->assignRole($supervisor_id);
         }
     }
 }

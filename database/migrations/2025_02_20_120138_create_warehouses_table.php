@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->longText('address')->nullable();
-            $table->foreignId('state_id')->constrained('states');
-            $table->foreignId('district_id')->constrained('districts');
-            $table->foreignId('city_id')->constrained('cities');
-            $table->foreignId('pincode_id')->constrained('pincodes');
+            $table->foreignId('state_id')->constrained('states')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('district_id')->constrained('districts')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('city_id')->constrained('cities')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('pincode_id')->constrained('pincodes')->cascadeOnUpdate()->restrictOnDelete();
             $table->boolean('is_active')->default(1);
             $table->softDeletes();
             $table->timestamps();

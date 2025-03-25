@@ -18,7 +18,7 @@ class PincodeRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string|array|string>
      */
     public function rules(): array
     {
@@ -27,8 +27,8 @@ class PincodeRequest extends FormRequest
                 'required', 'string', 'max:100',
                 Rule::unique('pincodes')->ignore($this->route('pincode'))
             ],
-            'district_id' => [
-                'required', 'integer', 'exists:districts,id',
+            'city_id' => [
+                'required', 'integer', 'exists:cities,id',
             ],
             'is_active' => 'required|boolean',
         ];

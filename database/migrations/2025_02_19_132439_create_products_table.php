@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->boolean('is_active')->default(1);
             $table->string('image')->nullable();
-            $table->foreignId('category_id')->constrained('product_categories');
-            $table->foreignId('tax_id')->constrained('taxes');
-            $table->foreignId('uom_id')->constrained('unit_of_measurements');
+            $table->foreignId('category_id')->constrained('product_categories')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('tax_id')->constrained('taxes')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('uom_id')->constrained('unit_of_measurements')->cascadeOnUpdate()->restrictOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

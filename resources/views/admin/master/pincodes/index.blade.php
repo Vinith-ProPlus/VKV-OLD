@@ -44,8 +44,7 @@
                                         <tr>
                                             <th>S.No</th>
                                             <th>Pincode</th>
-                                            <th>District</th>
-                                            <th>State</th>
+                                            <th>City</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -80,8 +79,7 @@
                     columns: [
                         {data: 'DT_RowIndex'},
                         {data: 'pincode'},
-                        {data: 'district_name'},
-                        {data: 'state_name'},
+                        {data: 'city_name'},
                         {data: 'is_active'},
                         {data: 'action', orderable: false},
                     ]

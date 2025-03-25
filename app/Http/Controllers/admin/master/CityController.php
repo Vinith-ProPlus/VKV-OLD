@@ -2,31 +2,41 @@
 
 namespace App\Http\Controllers\Admin\Master;
 
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CityRequest;
 use App\Models\Admin\Master\City;
+use App\Models\Admin\Master\State;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-
 class CityController extends Controller
 {
-    use AuthorizesRequests; 
-    public function index(Request $request)
+    use AuthorizesRequests;
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function index(Request $request): Application|Factory|View|JsonResponse
     {
         $this->authorize('View Cities');
         if ($request->ajax()) {
         $data = City::withTrashed()->get();
         return DataTables::of($data)
             ->addIndexColumn()
-            ->editColumn('is_active', function ($data) {
+            ->editColumn('is_active', static function ($data) {
                 return $data->is_active ? 'Active' : 'Inactive';
             })
-            ->addColumn('district_name', fn($data) => $data->district ? $data->district->name : 'N/A')
-            ->addColumn('action', function ($data) {
+            ->addColumn('district_name', static fn($data) => $data->district ? $data->district->name : 'N/A')
+            ->addColumn('action', static function ($data) {
                 $button = '<div class="d-flex justify-content-center">';
                 if ($data->deleted_at) {
                     $button = '<a onclick="commonRestore(\'' . route('cities.restore', $data->id) . '\')" class="btn btn-outline-warning"><i class="fa fa-undo"></i></a>';
@@ -42,65 +52,83 @@ class CityController extends Controller
         }
         return view('admin.master.cities.index');
     }
- 
-    public function create()
-    {
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function create(): View|Factory|Application
+     {
         $this->authorize('Create Cities');
-        return view('admin.master.cities.data', ['city' => '']);
+        return view('admin.master.cities.data', ['city' => '','state'=>'']);
     }
- 
-    public function store(CityRequest $request)
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function store(CityRequest $request): RedirectResponse
     {
         $this->authorize('Create Cities');
         try {
             City::create($request->all());
             return redirect()->route('cities.index')->with('success', 'City created successfully.');
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $ErrMsg = $exception->getMessage();
             info('Error::Place@CityController@store - ' . $ErrMsg);
             return redirect()->back()->with("warning", "Something went wrong" . $ErrMsg);
         }
-    } 
- 
-    public function edit(City $city)
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function edit(City $city): View|Factory|Application
     {
         $this->authorize('Edit Cities');
-        return view('admin.master.cities.data', compact('city'));
+        $state = $city->district_id ? State::find($city->district_id) : null;
+        return view('admin.master.cities.data', compact('city', 'state'));
     }
- 
-    public function update(CityRequest $request, City $city)
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(CityRequest $request, City $city): RedirectResponse
     {
         $this->authorize('Edit Cities');
         try {
             $city->update($request->validated());
             return redirect()->route('cities.index')->with('success', 'City updated successfully.');
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             info('Error::Place@CityController@update - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
     }
 
-
-    public function destroy($id)
+    /**
+     * @throws AuthorizationException
+     */
+    public function destroy($id): Application|Response|RedirectResponse|ResponseFactory
     {
         $this->authorize('Delete Cities');
         try {
             $category = City::findOrFail($id);
             $category->delete();
             return response(['status' => 'success', 'message' => 'City deleted Successfully!']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             info('Error::Place@CityController@destroy - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
     }
 
-    public function restore($id)
+    /**
+     * @throws AuthorizationException
+     */
+    public function restore($id): Application|Response|RedirectResponse|ResponseFactory
     {
         $this->authorize('Restore Cities');
         try {
-            City::withTrashed()->findOrFail($id)->restore();
+            City::withTrashed()->findOrFail($id)?->restore();
             return response(['status' => 'success', 'message' => 'City restored Successfully!']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             info('Error::Place@CityController@restore - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }

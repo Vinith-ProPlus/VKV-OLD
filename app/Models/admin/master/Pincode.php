@@ -6,19 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @method static create(array $all)
+ * @method static findOrFail($id)
+ */
 class Pincode extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['pincode', 'district_id', 'is_active'];
+    protected $fillable = ['pincode', 'city_id', 'is_active'];
 
-    public function district()
+    public function city()
     {
-        return $this->belongsTo(District::class);
-    }
-
-    public function state()
-    {
-        return $this->hasOneThrough(State::class, District::class, 'id', 'id', 'district_id', 'state_id');
+        return $this->belongsTo(City::class);
     }
 }

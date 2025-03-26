@@ -182,6 +182,12 @@
                                        title="">Leads</a>
                                 </li>
                             @endcan
+                            @can('View Visitors')
+                                <li class="">
+                                    <a href="{{ route('visitors.index') }}" data-active-name="Visitor" data-original-title=""
+                                       title="">Visitor</a>
+                                </li>
+                            @endcan
                             <!--
                             <li class=""><a
                                     href="http://localhost/VKV-OLD/admin/users-and-permissions/users/"  data-active-name="Users" data-original-title="" title="">Users</a>

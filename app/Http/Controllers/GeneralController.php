@@ -98,7 +98,7 @@ class GeneralController extends Controller
 
     public function getProjects(): JsonResponse
     {
-        return response()->json(Project::with('stages')->all());
+        return response()->json(Project::all());
     }
     public function getStages(Request $request)
     {

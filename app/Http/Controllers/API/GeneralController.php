@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectTaskRequest;
+use App\Http\Requests\VisitorRequest;
 use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\Admin\Master\City;
@@ -16,10 +17,12 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Project;
 use App\Models\User;
+use App\Models\Visitor;
 use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use function Laravel\Prompts\warning;
@@ -145,20 +148,6 @@ class GeneralController extends Controller
         return $this->successResponse(dataFormatter($stages), "Project stages fetched successfully!");
     }
 
-
-//    public function getStages(Request $request): JsonResponse
-//    {
-//        $query = ProjectStage::query();
-//
-//        $query->when($request->filled('project_id'), static function ($q) use ($request) {
-//            $q->where('project_id', $request->project_id);
-//        });
-//
-//        $stages = dataFilter($query, $request, ['name']);
-//
-//        return $this->successResponse(dataFormatter($stages), "Project stages fetched successfully!");
-//    }
-
     public function getDistricts(Request $request): JsonResponse
     {
         $query = District::where('is_active', 1);
@@ -253,6 +242,7 @@ class GeneralController extends Controller
             return $this->errorResponse($ErrMsg, "Task creation failed!", 500);
         }
     }
+
     public function updateTaskStatus(ProjectTask $task): JsonResponse
     {
         if (in_array($task->status, [ON_HOLD, COMPLETED, DELETED])) {
@@ -290,6 +280,46 @@ class GeneralController extends Controller
             compact('user', 'today_tasks', 'total_today_task', 'notification_count'),
             "Home Screen data fetched successfully!"
         );
+    }
+
+    public function getVisitors(Request $request): JsonResponse
+    {
+        $query = Visitor::query();
+
+        $query->when($request->filled('project_id'), function ($q) use ($request) {
+            $q->where('project_id', $request->project_id);
+        });
+        $query = dataFilter($query, $request, ['name']);
+
+        return $this->successResponse(dataFormatter($query), "Visitors fetched successfully!");
+    }
+
+    public function getVisitor(Request $request): JsonResponse
+    {
+        $query = Visitor::query();
+
+        $query->when($request->filled('visitor_id'), function ($q) use ($request) {
+            $q->where('id', $request->visitor_id);
+        });
+        $query = dataFilter($query, $request);
+
+        return $this->successResponse(dataFormatter($query), "Visitor fetched successfully!");
+    }
+    public function createVisitor(VisitorRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $data = $request->validated();
+            $data['user_id'] = Auth::user()->id;
+            $visitor = Visitor::create($data);
+            DB::commit();
+            return $this->successResponse(compact('visitor'), "Visitor created successfully!");
+        } catch (Exception $exception) {
+            DB::rollBack();
+            $ErrMsg = $exception->getMessage();
+            warning('Error::Place@GeneralController@createVisitor - ' . $ErrMsg);
+            return $this->errorResponse($ErrMsg, "Task creation failed!", 500);
+        }
     }
 
 

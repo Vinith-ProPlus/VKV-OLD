@@ -40,5 +40,10 @@ Route::middleware('auth:sanctum')->group(static function () {
     Route::post('manage-task/create-task', [GeneralController::class, 'createProjectTask']);
     Route::post('manage-task/update-task-status/{task}', [GeneralController::class, 'updateTaskStatus']);
 
+    // Visitors
+    Route::post('visitors/get-visitor', [GeneralController::class, 'getVisitor']);
+    Route::post('visitors/get-visitors', [GeneralController::class, 'getVisitors']);
+    Route::post('visitors/create-visitor', [GeneralController::class, 'createVisitor']);
+
     Route::post('HomeScreen', [GeneralController::class, 'HomeScreen']);
 });

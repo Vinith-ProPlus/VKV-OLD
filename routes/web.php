@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CRM\LeadController;
 use App\Http\Controllers\Admin\CRM\LeadSourceController;
+use App\Http\Controllers\Admin\CRM\VisitorController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Users\CustomerController;
 use App\Http\Controllers\Admin\Users\UserController;
@@ -104,6 +105,9 @@ Route::group(['prefix'=>'admin'],function (){
 
         Route::resource('leads', LeadController::class);
         Route::put('leads/restore/{id}', [LeadController::class, 'restore'])->name('leads.restore')->middleware('can:Restore Lead');
+
+        Route::resource('visitors', VisitorController::class);
+        Route::put('visitors/restore/{id}', [VisitorController::class, 'restore'])->name('visitors.restore')->middleware('can:Restore Visitors');
 
     });
 });

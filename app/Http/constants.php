@@ -67,5 +67,5 @@ const ON_HOLD = 'On-hold';
 const COMPLETED = 'Completed';
 const DELETED = 'Deleted';
 
-const PROJECT_TASK_STATUSES = ['Created', 'In-progress', 'On-hold', 'Completed', 'Deleted'];
+const PROJECT_TASK_STATUSES = [CREATED, IN_PROGRESS, ON_HOLD, COMPLETED, DELETED];
 

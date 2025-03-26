@@ -11,6 +11,7 @@ use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
 use App\Models\Admin\Master\State;
+use App\Models\Content;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\Product;
@@ -322,5 +323,17 @@ class GeneralController extends Controller
         }
     }
 
+    public function getContent(Request $request): JsonResponse
+    {
+        $query = Content::where('is_active', 1);
+
+        $query->when($request->filled('content_id'), static function ($q) use ($request) {
+            $q->where('id', $request->content_id);
+        });
+
+        $districts = dataFilter($query, $request, ['name']);
+
+        return $this->successResponse(dataFormatter($districts), "Content fetched successfully!");
+    }
 
 }

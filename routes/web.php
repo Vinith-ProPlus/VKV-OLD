@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CRM\LeadController;
 use App\Http\Controllers\Admin\CRM\LeadSourceController;
 use App\Http\Controllers\Admin\CRM\VisitorController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\Settings\ContentController;
 use App\Http\Controllers\Admin\Users\CustomerController;
 use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\Admin\Users\VendorController;
@@ -108,6 +109,9 @@ Route::group(['prefix'=>'admin'],function (){
 
         Route::resource('visitors', VisitorController::class);
         Route::put('visitors/restore/{id}', [VisitorController::class, 'restore'])->name('visitors.restore')->middleware('can:Restore Visitors');
+
+        Route::resource('contents', ContentController::class);
+        Route::put('contents/restore/{id}', [ContentController::class, 'restore'])->name('contents.restore')->middleware('can:Restore Contents');
 
     });
 });

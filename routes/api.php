@@ -28,6 +28,7 @@ Route::group(['prefix'=>'master'], static function (){
     Route::post('/getRoles', [GeneralController::class, 'getRoles'])->name('getRoles');
     Route::post('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
     Route::post('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
+    Route::post('/getContent', [GeneralController::class, 'getContent'])->name('getContent');
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(static function () {

@@ -39,6 +39,7 @@ class User extends Authenticatable
         'email',
         'dob',
         'mobile',
+        'alternate_mobile',
         'address',
         'state_id',
         'city_id',
@@ -48,6 +49,7 @@ class User extends Authenticatable
         'password',
         'active_status',
         'image',
+        'deleted_by',
     ];
 
     /**

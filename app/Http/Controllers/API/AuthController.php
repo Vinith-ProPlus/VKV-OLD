@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -88,38 +89,48 @@ class AuthController extends Controller
         DB::beginTransaction();
         try {
             $user = auth()->user();
-
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-                'dob' => 'required|date',
-                'mobile' => ['required', 'digits_between:7,12', Rule::unique('users')->ignore($user->id)],
-                'address' => 'required|string|max:255',
-                'state_id' => 'required|exists:states,id',
-                'district_id' => 'required|exists:districts,id',
-                'city_id' => 'required|exists:cities,id',
-                'pincode_id' => 'required|exists:pincodes,id',
-                'password' => 'nullable|string|min:6'
+                'alternate_mobile' => ['nullable', 'digits_between:7,12', Rule::unique('users')->ignore($user->id)],
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
-
-            if (!empty($validatedData['password'])) {
-                $validatedData['password'] = Hash::make($validatedData['password']);
-            } else {
-                unset($validatedData['password']);
+            if ($request->hasFile('image')) {
+                $oldImage = $user->image;
+                $newImage = $validatedData['image'] = $request->file('image')?->store('users', 'public');
             }
-
             $user->update($validatedData);
             DB::commit();
-            return $this->successResponse([
-                'user' => $user->fresh()
-            ], "Profile updated successfully");
+            if (isset($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
+            }
+            $user = $user->fresh();
+            $user->image = generate_file_url($user->image);
+            return $this->successResponse(compact('user'), "Profile updated successfully");
         } catch (Exception $exception) {
             DB::rollBack();
+            if(isset($newImage)){
+                Storage::disk('public')->delete($newImage);
+            }
             Log::error('Error::AuthController@updateProfile - ' . $exception->getMessage());
             return $this->errorResponse($exception->getMessage(), "Profile update failed!", 500);
         }
     }
 
+    public function deleteAccount(): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $user = auth()->user();
+            $user->update(['deleted_by' => Auth::user()->id, 'remember_token'=> null]);
+            $user->delete();
+            DB::commit();
+            return $this->successResponse([], "Profile deleted successfully");
+        } catch (Exception $exception) {
+            DB::rollBack();
+            Log::error('Error::AuthController@deleteAccount - ' . $exception->getMessage());
+            return $this->errorResponse($exception->getMessage(), "Profile deletion failed!", 500);
+        }
+    }
 
     /**
      * Send OTP for Forgot Password
@@ -196,17 +207,22 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
-            'password' => 'required|string|min:8|confirmed',
+            'old_password' => 'sometimes|required|string',
+            'password' => 'required|string|min:8|confirmed|different:old_password',
         ]);
 
         if ($validator->fails()) {
             return $this->errorResponse($validator->errors()->first(), "Validation Failed!", 422);
         }
 
-        $user = User::find($request->user_id);
+        $user = User::findOrFail($request->user_id);
+
+        if ($request->filled('old_password') && !Hash::check($request->old_password, $user->password)) {
+            return $this->errorResponse("Old password is incorrect!", "Validation Failed!", 422);
+        }
+
         $user->update(['password' => Hash::make($request->password)]);
         $token = $user->createToken('API Token')->plainTextToken;
-
         return $this->successResponse(compact('user', 'token'), "Password reset successfully!");
     }
 

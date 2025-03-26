@@ -12,6 +12,7 @@ Route::post('/verifyForgotPasswordOTP', [AuthController::class, 'verifyForgotPas
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 Route::get('/user', [AuthController::class, 'profile'])->middleware('auth:sanctum');
 Route::post('/updateProfile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
+Route::post('/delete-account', [AuthController::class, 'deleteAccount'])->middleware('auth:sanctum');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::group(['prefix'=>'master'], static function (){

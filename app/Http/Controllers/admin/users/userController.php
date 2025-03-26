@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
@@ -143,8 +144,9 @@ class UserController extends Controller
     {
         $this->authorize('Delete Users');
         try {
-            $category = User::findOrFail($id);
-            $category->delete();
+            $user = User::findOrFail($id);
+            $user->update(['deleted_by' => Auth::user()->id, 'remember_token'=> null]);
+            $user->delete();
             return response(['status' => 'success', 'message' => 'User deleted Successfully!']);
         } catch (Exception $exception) {
             info('Error::Place@UserController@destroy - ' . $exception->getMessage());
@@ -159,7 +161,11 @@ class UserController extends Controller
     {
         $this->authorize('Restore Users');
         try {
-            User::withTrashed()->findOrFail($id)?->restore();
+            $user = User::withTrashed()->findOrFail($id);
+            if ($user) {
+                $user->restore();
+                $user->update(['deleted_by' => null]);
+            }
             return response(['status' => 'success', 'message' => 'User restored Successfully!']);
         } catch (Exception $exception) {
             info('Error::Place@UserController@restore - ' . $exception->getMessage());

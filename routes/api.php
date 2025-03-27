@@ -14,8 +14,9 @@ Route::get('/user', [AuthController::class, 'profile'])->middleware('auth:sanctu
 Route::post('/updateProfile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
 Route::post('/delete-account', [AuthController::class, 'deleteAccount'])->middleware('auth:sanctum');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/logout_all_devices', [AuthController::class, 'logout_all_devices'])->middleware('auth:sanctum');
 
-Route::group(['prefix'=>'master'], static function (){
+Route::group(['prefix' => 'master', 'middleware' => 'auth:sanctum'], static function () {
     Route::post('/getCategories', [GeneralController::class, 'getCategories'])->name('getCategories');
     Route::post('/getProducts', [GeneralController::class, 'getProducts'])->name('getProducts');
     Route::post('/getStates', [GeneralController::class, 'getStates'])->name('getStates');
@@ -29,7 +30,7 @@ Route::group(['prefix'=>'master'], static function (){
     Route::post('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
     Route::post('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
     Route::post('/getContent', [GeneralController::class, 'getContent'])->name('getContent');
-})->middleware('auth:sanctum');
+});
 
 Route::middleware('auth:sanctum')->group(static function () {
     // Attendance

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Otp;
 use App\Models\User;
+use App\Models\UserDevice;
+use App\Models\UserDeviceLocation;
 use App\Traits\ApiResponse;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -55,11 +57,15 @@ class AuthController extends Controller
      * User Login
      * @throws ValidationException
      */
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            'device_id' => 'required|string',
+            'fcm_token' => 'nullable|string',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
         $site_supervisor_role_id = Role::whereName(SITE_SUPERVISOR_ROLE_NAME)->first()->id;
 
@@ -70,16 +76,28 @@ class AuthController extends Controller
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
-        return $this->successResponse([
-            'user' => $user,
-            'token' => $user->createToken('API Token')->plainTextToken,
-        ], "Login successful!");
+        $device = UserDevice::updateOrCreate(
+            ['user_id' => $user->id, 'device_id' => $request->device_id],
+            ['fcm_token' => $request->fcm_token]
+        );
+
+        UserDeviceLocation::create([
+            'user_id' => $user->id,
+            'user_device_id' => $device->id,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+        ]);
+
+        // Generate a token
+        $token = $user->createToken('Device_' . now()->timestamp)->plainTextToken;
+
+        return $this->successResponse(compact('user', 'token'), "Login successful!");
     }
 
     /**
      * Get Authenticated User Profile
      */
-    public function profile(Request $request)
+    public function profile(Request $request): JsonResponse
     {
         $user = $request->user();
         $user->image = generate_file_url($user->image);
@@ -231,9 +249,15 @@ class AuthController extends Controller
     /**
      * User Logout
      */
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
+    {
+        $request->user()->currentAccessToken()->delete();
+        return $this->successResponse([], "Logged out successfully!");
+    }
+
+    public function logout_all_devices(Request $request): JsonResponse
     {
         $request->user()->tokens()->delete();
-        return $this->successResponse([], "Logged out successfully!");
+        return $this->successResponse([], "Logged out from all devices successfully!");
     }
 }

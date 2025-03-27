@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Random\RandomException;
+use Spatie\Permission\Models\Role;
 use Throwable;
 
 class AuthController extends Controller
@@ -60,8 +61,9 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
+        $site_supervisor_role_id = Role::whereName(SITE_SUPERVISOR_ROLE_NAME)->first()->id;
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::whereEmail($request->email)->whereRoleId($site_supervisor_role_id)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([

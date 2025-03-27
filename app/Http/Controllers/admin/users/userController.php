@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin\Users;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Mail\PasswordChangedMail;
+use App\Mail\WelcomeMail;
 use App\Models\User;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -17,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
@@ -74,6 +77,7 @@ class UserController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
+            $plainPassword = $data['password'];
             $data['password'] = Hash::make($data['password']);
             if ($request->hasFile('image')) {
                 $data['image'] = $request->file('image')?->store('users', 'public');
@@ -82,6 +86,7 @@ class UserController extends Controller
             $role = Role::findOrFail($data['role_id']);
             $user->assignRole($role->name);
             DB::commit();
+            Mail::to($user->email)->send(new WelcomeMail($user, $plainPassword));
             return redirect()->route('users.index')->with('success', 'User created successfully.');
         } catch (Exception $exception) {
             DB::rollBack();
@@ -109,7 +114,9 @@ class UserController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
+            $newPassword = null;
             if (!empty($data['password'])) {
+                $newPassword = $data['password'];
                 $data['password'] = Hash::make($data['password']);
             } else {
                 unset($data['password']);
@@ -125,6 +132,9 @@ class UserController extends Controller
             DB::commit();
             if (isset($oldImage)) {
                 Storage::disk('public')->delete($oldImage);
+            }
+            if ($newPassword) {
+                Mail::to($user->email)->send(new PasswordChangedMail($user, $newPassword));
             }
             return redirect()->route('users.index')->with('success', 'User updated successfully.');
         } catch (Exception $exception) {

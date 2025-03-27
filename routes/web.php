@@ -129,5 +129,7 @@ Route::get('/getRoles', [GeneralController::class, 'getRoles'])->name('getRoles'
 Route::get('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
 Route::get('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
 Route::get('/getSites', [GeneralController::class, 'getSites'])->name('getSites');
+Route::post('uploadDocuments', [GeneralController::class, 'uploadDocuments'])->name('uploadDocuments');
+Route::post('deleteDocument', [GeneralController::class, 'deleteDocument'])->name('deleteDocument');
 
 require __DIR__.'/auth.php';

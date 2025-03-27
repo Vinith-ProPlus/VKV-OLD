@@ -45,7 +45,12 @@
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/datatables.css?r={{date('YmdHis')}}">
 		<!-- sweetalert2 -->
 		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	</head>
+
+        <!-- Dropzone CSS & JS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
+
+    </head>
 	<body>
 		<input type="hidden" style="display:none!important" id="txtRootUrl" value="{{url('/')}}/">
 		<input type="hidden" name="txtActiveName" id="txtActiveName" value="{{$ActiveMenuName ?? ''}}">

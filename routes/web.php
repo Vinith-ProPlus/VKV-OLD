@@ -133,3 +133,8 @@ Route::post('uploadDocuments', [GeneralController::class, 'uploadDocuments'])->n
 Route::post('deleteDocument', [GeneralController::class, 'deleteDocument'])->name('deleteDocument');
 
 require __DIR__.'/auth.php';
+
+
+Route::get('/csrf-token', function (Request $request) {
+    return response()->json(['csrf_token' => csrf_token()]);
+});

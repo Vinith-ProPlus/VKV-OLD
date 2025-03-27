@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('documents', static function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->string('module_name');
             $table->unsignedBigInteger('module_id');
             $table->string('file_path');
             $table->string('file_name');
             $table->foreignId('uploaded_by')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

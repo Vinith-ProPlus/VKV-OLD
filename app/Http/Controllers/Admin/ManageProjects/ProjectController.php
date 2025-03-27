@@ -19,6 +19,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller{
     use AuthorizesRequests;
@@ -172,5 +174,81 @@ class ProjectController extends Controller{
             info('Error::Place@ProjectController@restore - ' . $exception->getMessage());
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
+    }
+ 
+    public function docxHandler(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'images.*' => 'required|file|max:5120|mimes:png,jpg,jpeg,gif,pdf,doc,docx,xls,xlsx,txt'
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()
+                ], 400);
+            }
+    
+            $uploadedFiles = [];
+            $title = $request->input('title', 'Untitled Document');
+            $description = $request->input('description', '');
+            $moduleName = $request->input('module_name', 'Project');
+    
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    // Generate a unique filename
+                    $filename = uniqid() . '_' . $file->getClientOriginalName();
+                    
+                    // Store file in public disk
+                    $path = $file->storeAs('project_documents', $filename, 'public');
+    
+                    // Create document record
+                    $document = Document::create([
+                        'title' => $title,
+                        'description' => $description,
+                        'module_name' => $moduleName,
+                        'module_id' => auth()->id(), // Use current user's ID
+                        'file_path' => $path,
+                        'file_name' => $filename,
+                        'uploaded_by' => auth()->id()
+                    ]);
+    
+                    $uploadedFiles[] = [
+                        'id' => $document->id,
+                        'name' => $filename,
+                        'path' => Storage::url($path),
+                        'extension' => $file->getClientOriginalExtension()
+                    ];
+                }
+            }
+    
+            return response()->json([
+                'success' => true,
+                'files' => $uploadedFiles
+            ]);
+        } catch (\Exception $e) {
+            // Log the full error for server-side debugging
+            \Log::error('Document upload error: ' . $e->getMessage());
+            
+            // Return a clean error response
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred during upload',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteDocx(Request $request)
+    {
+        Document::where('id', $request->$id)->update(['deleted_at' => Carbon::now()]);
+
+        $filePath = 'project_documents/' . $request->$fileName;
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+        }
+
+        return response()->json(['message' => 'Document deleted successfully']);
     }
 }

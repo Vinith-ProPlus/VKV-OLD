@@ -155,7 +155,7 @@ class UserController extends Controller
         $this->authorize('Delete Users');
         try {
             $user = User::findOrFail($id);
-            $user->update(['deleted_by' => Auth::user()->id, 'remember_token'=> null]);
+            $user->update(['deleted_by' => Auth::id(), 'remember_token'=> null]);
             $user->delete();
             return response(['status' => 'success', 'message' => 'User deleted Successfully!']);
         } catch (Exception $exception) {

@@ -81,7 +81,7 @@ class VisitorController extends Controller {
         DB::beginTransaction();
         try {
             $data = $request->validated();
-            $data['user_id'] = Auth::user()->id;
+            $data['user_id'] = Auth::id();
             Visitor::create($data);
             DB::commit();
             return redirect()->route('visitors.index')->with('success', 'Visitor added successfully.');

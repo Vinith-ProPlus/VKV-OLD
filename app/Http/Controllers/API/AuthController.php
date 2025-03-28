@@ -63,7 +63,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
             'device_id' => 'required|string',
-            'fcm_token' => 'nullable|string',
+            'fcm_token' => 'required|string',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
         ]);
@@ -141,7 +141,7 @@ class AuthController extends Controller
         DB::beginTransaction();
         try {
             $user = auth()->user();
-            $user->update(['deleted_by' => Auth::user()->id, 'remember_token'=> null]);
+            $user->update(['deleted_by' => Auth::id(), 'remember_token'=> null]);
             $user->delete();
             DB::commit();
             return $this->successResponse([], "Profile deleted successfully");

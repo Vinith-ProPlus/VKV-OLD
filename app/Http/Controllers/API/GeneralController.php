@@ -18,6 +18,8 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Project;
 use App\Models\User;
+use App\Models\UserDevice;
+use App\Models\UserDeviceLocation;
 use App\Models\Visitor;
 use App\Traits\ApiResponse;
 use Exception;
@@ -25,7 +27,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
+use Throwable;
 use function Laravel\Prompts\warning;
 
 class GeneralController extends Controller
@@ -311,7 +315,7 @@ class GeneralController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
-            $data['user_id'] = Auth::user()->id;
+            $data['user_id'] = Auth::id();
             $visitor = Visitor::create($data);
             DB::commit();
             return $this->successResponse(compact('visitor'), "Visitor created successfully!");
@@ -334,6 +338,57 @@ class GeneralController extends Controller
         $districts = dataFilter($query, $request, ['name']);
 
         return $this->successResponse(dataFormatter($districts), "Content fetched successfully!");
+    }
+
+    public function updateFcmToken(Request $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'device_id' => 'required|string',
+                'fcm_token' => 'required|string'
+            ]);
+            $device = UserDevice::updateOrCreate(
+                ['user_id' => Auth::id(), 'device_id' => $request->device_id],
+                ['fcm_token' => $request->fcm_token]
+            );
+            DB::commit();
+            return $this->successResponse($device,"Fcm Token updated successfully!");
+        } catch (Throwable $exception) {
+            DB::rollBack();
+            Log::error('Error::GeneralController@updateFcmToken - ' . $exception->getMessage());
+            return $this->errorResponse($exception->getMessage(), "Failed to update Fcm Token!", 500);
+        }
+    }
+
+    public function recordLocationHistory(Request $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'device_id' => 'required|string|exists:user_devices,device_id',
+                'latitude' => 'required|numeric|between:-90,90',
+                'longitude' => 'required|numeric|between:-180,180',
+            ]);
+            $user_id = Auth::id();
+            $device = UserDevice::where('user_id', $user_id)->where('device_id', $request->device_id)->first();
+
+            if(!$device){
+                return $this->errorResponse("Device not registered", "Failed to record location history!", 522);
+            }
+            $device_location = UserDeviceLocation::create([
+                'user_id' => $user_id,
+                'user_device_id' => $device->id,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+            ]);
+            DB::commit();
+            return $this->successResponse($device_location,"Location History recorded successfully!");
+        } catch (Throwable $exception) {
+            DB::rollBack();
+            Log::error('Error::GeneralController@locationHistoryRecord - ' . $exception->getMessage());
+            return $this->errorResponse($exception->getMessage(), "Failed to record location history!", 500);
+        }
     }
 
 }

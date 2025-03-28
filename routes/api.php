@@ -49,4 +49,7 @@ Route::middleware('auth:sanctum')->group(static function () {
     Route::post('visitors/create-visitor', [GeneralController::class, 'createVisitor']);
 
     Route::post('HomeScreen', [GeneralController::class, 'HomeScreen']);
+    Route::post('update-fcm-token', [GeneralController::class, 'updateFcmToken']);
+    Route::post('record-location-history', [GeneralController::class, 'recordLocationHistory']);
+
 });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Master\ContractTypeController;
 use App\Http\Controllers\Admin\Master\ProductController;
 use App\Http\Controllers\Admin\Master\UnitOfMeasurementController;
 use App\Http\Controllers\Admin\Master\WarehouseController;
@@ -32,6 +33,9 @@ Route::put('taxes/restore/{id}', [TaxController::class, 'restore'])->name('taxes
 
 Route::resource('warehouses', WarehouseController::class);
 Route::put('warehouses/restore/{id}', [WarehouseController::class, 'restore'])->name('warehouses.restore')->middleware('can:Restore Warehouse');
+
+Route::resource('contract_types', ContractTypeController::class);
+Route::put('contract_types/restore/{id}', [ContractTypeController::class, 'restore'])->name('contract_types.restore')->middleware('can:Restore Contract Type');
 
 Route::resource('units', UnitOfMeasurementController::class)->except(['show']);
 Route::put('units/restore/{id}', [UnitOfMeasurementController::class, 'restore'])->name('units.restore')->middleware('can:Restore Unit of Measurement');

@@ -82,6 +82,12 @@
                                     title="">Warehouse</a>
                             </li>
                             @endcan
+                            @can('View Contract Type')
+                                <li class="">
+                                    <a href="{{ route('contract_types.index') }}" data-active-name="Contract-Type" data-original-title=""
+                                       title="">Contract Type</a>
+                                </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">

@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/clear', function() {
+Route::get('/clear', static function() {
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
     Artisan::call('config:cache');
@@ -31,7 +31,7 @@ Route::get('/clear', function() {
     return "Cleared!";
 });
 
-Route::get('/', function () {
+Route::get('/', static function () {
     if(auth()->user()){
         return redirect()->route('dashboard');
     }
@@ -43,7 +43,7 @@ Route::get('/import-table-rows/{TableName}', [SqlImportController::class, 'impor
 Route::get('/export-menus', [SqlImportController::class, 'exportMenus']);
 
 
-Route::get('/dashboard', function () {
+Route::get('/dashboard', static function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -53,37 +53,37 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::group(['prefix'=>'admin'],function (){
+Route::group(['prefix'=>'admin'], static function (){
     Route::middleware('auth')->group(function () {
 
-        Route::group(['prefix'=>'manage-projects'],function () {
+        Route::group(['prefix'=>'manage-projects'], static function () {
             require __DIR__.'/admin/manage_projects.php';
         });
 
-        Route::group(['prefix'=>'master'],function (){
+        Route::group(['prefix'=>'master'], static function (){
             require __DIR__.'/admin/master.php';
-            Route::get('categories/list', function () {
+            Route::get('categories/list', static function () {
                 return response()->json(ProductCategory::select('id', 'name')->where('is_active', 1)->get());
             })->name('categories.list');
 
-            Route::get('taxes/list', function () {
+            Route::get('taxes/list', static function () {
                 return response()->json(Tax::select('id', 'name')->where('is_active', 1)->get());
             })->name('taxes.list');
 
-            Route::get('uoms/list', function () {
+            Route::get('uoms/list', static function () {
                 return response()->json(UnitOfMeasurement::select('id', 'name')->where('is_active', 1)->get());
             })->name('uoms.list');
-            Route::get('states/list', function () {
+            Route::get('states/list', static function () {
                 return response()->json(State::select('id', 'name')->where('is_active', 1)->get());
             })->name('states.list');
-            Route::get('districts/list', function (Request $request) {
+            Route::get('districts/list', static function (Request $request) {
                 logger("districts: ".$request);
                 return response()->json(District::select('id', 'name')->where('is_active', 1)->get());
             })->name('districts.list');
-            Route::get('cities/list', function () {
+            Route::get('cities/list', static function () {
                 return response()->json(City::select('id', 'name')->where('is_active', 1)->get());
             })->name('cities.list');
-            Route::get('pincodes/list', function () {
+            Route::get('pincodes/list', static function () {
                 return response()->json(Pincode::select('id', 'name')->where('is_active', 1)->get());
             })->name('pincodes.list');
         });
@@ -135,6 +135,6 @@ Route::post('deleteDocument', [GeneralController::class, 'deleteDocument'])->nam
 require __DIR__.'/auth.php';
 
 
-Route::get('/csrf-token', function (Request $request) {
+Route::get('/csrf-token', static function (Request $request) {
     return response()->json(['csrf_token' => csrf_token()]);
 });

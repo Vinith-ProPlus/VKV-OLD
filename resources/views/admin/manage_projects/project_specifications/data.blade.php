@@ -1,6 +1,11 @@
 @extends('layouts.admin')
 
 @section('content')
+    <style>
+        .nested-1 td { padding-left: 20px !important; background: #f8f9fa; }
+        .nested-2 td { padding-left: 40px !important; background: #e9ecef; }
+        .nested-3 td { padding-left: 60px !important; background: #dee2e6; }
+    </style>
     @php
         $PageTitle="Project Specifications";
         $ActiveMenuName='Project-Specifications';
@@ -32,7 +37,7 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm-12 mt-20">
+                            {{-- <div class="col-sm-12 mt-20">
                                 <div class="form-group">
                                     <label class="txtSpecName">Project Specification Name <span class="required"> * </span></label>
                                     <input type="text" class="form-control" id="txtSpecName" value="{{ $projectSpecification->spec_name ?? '' }}">
@@ -65,9 +70,9 @@
                                 <table class="table tblSpecValues" id="tblSpecValues">
                                     <thead>
                                         <tr>
-                                            <th>S.No</th>
-                                            <th>Specification Value Name</th>
-                                            <th>Action</th>
+                                            <th class="text-center">S.No</th> 
+                                            <th class="text-center">Specification Value Name</th>
+                                            <th class="text-center">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -85,7 +90,42 @@
                                         @endif
                                     </tbody>                                                                        
                                 </table>
+                            </div> --}}
+
+                            <div class="row my-3 justify-content-center">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="spec_name" placeholder="Enter Specification Name">
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" id="description" placeholder="Enter Description">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" id="level1">
+                                        <option value="">Select Level 1</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" id="level2">
+                                        <option value="">Select Level 2</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 my-2">
+                                    <button class="btn btn-primary" id="addSpec">Add Specification</button>
+                                </div>
                             </div>
+                        
+                            <table class="table table-bordered mt-3" id="specTable">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">S.No</th>
+                                        <th class="text-center">Specification Name</th>
+                                        <th class="text-center">Description</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <div class="card-footer">
@@ -247,6 +287,157 @@
                 });
             }
         });
+
+        let specData = [];
+
+        $("#addSpec").click(function () {
+            let specName = $("#spec_name").val().trim();
+            let description = $("#description").val().trim();
+            let level1 = $("#level1").val();
+            let level2 = $("#level2").val();
+
+            if (!specName) {
+                toastr.error("Add a Project Specification Value", "Failed", { positionClass: "toast-top-right", containerId: "toast-top-right", showMethod: "slideDown", hideMethod: "slideUp", progressBar: !0 });
+                return;
+            }
+
+            let level = 1;
+            if (level1) level = 2;
+            if (level1 && level2) level = 3;
+
+            let rowClass = level === 1 ? "nested-1" : level === 2 ? "nested-2" : "nested-3";
+
+            // Check for duplicates within the same parent
+            let duplicateExists = $(`#specTable tbody tr[data-level='${level}'][data-lvl1='${level1}'][data-lvl2='${level2}'] td:nth-child(2)`)
+                .filter(function () {
+                    return $(this).text().trim().toLowerCase() === specName.toLowerCase();
+                }).length > 0;
+
+            if (duplicateExists) {
+                toastr.error("Specification name already exists under the same parent!", "Duplicate Entry", { positionClass: "toast-top-right", containerId: "toast-top-right", showMethod: "slideDown", hideMethod: "slideUp", progressBar: !0 });
+                return;
+            }
+
+            let newRow = `<tr class="${rowClass}" data-lvl1="${specName}" data-lvl2="${level2}" data-level="${level}">
+                <td class="sno"></td>
+                <td>${specName}</td>
+                <td>${description}</td>
+                <td><button class="btn btn-danger btn-sm deleteRow">Delete</button></td>
+            </tr>`;
+
+            if (level === 1) {
+                $("#specTable tbody").append(newRow);
+            } else if (level === 2) {
+                let lastLevel1Row = $(`#specTable tbody tr[data-level='1'][data-lvl1='${level1}']`).last();
+                if (lastLevel1Row.length) {
+                    lastLevel1Row.after(newRow);
+                } else {
+                    $("#specTable tbody").append(newRow);
+                }
+            } else if (level === 3) {
+                let lastLevel2Row = $(`#specTable tbody tr[data-level='2'][data-lvl1='${level1}'][data-lvl2='${level2}']`).last();
+                if (lastLevel2Row.length) {
+                    lastLevel2Row.after(newRow);
+                } else {
+                    let lastLevel1Row = $(`#specTable tbody tr[data-level='1'][data-lvl1='${level1}']`).last();
+                    if (lastLevel1Row.length) {
+                        lastLevel1Row.after(newRow);
+                    } else {
+                        $("#specTable tbody").append(newRow);
+                    }
+                }
+            }
+
+            specData.push({ spec: specName, desc: description, level: level, level1: level1, level2: level2 });
+            updateDropdowns();
+            updateTable();
+            $("#spec_name, #description").val("");
+        });
+
+
+
+        function updateDropdowns() {
+            let level1Options = [...new Set(specData.filter(e => e.level === 1).map(e => e.spec))];
+            let level1Select = $("#level1");
+            level1Select.empty().append('<option value="">Select Level 1</option>');
+            level1Options.forEach(spec => {
+                level1Select.append(`<option value="${spec}">${spec}</option>`);
+            });
+            let level2Select = $("#level2");
+            level2Select.empty().append('<option value="">Select Level 2</option>');
+        }
+
+        $("#level1").change(function () {
+            let selectedSpec = $(this).val();
+            let level2Select = $("#level2");
+            level2Select.empty().append('<option value="">Select Level 2</option>');
+
+            let filteredDesc = specData
+                .filter(e => e.level === 2 && e.level1 === selectedSpec)
+                .map(e => e.spec);
+
+            filteredDesc.forEach(desc => {
+                level2Select.append(`<option value="${desc}">${desc}</option>`);
+            });
+        });
+
+        $(document).on("click", ".deleteRow", function () {
+            let row = $(this).closest("tr");
+            let spec = row.data("lvl1");
+            let desc = row.data("lvl2");
+
+            specData = specData.filter(e => !(e.spec === spec && e.desc === desc));
+
+            row.remove();
+            updateDropdowns();
+            updateTable();
+        });
+
+        function updateTable() {
+            let count = 1; // Level 1 counter
+            let level1Count = {}; // Stores numbering for level 1
+            let level2Count = {}; // Stores numbering for level 2 per level 1
+
+            $("#specTable tbody tr").each(function () {
+                let level = $(this).data("level");
+                let level1 = $(this).attr("data-lvl1") || "";
+                let level2 = $(this).attr("data-lvl2") || "";
+
+                if (level === 1) {
+                    // Assign level 1 numbering
+                    $(this).find(".sno").text(count);
+                    level1Count[level1] = count; // Store parent count for level 2 reference
+                    
+                    // Initialize level2Count[level1] if not already initialized
+                    if (!level2Count[level1]) level2Count[level1] = {};
+                    
+                    count++;
+                } else if (level === 2) {
+                    // Ensure level2Count[level1] is initialized before accessing level2Count[level1][level2]
+                    if (!level2Count[level1]) level2Count[level1] = {};
+
+                    // Get parent number and assign level 2 numbering
+                    let parentNum = level1Count[level1] || count;
+                    if (!level2Count[level1][level2]) level2Count[level1][level2] = 1;
+                    let subNum = level2Count[level1][level2]++;
+                    $(this).find(".sno").text(`${parentNum}.${subNum}`);
+                } else if (level === 3) {
+                    // Ensure level2Count[level1] is initialized
+                    if (!level2Count[level1]) level2Count[level1] = {};
+
+                    // Ensure level2Count[level1][level2] is initialized
+                    if (!level2Count[level1][level2]) level2Count[level1][level2] = 1;
+
+                    // Get parent number and assign level 3 numbering
+                    let parentNum = level1Count[level1] || count;
+                    let subNum = level2Count[level1][level2];
+                    let childNum = $(this).prevAll(`[data-lvl1='${level1}'][data-lvl2='${level2}']`).length + 1;
+                    $(this).find(".sno").text(`${parentNum}.${subNum}.${childNum}`);
+                }
+            });
+        }
+
+
     });
 </script>
     

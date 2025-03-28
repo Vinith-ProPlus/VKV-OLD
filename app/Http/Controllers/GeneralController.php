@@ -8,6 +8,7 @@ use App\Models\Admin\Master\Pincode;
 use App\Models\Admin\Master\State;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -54,6 +55,18 @@ class GeneralController extends Controller
     public function getUsers()
     {
         return response()->json(User::where('active_status','Active')->get());
+    }
+    public function getProducts(Request $req)
+    {
+        $products = Product::where('products.is_active', '1')
+        ->leftJoin('unit_of_measurements as uom', 'products.uom_id', 'uom.id')
+        ->select('products.*','uom.name as uom_name','uom.code as uom_code');
+
+        if ($req->filled('category_id')) {
+            $products->where('category_id', $req->category_id);
+        }
+
+        return response()->json($products->get());
     }
 
     public function getDistricts(Request $req)

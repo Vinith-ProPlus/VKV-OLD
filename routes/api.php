@@ -9,7 +9,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/sendForgotPasswordOTP', [AuthController::class, 'sendForgotPasswordOTP']);
 Route::post('/verifyForgotPasswordOTP', [AuthController::class, 'verifyForgotPasswordOTP']);
-Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::post('/changePassword', [AuthController::class, 'changePassword']);
 Route::get('/user', [AuthController::class, 'profile'])->middleware('auth:sanctum');
 Route::post('/updateProfile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
 Route::post('/delete-account', [AuthController::class, 'deleteAccount'])->middleware('auth:sanctum');

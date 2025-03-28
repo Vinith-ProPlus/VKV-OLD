@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\ManageProjects;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectTaskRequest;
-use App\Models\admin\ManageProjects\ProjectTask;
+use App\Models\Admin\ManageProjects\ProjectTask;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -101,7 +101,7 @@ class ProjectTaskController extends Controller{
             if ($request->hasFile('image')) {
                 $data['image'] = $request->file('image')?->store('project_tasks', 'public');
             }
-            $data->created_by_id = auth()->id();
+            $data['created_by_id'] = auth()->id();
             ProjectTask::create($data);
             DB::commit();
             return redirect()->route('project_tasks.index')->with('success', 'Project Task created successfully.');

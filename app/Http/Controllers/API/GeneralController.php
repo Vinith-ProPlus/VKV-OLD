@@ -198,8 +198,10 @@ class GeneralController extends Controller
         $task = ProjectTask::with('project:id,name', 'stage:id,name', 'created_by:id,name')
             ->whereHas('project.site.supervisors', static fn($q) => $q->where('users.id', $userId))
             ->where('id', $request->task_id)->first();
-        $task->image = generate_file_url($task->image);
-        $task->is_in_progress = in_array($task->status, [ON_HOLD, COMPLETED, DELETED], true) ? 0 : 1;
+        if($task) {
+            $task->image = generate_file_url($task->image);
+            $task->is_in_progress = in_array($task->status, [ON_HOLD, COMPLETED, DELETED], true) ? 0 : 1;
+        }
         return $this->successResponse(compact('task'), "Task fetched successfully!");
     }
 

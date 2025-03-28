@@ -43,6 +43,10 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Amenities'],
             ['guard_name' => 'web', 'model' => 'Projects'],
             ['guard_name' => 'web', 'model' => 'Sites'],
+
+            // Transactions
+            ['guard_name' => 'web', 'model' => 'Purchase Requests'],
+            ['guard_name' => 'web', 'model' => 'Purchase Orders'],
         ];
 
         $updatedModules = [];

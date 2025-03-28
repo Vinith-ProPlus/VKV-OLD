@@ -103,7 +103,7 @@
             $('#lstDistrict').append('<option value="">--Select a District--</option>');
 
             $.ajax({
-                url:"{{route('getPinCodes')}}",
+                url:"{{route('getDistricts')}}",
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {

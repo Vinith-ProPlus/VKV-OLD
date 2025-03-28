@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\Users\CustomerController;
 use App\Http\Controllers\Admin\Users\VendorController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\SqlImportController;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
@@ -106,6 +108,12 @@ Route::group(['prefix'=>'admin'],function (){
 
         Route::resource('leads', LeadController::class);
         Route::put('leads/restore/{id}', [LeadController::class, 'restore'])->name('leads.restore')->middleware('can:Restore Lead');
+        
+        Route::resource('purchase_requests', PurchaseRequestController::class);
+        Route::put('purchase_requests/restore/{id}', [PurchaseRequestController::class, 'restore'])->name('purchase_requests.restore')->middleware('can:Restore Purchase Request');
+        
+        Route::resource('purchase_orders', PurchaseOrderController::class);
+        Route::put('purchase_orders/restore/{id}', [PurchaseOrderController::class, 'restore'])->name('purchase_orders.restore')->middleware('can:Restore Purchase order');
 
     });
 });
@@ -117,5 +125,6 @@ Route::get('/getPinCodes', [GeneralController::class, 'getPinCodes'])->name('get
 Route::get('/getLeadSource', [GeneralController::class, 'getLeadSource'])->name('getLeadSource');
 Route::get('/getLeadStatus', [GeneralController::class, 'getLeadStatus'])->name('getLeadStatus');
 Route::get('/getUsers', [GeneralController::class, 'getUsers'])->name('getUsers');
+Route::get('/getProducts', [GeneralController::class, 'getProducts'])->name('getProducts');
 
 require __DIR__.'/auth.php';

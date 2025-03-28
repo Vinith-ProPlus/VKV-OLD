@@ -41,26 +41,22 @@
                         <ul class="nav-submenu menu-content" style="display: none;">
                             @can('View States')
                             <li class="">
-                                <a href="{{ route('states.index') }}" data-active-name="States" data-original-title=""
-                                    title="">States</a>
+                                <a href="{{ route('states.index') }}" data-active-name="States" data-original-title="" title="">States</a>
                             </li>
                             @endcan
                             @can('View Districts')
                             <li class="">
-                                <a href="{{ route('districts.index') }}" data-active-name="Districts" data-original-title=""
-                                    title="">Districts</a>
-                            </li>
-                            @endcan
-                            @can('View Pincodes')
-                            <li class="">
-                                <a href="{{ route('pincodes.index') }}" data-active-name="Pincodes" data-original-title=""
-                                    title="">Pincodes</a>
+                                <a href="{{ route('districts.index') }}" data-active-name="Districts" data-original-title="" title="">Districts</a>
                             </li>
                             @endcan
                             @can('View Cities')
+                                <li class="">
+                                    <a href="{{ route('cities.index') }}" data-active-name="Cities" data-original-title="" title="">City</a>
+                                </li>
+                            @endcan
+                            @can('View Pincodes')
                             <li class="">
-                                <a href="{{ route('cities.index') }}" data-active-name="Cities" data-original-title=""
-                                    title="">City</a>
+                                <a href="{{ route('pincodes.index') }}" data-active-name="Pincodes" data-original-title="" title="">Pincodes</a>
                             </li>
                             @endcan
                             @can('View Tax')
@@ -104,9 +100,9 @@
                                     <a href="{{ route('amenities.index') }}" data-active-name="Amenity" data-original-title="" title="">Amenities</a>
                                 </li>
                             @endcan
-                            @can('View Project Specifications')
+                            @can('View Sites')
                                 <li class="">
-                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project Specifications" data-original-title="" title="">Project Specifications</a>
+                                    <a href="{{ route('sites.index') }}" data-active-name="Sites" data-original-title="" title="">Sites</a>
                                 </li>
                             @endcan
                             @can('View Projects')
@@ -114,9 +110,14 @@
                                     <a href="{{ route('projects.index') }}" data-active-name="Projects" data-original-title="" title="">Projects</a>
                                 </li>
                             @endcan
-                            @can('View Sites')
+                            @can('View Project Tasks')
                                 <li class="">
-                                    <a href="{{ route('sites.index') }}" data-active-name="Sites" data-original-title="" title="">Sites</a>
+                                    <a href="{{ route('project_tasks.index') }}" data-active-name="Project Tasks" data-original-title="" title="">Project Tasks</a>
+                                </li>
+                            @endcan
+                            @can('View Project Specifications')
+                                <li class="">
+                                    <a href="{{ route('project_specifications.index') }}" data-active-name="Project-Specifications" data-original-title="" title="">Project Specifications</a>
                                 </li>
                             @endcan
                         </ul>
@@ -161,16 +162,10 @@
                                     href="{{ route('role.index') }}"  data-active-name="Roles-and-Permissions" data-original-title=""
                                     title="">Roles & Permissions</a></li>
                             @endcan
-                            @can('View Customers')
+                            @can('View Users')
                                 <li class="">
-                                    <a href="{{ route('customers.index') }}" data-active-name="Customers" data-original-title=""
-                                       title="">Customers</a>
-                                </li>
-                            @endcan
-                            @can('View Vendors')
-                                <li class="">
-                                    <a href="{{ route('vendors.index') }}" data-active-name="Vendors" data-original-title=""
-                                       title="">Vendors</a>
+                                    <a href="{{ route('users.index') }}" data-active-name="Users" data-original-title=""
+                                       title="">Manage Users</a>
                                 </li>
                             @endcan
                             <!--
@@ -206,12 +201,6 @@
                                 <li class="">
                                     <a href="{{ route('leads.index') }}" data-active-name="Lead" data-original-title=""
                                        title="">Leads</a>
-                                </li>
-                            @endcan
-                            @can('View Vendors')
-                                <li class="">
-                                    <a href="{{ route('vendors.index') }}" data-active-name="Vendors" data-original-title=""
-                                       title="">Followups</a>
                                 </li>
                             @endcan
                             <!--

@@ -54,4 +54,18 @@ const  YES = 'Yes';
 const  NO = 'No';
 
 const VERIFIED = [YES, NO];
+const SUPER_ADMIN_ROLE_NAME = 'Super Admin';
+const SITE_SUPERVISOR_ROLE_NAME = 'Site Supervisor';
+const ENGINEER_ROLE_NAME = 'Engineer';
+const SYSTEM_ROLES = ['Super Admin', 'Customer', 'Vendor', 'Site Supervisor', 'Labour', 'Contractor', 'Accountant', 'User', 'Engineer'];
+
+const USER_ROLE_NAME = 'User';
+
+const CREATED = 'Created';
+const IN_PROGRESS = 'In-progress';
+const ON_HOLD = 'On-hold';
+const COMPLETED = 'Completed';
+const DELETED = 'Deleted';
+
+const PROJECT_TASK_STATUSES = ['Created', 'In-progress', 'On-hold', 'Completed', 'Deleted'];
 

@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class VendorRequest extends FormRequest
+class UserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,7 +19,7 @@ class VendorRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -26,7 +27,7 @@ class VendorRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => [
                 'required', 'email', 'max:225',
-                Rule::unique('users')->ignore($this->route('vendor'))
+                Rule::unique('users')->ignore($this->route('user'))
             ],
             'dob' => 'required|date',
             'mobile' => 'required|digits_between:7,12',
@@ -35,8 +36,10 @@ class VendorRequest extends FormRequest
             'district_id' => 'required|exists:districts,id',
             'city_id' => 'required|exists:cities,id',
             'pincode_id' => 'required|exists:pincodes,id',
+            'role_id' => 'required|exists:roles,id',
             'password' => 'nullable|string|min:6',
             'active_status' => 'required|boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }

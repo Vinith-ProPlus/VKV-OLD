@@ -2,8 +2,8 @@
 
 @section('content')
     @php
-        $PageTitle="Customers";
-        $ActiveMenuName='Customers';
+        $PageTitle="Users";
+        $ActiveMenuName='Users';
     @endphp
     <div class="container-fluid">
         <div class="page-header">
@@ -28,9 +28,9 @@
                             <div class="col-sm-4"></div>
                             <div class="col-sm-4 my-2"><h5>{{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right text-md-right">
-                                @can('Create Customers')
+                                @can('Create Users')
                                     <a class="btn btn-sm btnPrimaryCustomizeBlue btn-primary add-btn"
-                                        href="{{ route('customers.create') }}">Add New Customer</a>
+                                        href="{{ route('users.create') }}">Add New User</a>
                                 @endcan
                             </div>
                         </div>
@@ -44,9 +44,8 @@
                                         <tr>
                                             <th>S.No</th>
                                             <th>Name</th>
-                                            <th>Email</th>
                                             <th>Phone</th>
-                                            <th>City</th>
+                                            <th>Role</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -65,7 +64,7 @@
 @endsection
 @section('script')
     <script>
-        @can('View Customers')
+        @can('View Users')
             $(function () {
                 $('#list_table').DataTable({
                     "columnDefs": [
@@ -75,15 +74,14 @@
                     iDisplayLength: 10,
                     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
                     ajax: {
-                        url: '{{ route("customers.index") }}',
+                        url: '{{ route("users.index") }}',
                         type: 'GET'
                     },
                     columns: [
                         {data: 'DT_RowIndex'},
                         {data: 'name'},
-                        {data: 'email'},
                         {data: 'mobile'},
-                        {data: 'city_name'},
+                        {data: 'role_name'},
                         {data: 'active_status'},
                         {data: 'action', orderable: false},
                     ]

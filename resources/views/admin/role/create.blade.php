@@ -33,7 +33,7 @@
                                     <label for="inputName" class="col-md-2 form-label">Role Name</label>
                                     <div class="col-md-4">
                                         <input type="text" class="form-control @error('name') is-invalid @enderror" id="val-username" name="name"
-                                               value="{{ $role ? old('name', $role->name) : old('name') }}" placeholder="Enter a role.." required>
+                                               value="{{ $role ? old('name', $role->name) : old('name') }}" placeholder="Enter a role name.." required @if($role && in_array($role->name, SYSTEM_ROLES, true)) readonly @endif>
                                         @error('name')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -41,6 +41,12 @@
                                 </div>
                                 <h4 class="mt-25">Assign Permissions</h4>
                                 <hr>
+                                <div class="row text-center">
+                                    <label class="custom-control custom-checkbox" for="check_all">
+                                        <input type="checkbox" class="custom-control-input" id="check_all">
+                                        <span class="custom-control-label">Check all</span>
+                                    </label>
+                                </div>
                                 <div>
                                     @foreach($permissions as $guardName => $guards)
                                         <div class="mt-10">
@@ -87,4 +93,24 @@
 @endsection
 
 @section('script')
+    <script>
+        $(document).ready(function () {
+            let check_boxes = $('.custom-control-input[name="permissions[]"]');
+            let check_all_input = $('#check_all');
+            function toggleCheckAll() {
+                let allChecked = check_boxes.length === $('.custom-control-input[name="permissions[]"]:checked').length;
+                check_all_input.prop('checked', allChecked);
+            }
+
+            check_all_input.on('change', function () {
+                check_boxes.prop('checked', $(this).prop('checked'));
+            });
+
+            check_boxes.on('change', function () {
+                toggleCheckAll();
+            });
+
+            toggleCheckAll();
+        });
+    </script>
 @endsection

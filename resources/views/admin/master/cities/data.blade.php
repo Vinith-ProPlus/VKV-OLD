@@ -46,8 +46,16 @@
                                     </div>
 
                                     <div class="form-group mt-15">
+                                        <label>State</label>
+                                        <select id="state_id" name="state_id" class="form-control select2"
+                                        data-selected='{{ $state ? old('district_id', $state->id) : "" }}' required>
+                                            <option value="">--Select a State--</option>
+                                        </select> 
+                                    </div>
+
+                                    <div class="form-group mt-15">
                                         <label>District</label>
-                                        <select id="lstDistrict" name="district_id" class="form-control select2 @error('district_id') is-invalid @enderror"
+                                        <select id="district_id" name="district_id" class="form-control select2 @error('district_id') is-invalid @enderror"
                                         data-selected='{{ $city ? old('district_id', $city->district_id) : old('district_id') }}' required>
                                             <option value="">--Select a District--</option>
                                         </select>
@@ -95,12 +103,18 @@
 <script>
     $(document).ready(function(){
 
-        const getDistricts = () =>{
+        const destroySelect2 = (selector) => {
+            if ($.fn.select2 && $(selector).hasClass("select2-hidden-accessible")) {
+                $(selector).select2('destroy');
+            }
+        };
 
-            let StateID = $('#lstDistrict').attr('data-selected');
-            $('#lstDistrict').select2('destroy');
-            $('#lstDistrict option').remove();
-            $('#lstDistrict').append('<option value="">--Select a District--</option>');
+        const getStates = () =>{
+            let StateID = $('#state_id').attr('data-selected');
+
+            destroySelect2('#state_id');
+ 
+            $('#state_id').empty().append('<option value="">--Select a State--</option>');
 
             $.ajax({
                 url:"{{route('getDistricts')}}",
@@ -109,21 +123,61 @@
                 success: function(response) {
                     response.forEach(function(item) {
                         if ((item.id == StateID)) {
-                            $('#lstDistrict').append('<option selected value="' + item.id
+                            $('#state_id').append('<option selected value="' + item.id
                                 + '">' + item.name + '</option>');
                         } else {
-                            $('#lstDistrict').append('<option value="' + item.id
+                            $('#state_id').append('<option value="' + item.id
                                 + '">'  + item.name + '</option>');
                         }
                     });
-                    $('#lstDistrict').select2();
+                    $('#state_id').select2();
+                    getDistricts();
                 },
                 error: function(xhr) {}
             });
         }
 
+
+        const getDistricts = () =>{
+            $('#district_id').select2();
+            
+            let StateID = $('#state_id').val();
+            let DistritID = $('#district_id').attr('data-selected');
+
+            destroySelect2('#district_id');
+ 
+            $('#district_id').empty().append('<option value="">--Select a District--</option>');
+
+            $.ajax({
+                url:"{{route('getDistricts')}}",
+                type: 'GET',
+                dataType: 'json',
+                data:{'state_id':StateID},
+                success: function(response) {
+                    response.forEach(function(item) {
+                        if ((item.id == DistritID)) {
+                            $('#district_id').append('<option selected value="' + item.id
+                                + '">' + item.name + '</option>');
+                        } else {
+                            $('#district_id').append('<option value="' + item.id
+                                + '">'  + item.name + '</option>');
+                        }
+                    });
+                    $('#district_id').select2();
+                },
+                error: function(xhr) {}
+            });
+        }
+    
+        //    ----------------------------event listeners
+
+        $('#state_id').change(getDistricts);
+
         const init = () => {
-            getDistricts();
+
+            $('#district_id, #state_id').select2();
+
+            getStates(); 
         }
 
         init();

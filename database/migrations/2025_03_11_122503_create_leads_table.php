@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
+            $table->string('lead_title');
             $table->string('first_name');
             $table->string('last_name')->nullable();
             $table->string('address', 255);
@@ -27,8 +28,8 @@ return new class extends Migration
             $table->foreignId('lead_source_id')->constrained('lead_sources')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('lead_status_id')->constrained('lead_statuses')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('lead_owner_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('lead_follow_by_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('image')->nullable();
-            $table->boolean('is_active')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

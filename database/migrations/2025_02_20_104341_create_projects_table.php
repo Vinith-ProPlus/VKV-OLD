@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('site_id')->constrained('sites')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('project_id')->unique();
             $table->string('name')->unique();
             $table->string('location');
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->bigInteger('units');
             $table->string('target_customers');
             $table->string('range');
+            $table->foreignId('engineer_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->boolean('is_active')->default(1);
             $table->softDeletes();
             $table->timestamps();

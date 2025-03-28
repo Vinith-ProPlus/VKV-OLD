@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pincodes', function (Blueprint $table) {
+        Schema::create('project_stages', function (Blueprint $table) {
             $table->id();
-            $table->string('pincode')->unique();
-            $table->foreignId('district_id')->constrained('districts');
-            $table->boolean('is_active')->default(1);
+            $table->foreignId('project_id')->constrained('projects')->cascadeOnUpdate()->restrictOnDelete();
+            $table->string('name');
+            $table->integer('order_no')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pincodes');
+        Schema::dropIfExists('project_stages');
     }
 };

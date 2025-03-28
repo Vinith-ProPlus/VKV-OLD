@@ -13,9 +13,6 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id', 50)->nullable();
-            $table->string('first_name', 50)->nullable();
-            $table->string('last_name', 50)->nullable();
             $table->string('name', 100)->nullable();
             $table->string('user_name', 100)->nullable();
             $table->text('profile_image')->nullable();
@@ -25,16 +22,16 @@ return new class extends Migration
             $table->date('doj')->nullable();
             $table->enum('gender', ['Male', 'Female', 'Others'])->default('Male');
             $table->string('address',255)->nullable();
-            $table->foreignId('state_id')->nullable()->constrained('states');
-            $table->foreignId('district_id')->nullable()->constrained('districts');
-            $table->foreignId('city_id')->nullable()->constrained('cities');
-            $table->foreignId('pincode_id')->nullable()->constrained('pincodes');
-            $table->string('role_id', 50)->nullable();
-            $table->string('login_type', 50)->nullable();
+            $table->foreignId('state_id')->nullable()->constrained('states')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('district_id')->nullable()->constrained('districts')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('pincode_id')->nullable()->constrained('pincodes')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('role_id')->nullable()->constrained('roles')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('password1')->nullable();
             $table->enum('active_status', ['Active', 'Inactive'])->default('Active');
+            $table->string('image')->nullable();
             $table->tinyInteger('d_flag')->default(0);
             $table->rememberToken();
             $table->softDeletes();
@@ -49,7 +46,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->foreignId('user_id')->nullable();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');

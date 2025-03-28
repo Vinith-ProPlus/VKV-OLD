@@ -26,16 +26,16 @@
                     <div class="card-header text-center">
                         <div class="row">
                             <div class="col-sm-4"></div>
-                            <div class="col-sm-4 my-2"><h5>{{ $leads  ? 'Edit' : 'Create' }} {{$PageTitle}}</h5></div>
+                            <div class="col-sm-4 my-2"><h5>{{ $lead  ? 'Edit' : 'Create' }} {{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right text-md-right"></div>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 col-sm-12 col-lg-12">
-                                <form class="row" action="{{ $leads ? route('leads.update', $leads->id) : route('leads.store') }}" method="POST">
+                                <form class="row" action="{{ $lead ? route('leads.update', $lead->id) : route('leads.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
-                                    @if($leads) @method('PUT') @endif
+                                    @if($lead) @method('PUT') @endif
                                     <div class="d-flex justify-content-center align-items-center">
                                         <div class="text-center">
                                             <label class="d-block">Lead Image <span class="text-danger">*</span></label>
@@ -46,13 +46,23 @@
                                                 <img id="image-preview" src="" class="img-fluid d-none" style="max-width: 100%; max-height: 100%;" alt="">
                                             </div>
                                             <input type="file" id="image-input" name="image" class="d-none" accept="image/*">
+                                            @error('image')
+                                            <span class="error invalid-feedback">{{$message}}</span>
+                                            @enderror
                                         </div>
                                     </div>
-
+                                    <div class="form-group col-sm-12 col-lg-12 mt-15">
+                                        <label>Lead Title <span class="text-danger">*</span></label>
+                                        <input type="text" name="lead_title" class="form-control @error('lead_title') is-invalid @enderror"
+                                               value="{{ $lead ? old('lead_title', $lead->lead_title) : old('lead_title') }}" required>
+                                        @error('lead_title')
+                                        <span class="error invalid-feedback">{{$message}}</span>
+                                        @enderror
+                                    </div>
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>First Name <span class="text-danger">*</span></label>
                                         <input type="text" name="first_name" class="form-control @error('first_name') is-invalid @enderror"
-                                               value="{{ $leads ? old('first_name', $leads->first_name) : old('first_name') }}" required>
+                                               value="{{ $lead ? old('first_name', $lead->first_name) : old('first_name') }}" required>
                                         @error('first_name')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -61,7 +71,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Last Name</label>
                                         <input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror"
-                                               value="{{ $leads ? old('last_name', $leads->last_name) : old('last_name') }}">
+                                               value="{{ $lead ? old('last_name', $lead->last_name) : old('last_name') }}">
                                         @error('last_name')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -69,7 +79,7 @@
 
                                     <div class="form-group col-sm-12 col-lg-12 mt-15">
                                         <label>Address <span class="text-danger">*</span></label>
-                                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" required>{{ $leads ? old('address', $leads->address) : old('address') }}</textarea>
+                                        <textarea name="address" class="form-control @error('address') is-invalid @enderror" required>{{ $lead ? old('address', $lead->address) : old('address') }}</textarea>
                                         @error('address')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -77,7 +87,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>State <span class="text-danger">*</span></label>
                                         <select name="state_id" id="state" class="form-control select2 @error('state_id') is-invalid @enderror"
-                                                data-selected='{{ $leads ? old('state_id', $leads->state_id) : old('state_id') }}' required>
+                                                data-selected='{{ $lead ? old('state_id', $lead->state_id) : old('state_id') }}' required>
                                             <option value="">Select a State</option>
                                         </select>
                                         @error('state_id')
@@ -88,7 +98,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>District <span class="text-danger">*</span></label>
                                         <select name="district_id" id="district" class="form-control select2 @error('district_id') is-invalid @enderror"
-                                                data-selected='{{ $leads ? old('district_id', $leads->district_id) : old('district_id') }}' required>
+                                                data-selected='{{ $lead ? old('district_id', $lead->district_id) : old('district_id') }}' required>
                                             <option value="">Select a District</option>
                                         </select>
                                         @error('district_id')
@@ -99,7 +109,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>City <span class="text-danger">*</span></label>
                                         <select name="city_id" id="city" class="form-control select2 @error('city_id') is-invalid @enderror"
-                                                data-selected='{{ $leads ? old('city_id', $leads->city_id) : old('city_id') }}' required>
+                                                data-selected='{{ $lead ? old('city_id', $lead->city_id) : old('city_id') }}' required>
                                             <option value="">Select a City</option>
                                         </select>
                                         @error('city_id')
@@ -110,7 +120,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>PinCode <span class="text-danger">*</span></label>
                                         <select name="pincode_id" id="pincode" class="form-control select2 @error('pincode_id') is-invalid @enderror"
-                                                data-selected='{{ $leads ? old('pincode_id', $leads->pincode_id) : old('pincode_id') }}' required>
+                                                data-selected='{{ $lead ? old('pincode_id', $lead->pincode_id) : old('pincode_id') }}' required>
                                             <option value="">Select a Pincode</option>
                                         </select>
                                         @error('pincode_id')
@@ -121,7 +131,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>GST No</label>
                                         <input type="text" name="gst_number" class="form-control @error('gst_number') is-invalid @enderror"
-                                               value="{{ $leads ? old('gst_number', $leads->gst_number) : old('gst_number') }}">
+                                               value="{{ $lead ? old('gst_number', $lead->gst_number) : old('gst_number') }}">
                                         @error('gst_number')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -129,7 +139,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Email</label>
                                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                               value="{{ $leads ? old('email', $leads->email) : old('email') }}">
+                                               value="{{ $lead ? old('email', $lead->email) : old('email') }}">
                                         @error('email')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -138,7 +148,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Mobile Number <span class="text-danger">*</span></label>
                                         <input type="tel" name="mobile_number" class="form-control @error('mobile_number') is-invalid @enderror"
-                                               value="{{ $leads ? old('mobile_number', $leads->mobile_number) : old('mobile_number') }}" required>
+                                               value="{{ $lead ? old('mobile_number', $lead->mobile_number) : old('mobile_number') }}" required>
                                         @error('mobile_number')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -147,7 +157,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Whatsapp Number <span class="text-danger">*</span></label>
                                         <input type="tel" name="whatsapp_number" class="form-control @error('whatsapp_number') is-invalid @enderror"
-                                               value="{{ $leads ? old('whatsapp_number', $leads->whatsapp_number) : old('whatsapp_number') }}" required>
+                                               value="{{ $lead ? old('whatsapp_number', $lead->whatsapp_number) : old('whatsapp_number') }}" required>
                                         @error('whatsapp_number')
                                         <span class="error invalid-feedback">{{$message}}</span>
                                         @enderror
@@ -156,7 +166,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Lead Source <span class="text-danger">*</span></label>
                                         <select name="lead_source_id" id="lead_source_id" class="form-control select2 @error('lead_source_id') is-invalid @enderror"
-                                                data-selected='{{ $leads ? old('lead_source_id', $leads->lead_source_id) : old('lead_source_id') }}' required>
+                                                data-selected='{{ $lead ? old('lead_source_id', $lead->lead_source_id) : old('lead_source_id') }}' required>
                                             <option value="">Select a Lead Source</option>
                                         </select>
                                         @error('lead_source_id')
@@ -167,7 +177,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Lead Status <span class="text-danger">*</span></label>
                                         <select name="lead_status_id" id="lead_status_id" class="form-control select2 @error('lead_status_id') is-invalid @enderror"
-                                                data-selected='{{ $leads ? old('lead_status_id', $leads->lead_status_id) : old('lead_status_id') }}' required>
+                                                data-selected='{{ $lead ? old('lead_status_id', $lead->lead_status_id) : old('lead_status_id') }}' required>
                                             <option value="">Select a Lead Status</option>
                                         </select>
                                         @error('lead_status_id')
@@ -178,7 +188,7 @@
                                     <div class="form-group col-sm-6 col-lg-6 mt-15">
                                         <label>Lead Owner <span class="text-danger">*</span></label>
                                         <select name="lead_owner_id" id="lead_owner_id" class="form-control select2 @error('lead_owner_id') is-invalid @enderror"
-                                                data-selected='{{ $leads ? old('lead_owner_id', $leads->lead_owner_id) : old('lead_owner_id') }}' required>
+                                                data-selected='{{ $lead ? old('lead_owner_id', $lead->lead_owner_id) : old('lead_owner_id') }}' required>
                                             <option value="">Select a Lead Owner</option>
                                         </select>
                                         @error('lead_owner_id')
@@ -186,10 +196,21 @@
                                         @enderror
                                     </div>
 
+                                    <div class="form-group col-sm-6 col-lg-6 mt-15">
+                                        <label>Lead Follow-by <span class="text-danger">*</span></label>
+                                        <select name="lead_follow_by_id" id="lead_follow_by_id" class="form-control select2 @error('lead_follow_by_id') is-invalid @enderror"
+                                                data-selected='{{ $lead ? old('lead_follow_by_id', $lead->lead_follow_by_id) : old('lead_follow_by_id') }}' required>
+                                            <option value="">Select a Lead Follow-by</option>
+                                        </select>
+                                        @error('lead_follow_by_id')
+                                        <span class="error invalid-feedback">{{$message}}</span>
+                                        @enderror
+                                    </div>
+
                                     <div class="row mt-15 text-end">
                                         <div>
                                             <a href="javascript:void(0)" onclick="window.history.back()" type="button" class="btn btn-warning">Back</a>
-                                            @if(!$leads)
+                                            @if(!$lead)
                                                 @can('Create Lead')
                                                     <button type="submit" class="btn btn-primary">Save</button>
                                                 @endcan
@@ -221,9 +242,10 @@
 
         $('#city').change(() => getPincodes());
 
-        @if($leads && $leads->image)
-        $("#image-preview").removeClass("d-none").attr("src", "{{ Storage::url($leads->image) }}");
-        $("#image-dropzone i, #image-dropzone p").hide();
+        @if($lead && $lead->image)
+            console.log("{{ Storage::url($lead->image) }}");
+            $("#image-preview").removeClass("d-none").attr("src", "{{ Storage::url($lead->image) }}");
+            $("#image-dropzone i, #image-dropzone p").hide();
         @endif
 
         // ------------------------------- get dropdowns
@@ -283,7 +305,7 @@
             $('#lead_status_id').select2();
         }
         const getLeadOwner = () =>{
-            let LeadOwnerID = $('#lead_owner_id').attr('data-selected');
+            let LeadFollowByID = $('#lead_owner_id').attr('data-selected');
             $('#lead_owner_id').select2('destroy');
             $('#lead_owner_id option').remove();
             $('#lead_owner_id').append('<option value="">Select a Lead Owner</option>');
@@ -294,7 +316,7 @@
                 dataType: 'json',
                 success: function(response) {
                     response.forEach(function(item) {
-                        if ((item.id == LeadOwnerID)) {
+                        if ((item.id == LeadFollowByID)) {
                             $('#lead_owner_id').append('<option selected value="' + item.id
                                 + '">' + item.name + '</option>');
                         } else {
@@ -308,6 +330,33 @@
                 },
             });
             $('#lead_owner_id').select2();
+        }
+        const getLeadFollowedBy = () =>{
+            let LeadOwnerID = $('#lead_follow_by_id').attr('data-selected');
+            $('#lead_follow_by_id').select2('destroy');
+            $('#lead_follow_by_id option').remove();
+            $('#lead_follow_by_id').append('<option value="">Select a Lead Owner</option>');
+
+            $.ajax({
+                url:"{{route('getUsers')}}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    response.forEach(function(item) {
+                        if ((item.id == LeadOwnerID)) {
+                            $('#lead_follow_by_id').append('<option selected value="' + item.id
+                                + '">' + item.name + '</option>');
+                        } else {
+                            $('#lead_follow_by_id').append('<option value="' + item.id
+                                + '">'  + item.name + '</option>');
+                        }
+                    });
+                },
+                error: function(e, x, settings, exception) {
+                    // ajaxErrors(e, x, settings, exception);
+                },
+            });
+            $('#lead_follow_by_id').select2();
         }
 
         const getStates = () =>{
@@ -439,6 +488,7 @@
         getLeadSource();
         getLeadStatus();
         getLeadOwner();
+        getLeadFollowedBy();
 
     });
 </script>

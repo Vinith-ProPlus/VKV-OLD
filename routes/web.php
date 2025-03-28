@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CRM\LeadController;
 use App\Http\Controllers\Admin\CRM\LeadSourceController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Users\CustomerController;
+use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\Admin\Users\VendorController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\ProfileController;
@@ -97,11 +98,8 @@ Route::group(['prefix'=>'admin'],function (){
             Route::put('role/update/{id}', [RoleController::class, 'update'])->name('role.update');
             Route::delete('role/delete/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
 
-        Route::resource('customers', CustomerController::class);
-        Route::put('customers/restore/{id}', [CustomerController::class, 'restore'])->name('customers.restore')->middleware('can:Restore Customers');
-
-        Route::resource('vendors', VendorController::class);
-        Route::put('vendors/restore/{id}', [VendorController::class, 'restore'])->name('vendors.restore')->middleware('can:Restore Vendors');
+        Route::resource('users', UserController::class);
+        Route::put('users/restore/{id}', [UserController::class, 'restore'])->name('users.restore')->middleware('can:Restore Users');
 
         Route::resource('lead_sources', LeadSourceController::class);
         Route::put('lead_sources/restore/{id}', [LeadSourceController::class, 'restore'])->name('lead_sources.restore')->middleware('can:Restore Lead Source');
@@ -125,6 +123,12 @@ Route::get('/getPinCodes', [GeneralController::class, 'getPinCodes'])->name('get
 Route::get('/getLeadSource', [GeneralController::class, 'getLeadSource'])->name('getLeadSource');
 Route::get('/getLeadStatus', [GeneralController::class, 'getLeadStatus'])->name('getLeadStatus');
 Route::get('/getUsers', [GeneralController::class, 'getUsers'])->name('getUsers');
+Route::get('/getSiteSupervisors', [GeneralController::class, 'getSiteSupervisors'])->name('getSiteSupervisors');
+Route::get('/getEngineers', [GeneralController::class, 'getEngineers'])->name('getEngineers');
+Route::get('/getRoles', [GeneralController::class, 'getRoles'])->name('getRoles');
+Route::get('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
+Route::get('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
+Route::get('/getSites', [GeneralController::class, 'getSites'])->name('getSites');
 Route::get('/getProducts', [GeneralController::class, 'getProducts'])->name('getProducts');
 
 require __DIR__.'/auth.php';

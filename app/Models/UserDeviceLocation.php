@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class UserDeviceLocation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = ['user_id', 'user_device_id', 'latitude', 'longitude'];
 

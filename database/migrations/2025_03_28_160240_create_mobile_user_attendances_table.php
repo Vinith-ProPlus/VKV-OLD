@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mobile_user_attendances', function (Blueprint $table) {
+        Schema::create('mobile_user_attendances', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->enum('type', ['check_in', 'check_out']);
-            $table->decimal('latitude', 10, 7);
-            $table->decimal('longitude', 10, 7);
             $table->string('ip_address')->nullable();
-            $table->string('device_id')->nullable();
-            $table->string('device_name')->nullable();
+            $table->foreignId('user_device_id')->constrained('user_devices')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('user_device_location_id')->constrained('user_device_locations')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamp('time');
             $table->timestamps();
         });

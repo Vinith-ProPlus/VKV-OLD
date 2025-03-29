@@ -28,6 +28,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 use Throwable;
 use function Laravel\Prompts\warning;
@@ -347,14 +348,15 @@ class GeneralController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'device_id' => 'required|string',
-                'device_name' => 'required|string',
-                'fcm_token' => 'required|string'
+                'device_id' => ['required', 'string',
+                    Rule::exists('user_devices', 'device_id')->where(static function ($query) {
+                        $query->where('user_id', Auth::id());
+                    }),
+                ],
+                'fcm_token' => 'required|string',
             ]);
-            $device = UserDevice::updateOrCreate(
-                ['user_id' => Auth::id(), 'device_id' => $request->device_id],
-                ['device_name' => $request->device_name, 'fcm_token' => $request->fcm_token]
-            );
+            $device = UserDevice::where('user_id', Auth::id())->where('device_id', $request->device_id)
+                ->update(['fcm_token' => $request->fcm_token]);
             DB::commit();
             return $this->successResponse($device,"Fcm Token updated successfully!");
         } catch (Throwable $exception) {
@@ -369,16 +371,17 @@ class GeneralController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'device_id' => 'required|string|exists:user_devices,device_id',
+                'device_id' => ['required', 'string',
+                    Rule::exists('user_devices', 'device_id')->where(static function ($query) {
+                        $query->where('user_id', Auth::id());
+                    }),
+                ],
                 'latitude' => 'required|numeric|between:-90,90',
                 'longitude' => 'required|numeric|between:-180,180',
             ]);
             $user_id = Auth::id();
             $device = UserDevice::where('user_id', $user_id)->where('device_id', $request->device_id)->first();
 
-            if(!$device){
-                return $this->errorResponse("Device not registered", "Failed to record location history!", 522);
-            }
             $device_location = UserDeviceLocation::create([
                 'user_id' => $user_id,
                 'user_device_id' => $device->id,

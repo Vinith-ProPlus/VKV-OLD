@@ -5,9 +5,12 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MobileUserAttendanceRequest;
 use App\Models\MobileUserAttendance;
+use App\Models\UserDevice;
+use App\Models\UserDeviceLocation;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -22,14 +25,24 @@ class MobileUserAttendanceController extends Controller
     {
         DB::beginTransaction();
         try {
-            $attendance = MobileUserAttendance::create(array_merge(
-                $request->validated(),
-                [
-                    'user_id' => auth()->user()->id,
-                    'ip_address' => $request->ip(),
-                    'time' => now(),
-                ]
-            ));
+            $user_id = Auth::id();
+            $device = UserDevice::where('user_id', $user_id)->where('device_id', $request->device_id)->first();
+
+            $user_device_location = UserDeviceLocation::create([
+                'user_id' => $user_id,
+                'user_device_id' => $device->id,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+            ]);
+            $attendance = MobileUserAttendance::create([
+                'user_id' => Auth::id(),
+                'user_device_id' => $device->id,
+                'user_device_location_id' => $user_device_location->id,
+                'ip_address' => $request->ip(),
+                'time' => now(),
+                'type' => $request->type,
+            ]);
+
             DB::commit();
             return $this->successResponse($attendance, ucfirst($request->type) . " recorded successfully!");
         } catch (Throwable $exception) {
@@ -46,7 +59,7 @@ class MobileUserAttendanceController extends Controller
     {
         try {
             $user = auth()->user();
-            $query = MobileUserAttendance::where('user_id', $user->id);
+            $query = MobileUserAttendance::where('user_id', $user->id)->with(['userDevice', 'userDeviceLocation']);
             $query = dataFilter($query, $request);
             return $this->successResponse(dataFormatter($query), "Attendance history fetched successfully!");
         } catch (Throwable $exception) {

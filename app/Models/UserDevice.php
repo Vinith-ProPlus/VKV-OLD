@@ -15,7 +15,7 @@ class UserDevice extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'device_id', 'fcm_token'];
+    protected $fillable = ['user_id', 'device_id', 'device_name', 'fcm_token'];
 
     public function user(): BelongsTo
     {

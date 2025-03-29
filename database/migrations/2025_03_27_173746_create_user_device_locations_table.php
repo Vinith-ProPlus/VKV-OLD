@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_device_locations', function (Blueprint $table) {
+        Schema::create('user_device_locations', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('user_device_id')->constrained('user_devices')->cascadeOnUpdate()->restrictOnDelete();

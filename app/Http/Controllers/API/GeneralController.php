@@ -348,11 +348,12 @@ class GeneralController extends Controller
         try {
             $request->validate([
                 'device_id' => 'required|string',
+                'device_name' => 'required|string',
                 'fcm_token' => 'required|string'
             ]);
             $device = UserDevice::updateOrCreate(
                 ['user_id' => Auth::id(), 'device_id' => $request->device_id],
-                ['fcm_token' => $request->fcm_token]
+                ['device_name' => $request->device_name, 'fcm_token' => $request->fcm_token]
             );
             DB::commit();
             return $this->successResponse($device,"Fcm Token updated successfully!");

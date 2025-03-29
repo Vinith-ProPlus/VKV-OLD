@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('device_id');
+            $table->string('device_name');
             $table->string('fcm_token')->nullable();
             $table->timestamps();
             $table->softDeletes();

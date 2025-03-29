@@ -63,6 +63,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
             'device_id' => 'required|string',
+            'device_name' => 'required|string',
             'fcm_token' => 'required|string',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
@@ -78,7 +79,7 @@ class AuthController extends Controller
         }
         $device = UserDevice::updateOrCreate(
             ['user_id' => $user->id, 'device_id' => $request->device_id],
-            ['fcm_token' => $request->fcm_token]
+            ['device_name' => $request->device_name, 'fcm_token' => $request->fcm_token]
         );
 
         UserDeviceLocation::create([

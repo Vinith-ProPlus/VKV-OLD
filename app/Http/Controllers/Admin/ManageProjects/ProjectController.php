@@ -21,6 +21,7 @@ use Illuminate\Http\Response;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class ProjectController extends Controller{
     use AuthorizesRequests;
@@ -175,45 +176,45 @@ class ProjectController extends Controller{
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
     }
- 
-    public function docxHandler(Request $request)
+
+    public function docxHandler(Request $request): JsonResponse
     {
         try {
             $validator = Validator::make($request->all(), [
-                'images.*' => 'required|file|max:5120|mimes:png,jpg,jpeg,gif,pdf,doc,docx,xls,xlsx,txt'
+                'images.*' => 'required|file|max:10240|mimes:png,jpg,jpeg,pdf,docx,xls,webp'
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'errors' => $validator->errors()
                 ], 400);
             }
-    
+
             $uploadedFiles = [];
             $title = $request->input('title', 'Untitled Document');
             $description = $request->input('description', '');
             $moduleName = $request->input('module_name', 'Project');
-    
+
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $file) {
                     // Generate a unique filename
-                    $filename = uniqid() . '_' . $file->getClientOriginalName();
-                    
+                    $filename = uniqid('', true) . '_' . $file->getClientOriginalName();
+
                     // Store file in public disk
                     $path = $file->storeAs('project_documents', $filename, 'public');
-    
+
                     // Create document record
                     $document = Document::create([
                         'title' => $title,
                         'description' => $description,
                         'module_name' => $moduleName,
-                        'module_id' => auth()->id(), // Use current user's ID
+                        'module_id' => auth()->id(),
                         'file_path' => $path,
                         'file_name' => $filename,
                         'uploaded_by' => auth()->id()
                     ]);
-    
+
                     $uploadedFiles[] = [
                         'id' => $document->id,
                         'name' => $filename,
@@ -222,16 +223,15 @@ class ProjectController extends Controller{
                     ];
                 }
             }
-    
+
             return response()->json([
                 'success' => true,
                 'files' => $uploadedFiles
             ]);
         } catch (\Exception $e) {
-            // Log the full error for server-side debugging
+
             \Log::error('Document upload error: ' . $e->getMessage());
-            
-            // Return a clean error response
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred during upload',
@@ -242,13 +242,37 @@ class ProjectController extends Controller{
 
     public function deleteDocx(Request $request)
     {
-        Document::where('id', $request->$id)->update(['deleted_at' => Carbon::now()]);
+        $ids = $request->input('id');
 
-        $filePath = 'project_documents/' . $request->$fileName;
-        if (Storage::disk('public')->exists($filePath)) {
-            Storage::disk('public')->delete($filePath);
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['message' => 'Invalid request data'], 400);
         }
 
-        return response()->json(['message' => 'Document deleted successfully']);
+        // Fetch all documents that match the given IDs
+        $documents = Document::whereIn('id', $ids)->get();
+
+        if ($documents->isEmpty()) {
+            return response()->json(['message' => 'Documents not found'], 404);
+        }
+
+        $deletedFiles = [];
+        foreach ($documents as $document) {
+            $filePath = 'project_documents/' . $document->file_name;
+
+            // Soft delete document
+            $document->delete();
+
+            // Delete file from storage if it exists
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+                $deletedFiles[] = $document->file_name;
+            }
+        }
+
+        return response()->json([
+            'message' => 'Documents deleted successfully',
+            'deleted_files' => $deletedFiles
+        ]);
     }
+
 }

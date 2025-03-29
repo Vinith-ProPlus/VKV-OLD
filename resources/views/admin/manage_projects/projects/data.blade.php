@@ -5,7 +5,7 @@
         $PageTitle = "Project";
         $ActiveMenuName = 'Projects';
     @endphp
-    <head>  
+    <head>
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
     </head>
@@ -14,15 +14,15 @@
             /* pointer-events: none !important; */
             margin-bottom: 30px !important;
             justify-content: space-evenly;
-        } 
+        }
         .wizard-head a {
             text-decoration: none;
         }
         .wizard-head a .nav-contents {
             display: flex;
             flex-direction: row;
-            align-items: center; 
-            justify-content: center;  
+            align-items: center;
+            justify-content: center;
             font-weight: 700;
         }
         .wizard-head .nav-title{
@@ -34,17 +34,85 @@
         .wizard-head .nav-link i{
             font-size: 32px;
             color: #d8d6ff;
-        } 
+        }
         .wizard-head .nav-link.active i{
             color:  #7167f4 !important;
         }
         .nav-tabs {
             border-bottom: none !important;
-        } 
+        }
         .wizard-head .nav-link {
             border: none !important;
-        } 
+        }
 
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .preview-item {
+            position: relative;
+            width: 150px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 15px;
+
+        }
+        .preview-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .preview-document {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-radius: 4px;
+        }
+        .preview-document i {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .file-name {
+            font-size: 12px;
+            text-align: center;
+            word-break: break-word;
+            margin-top: 5px;
+            color: #333;
+        }
+        .file-size {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-top: 3px;
+        }
+        .dropify-wrapper {
+            /* margin-bottom: 20px; */
+        }
+        .remove-file,.remove-modal-file,.btnDeleteDocumentFile, .btnDeleteDocArray{
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
     </style>
     <div class="container-fluid">
         <div class="page-header">
@@ -88,16 +156,16 @@
                                 </span>
                             </a>
                         </div>
-                        
 
+                        <form id="project-form" action="{{ $project ? route('projects.update', $project->id) : route('projects.store') }}" method="POST">
+                            @csrf
+                            @if($project)
+                                @method('PUT')
+                            @endif
                         <div class="tab-content mt-3">
                             <!-- Project Details Tab -->
                             <div class="tab-pane fade show active" id="project-details">
-                                <form action="{{ $project ? route('projects.update', $project->id) : route('projects.store') }}" method="POST">
-                                    @csrf
-                                    @if($project)
-                                        @method('PUT')
-                                    @endif
+
 
                                     <div class="row">
                                         <div class="col-6">
@@ -223,7 +291,6 @@
                                             <button type="submit" class="btn btn-primary">{{ $project ? 'Update' : 'Save' }}</button>
                                         </div> --}}
                                     </div>
-                                </form>
                             </div>
 
                             <div class="tab-pane fade" id="project-stages">
@@ -277,7 +344,7 @@
                                     <div class="col-6 text-end">
                                         <a class="btn btn-outline-light btn-prev">Previous</a>
                                         <a class="btn btn-primary btn-next">Next</a>
-                                    </div> 
+                                    </div>
                                 </div>
                             </div>
                             <!-- Project Documents Tab -->
@@ -300,12 +367,24 @@
                                     </ul>
                                 </div> --}}
 
+                                <table class="table table-responsive table-hover mb-30 d-none">
+                                    <thead class="bg-light">
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    <tbody id="tblProjectDocuments"></tbody>
+                                    </thead>
+                                </table>
+
                                 <div class="text-center">
-                                    <a class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target=".mdlDocument">
+                                    <a class="btn btn-outline-primary btnAddDocs" type="button" data-bs-toggle="modal" data-bs-target=".mdlDocument">
                                         Add Documents
                                     </a>
                                 </div>
-                                
+
                                 <div class="modal fade mdlDocument" tabindex="-1" aria-labelledby="myExtraLargeModal" aria-hidden="true">
                                     <div class="modal-dialog modal-md">
                                         <div class="modal-content">
@@ -325,13 +404,13 @@
                                                         <textarea id="txtDescription" cols="30" class="form-control"></textarea>
                                                     </div>
                                                 </div>
-                                
+
                                                 <div class="row">
                                                     <div class="col-12 mt-20 divDocument" id="divDocument">
                                                         <label for="multipleImageDocument">Documents <span class="required">*</span></label>
-                                                        <input type="file" class="dropify multipleImageDocument" id="multipleImageDocument" 
-                                                            data-allowed-file-extensions="png jpg jpeg gif pdf doc docx xls xlsx txt" 
-                                                            data-height="100" multiple readonly>
+                                                        <input type="file" class="dropify multipleImageDocument" id="multipleImageDocument"
+                                                               data-allowed-file-extensions="png jpg jpeg gif pdf doc docx xls xlsx txt"
+                                                               data-height="100" readonly>
                                                         <div class="filterInfos d-none">
                                                             <div class="upload-status mb-2" id="divDocumentCount"></div>
                                                             <div class="row justify-content-between filters">
@@ -346,28 +425,30 @@
                                                         <div class="preview-container document-preview-container"></div>
                                                     </div>
                                                 </div>
-                                
+
                                                 <div class="row justify-content-end mt-20">
                                                     <div class="col-auto text-end">
-                                                        <button class="btn btn-primary" id="btnSaveDocument">Save</button>
+                                                        <button type="button" class="btn btn-warning d-none" id="btnUpdateDocument">Update</button>
+                                                        <button type="button" class="btn btn-primary" id="btnSaveDocument">Save</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mt-40 text-end">
                                     <div class="col-6 text-start">
                                         <a class="btn btn-light">Back</a>
                                     </div>
                                     <div class="col-6 text-end">
                                         <a class="btn btn-outline-light btn-prev">Previous</a>
-                                        <a class="btn btn-primary">Submit</a>
-                                    </div> 
+                                        <a class="btn btn-primary" onclick="$('#project-form').submit()">Submit</a>
+                                    </div>
                                 </div>
                             </div>
                         </div> <!-- End Tab Content -->
+                        </form>
                     </div>
                 </div>
             </div>
@@ -377,11 +458,15 @@
 
 @section('script')
     <script>
-        
+
+
         $(document).ready(function () {
 
-            //start of wizard tab toggle function
-            
+            let tableEditId = 1;
+            let deletedDocuments = [];
+
+            //-------------------start of wizard tab toggle function
+
             $('.btn-prev').on('click',function(){
                 changePage(0,$(this).closest('.tab-pane').attr('id'));
             });
@@ -394,7 +479,7 @@
 
                 if(flag){
                     let nextTab = tab.next();
-                    
+
                     if (nextTab.length) {
                         tab.removeClass('active');
                         nextTab.addClass('active');
@@ -404,31 +489,41 @@
                     }
                 }else{
                     let prevTab = tab.prev();
-                
+
                     if (prevTab.length) {
                         tab.removeClass('active');
                         prevTab.addClass('active');
-                    
+
                         $(`.tab-pane[id='${tab.attr("data-tab")}']`).removeClass('show active');
                         $(`.tab-pane[id='${prevTab.attr("data-tab")}']`).addClass('show active');
                     }
                 }
             }
 
-            // end of wizard tab toggle function
+            //-------------------------------end of wizard tab toggle function
 
-            // Document image handler
-            $('.multipleImageDocument').on('change', function (event) {
+            //-------------------------------Document image handler
+
+            function clearDropify(inputSelector) {
+                let dropifyInstance = $(inputSelector).dropify();
+                dropifyInstance = dropifyInstance.data('dropify');
+
+                if (dropifyInstance) {
+                    dropifyInstance.clearElement();
+                }
+            }
+
+            $('.multipleImageDocument').on('input', function (event) {
                 let title = $('#txtTitle').val();
                 let description = $('#txtDescription').val();
                 if(title){
-                    
+
                     let files = event.target.files;
-                        
+
                     if (files.length === 0) {
                         return;
                     }
-                    
+
                     let formData = new FormData();
                     $.each(files, function (i, file) {
                         formData.append('images[]', file);
@@ -440,7 +535,7 @@
 
                     let csrfToken = $('meta[name="csrf-token"]').attr('content');
                     formData.append('_token', csrfToken);
-                    
+
                     $.ajax({
                         url: "{{ route('projects.handle_documents') }}",
                         type: "POST",
@@ -449,11 +544,10 @@
                         processData: false,
                         headers: {
                             'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json' // Explicitly request JSON
+                            'Accept': 'application/json'
                         },
                         success: function(response) {
                             if (response.success) {
-                                console.log("Documents uploaded successfully", response);
                                 updateDocumentPreview(response);
                             } else {
                                 handleUploadError(response);
@@ -461,31 +555,30 @@
                         },
                         error: function(xhr) {
                             let errorMessage = 'Upload failed';
-                            
-                            // Try to parse error response
+
                             try {
                                 let errorResponse = JSON.parse(xhr.responseText);
                                 errorMessage = errorResponse.message || errorMessage;
                             } catch (e) {
-                                // If parsing fails, use default or status text
                                 errorMessage = xhr.statusText || errorMessage;
                             }
 
                             console.error("Upload error:", errorMessage);
-                            
-                            // Show user-friendly error
-                            console.log(errorMessage);
                         }
                     });
+
+                    $('#txtTitle-err').text('');
+                    clearDropify('#multipleImageDocument');
                 }else{
-                    console.log('title is required!');
+                    $('#txtTitle-err').text('Title is required !');
                 }
+
+                $('#multipleImageDocument').closest('.dropify-wrapper').find('.dropify-preview').addClass('d-none');
             });
 
             function handleUploadError(response) {
                 let errorMessage = 'Upload failed';
-                
-                // Check for specific error types
+
                 if (response.errors) {
                     // Handle validation errors
                     let errorList = Object.values(response.errors).flat();
@@ -498,87 +591,317 @@
             }
 
             function updateDocumentPreview(response) {
+
                 if (response.files && response.files.length > 0) {
                     let previewContainer = $('.preview-container');
-                    previewContainer.empty();
+                    let filePath;
+
+                    const allowedImageExtensions = ["jpeg", "jpg", "png", "webp"];
 
                     response.files.forEach(function(file) {
-                        let fileType = getFileType(file.extension);
+
+                        filePath = file.path;
+                        let extension = filePath.split('.').pop().toLowerCase();
+                        let docImg = filePath;
+                        if (!allowedImageExtensions.includes(extension)) {
+                            docImg = "/storage/essentials/doc.png";
+                        }
+
                         let previewHtml = `
-                            <div class="preview-item ${fileType}" data-filename="${file.name}">
-                                <img src="${file.path}" height="100" width="100"> 
-                                <span class="file-name">${file.name}</span>
-                                <button data-id="${file.id}" class="remove-file">×</button>
+                            <div class="col-md-3 col-6 img-hover preview-item light-card hover-1" data-url="${file.path}" data-ext="jpeg" data-filename="${file.name}">
+                                <button data-id="${file.id}" class="doc-rem remove-file btnDeleteDocumentFile">x</button>
+                                <a href="${file.path}" data-lightbox="image-gallery" data-title="${file.name}" class="gallery-item">
+                                    <div class="gallery-img-wrap">
+                                        <img src="${docImg}" class="preview-image" data-title="${file.name}" alt="${file.name}">
+                                    </div>
+                                </a>
+                                <div class="file-name">${file.name}</div>
+                                <div class="text-center">
+                                    <a href="${file.path}" download="${file.name}" class="btn btn-sm btn-primary mt-2">Download</a>
+                                </div>
                             </div>
                         `;
+
                         previewContainer.append(previewHtml);
                     });
                 }
             }
 
-            function getFileType(extension) {
-                const imageExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-                const documentExtensions = ['pdf', 'doc', 'docx', 'txt'];
-                const spreadsheetExtensions = ['xls', 'xlsx'];
-
-                if (imageExtensions.includes(extension.toLowerCase())) return 'image';
-                if (documentExtensions.includes(extension.toLowerCase())) return 'document';
-                if (spreadsheetExtensions.includes(extension.toLowerCase())) return 'spreadsheet';
-                return 'unknown';
-            }
- 
             $('.preview-container').on('click', '.remove-file', function() {
                 $(this).closest('.preview-item').remove();
-            }); 
-
-
-            $(document).on('click','.remove-file',function(e){
-                e.preventDefault();
-                let fileName = $(this).closest('.preview-item').data('filename');
-                let id = $(this).attr('data-id');
-                
-                let csrfToken = $('meta[name="csrf-token"]').attr('content');
-                let formData = new FormData();
-
-                    formData.append('_token', csrfToken);
-                    formData.append('id', id);
-                    formData.append('fileName', fileName);
-                    
-                    $.ajax({
-                        url: "{{ route('projects.delete_documents') }}",
-                        type: "DELETE",
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        success: function(response) {
-                            console.log(response);
-                        },
-                        error: function(xhr) {
-                            let errorMessage = 'Upload failed';
-                            
-                            // Try to parse error response
-                            try {
-                                let errorResponse = JSON.parse(xhr.responseText);
-                                errorMessage = errorResponse.message || errorMessage;
-                            } catch (e) {
-                                // If parsing fails, use default or status text
-                                errorMessage = xhr.statusText || errorMessage;
-                            }
-
-                            console.error("Upload error:", errorMessage);
-                            
-                            // Show user-friendly error
-                            console.log(errorMessage);
-                        }
-                    });
             });
 
-            // Document image handler
-            
+            $(document).on('click', '.remove-file', function(e) {
+                e.preventDefault();
+
+                let id = $(this).attr('data-id');
+
+                let csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    url: "{{ route('projects.delete_documents') }}",
+                    type: "DELETE",
+                    data: JSON.stringify({ id: [id] }),
+                    contentType: "application/json",
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Upload failed';
+
+                        try {
+                            let errorResponse = JSON.parse(xhr.responseText);
+                            errorMessage = errorResponse.message || errorMessage;
+                        } catch (e) {
+                            errorMessage = xhr.statusText || errorMessage;
+                        }
+
+                        console.error("Upload error:", errorMessage);
+                    }
+                });
+            });
+
+            //-----------------------------end of Document image handlers
+
+            //---------------------------Document image table handlers
+
+            $('.btnAddDocs').on('click', function () {
+                $('#btnSaveDocument').removeClass('d-none');
+                $('#btnUpdateDocument').addClass('d-none');
+                clearModal();
+            });
+
+            $('#btnSaveDocument').on('click', function () {
+                let title = $('#txtTitle').val();
+                let description = $('#txtDescription').val();
+
+                let images = [];
+
+                $('.preview-container .preview-item').each(function () {
+                    let fileName = $(this).data('filename');
+                    let fileUrl = $(this).data('url');
+                    let fileId = $(this).find('.doc-rem').data('id');
+
+                    if (fileName && fileUrl) {
+                        images.push({
+                            fileId:fileId,
+                            filename: fileName,
+                            url: fileUrl
+                        });
+                    }
+                });
+
+                const obj = {
+                    'title':title,
+                    'description':description,
+                    'images':images
+                }
+
+                let html = `
+                    <tr data-edit="${tableEditId++}">
+                        <td data="serial">*</td>
+                        <td data="title">${title}</td>
+                        <td data="description">${description ? description : '-' }</td>
+                        <td>
+                            <a class="btn btn-warning editDocuments"><i class="fa fa-pencil"></i></a>
+                            <a class="btn btn-outline-danger deleteDocuments"><i class="fa fa-trash"></i></a>
+                        </td>
+                        <td data="tdata" class="d-none tdata">${JSON.stringify(obj)}</td>
+                    </tr>`;
+
+                $('#tblProjectDocuments').append(html).closest('table').removeClass('d-none');
+                serialize('#tblProjectDocuments');
+                $('.mdlDocument').modal('hide');
+                clearModal();
+            });
+
+            let updatingRowId;
+
+            $(document).on('click', '.editDocuments', function () {
+
+                clearModal();
+
+                updatingRowId = $(this).closest('tr').attr('data-edit');
+
+                let tData = JSON.parse($(this).closest('tr').find('td').last().text());
+
+                $('#txtTitle').val(tData.title);
+                $('#txtDescription').val(tData.description);
+
+                let previewContainer = $('.preview-container');
+                let previewHtml = '';
+                const allowedImageExtensions = ["jpeg", "jpg", "png", "webp"];
+                let filePath;
+
+                if (Array.isArray(tData.images)) {
+                    tData.images.forEach(image => {
+                        filePath = image.url;
+                        let extension = filePath.split('.').pop().toLowerCase();
+                        let docImg = filePath;
+                        if (!allowedImageExtensions.includes(extension)) {
+                            docImg = "/storage/essentials/doc.png";
+                        }
+
+                        previewHtml += `
+                            <div class="col-md-3 col-6 img-hover preview-item light-card hover-1" data-url="${image.url}" data-ext="jpeg"  data-filename="${image.filename}">
+                                <button data-id="${image.fileId}" class="doc-rem btnDeleteDocArray">x</button>
+                                <a href="${image.url}" data-lightbox="image-gallery" data-title="${image.filename}" class="gallery-item">
+                                        <div class="gallery-img-wrap">
+                                            <img src="${docImg}" class="preview-image" data-title="${image.filename}" alt="${image.filename}">
+                                        </div>
+                                    </a>
+                                <div class="file-name">${image.filename}</div>
+                                <div class="text-center">
+                                    <a href="${image.url}" download="${image.filename}" class="btn btn-sm btn-primary mt-2">Download</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    console.error("tData.images is not an array or is undefined:", tData.images);
+                }
+
+                previewContainer.append(previewHtml);
+
+                $('#btnUpdateDocument').removeClass('d-none');
+                $('#btnSaveDocument').addClass('d-none');
+
+                $('.mdlDocument').modal('show');
+
+                deletedDocuments = [];
+            });
+
+            $('#btnUpdateDocument').on('click',function(){
+
+                let title = $('#txtTitle').val();
+                let description = $('#txtDescription').val();
+
+                let images = [];
+
+                $('.preview-container .preview-item').each(function () {
+                    let fileName = $(this).data('filename');
+                    let fileUrl = $(this).data('url');
+                    let fileId = $(this).find('.doc-rem').data('id');
+
+                    if (fileName && fileUrl) {
+                        images.push({
+                            fileId:fileId,
+                            filename: fileName,
+                            url: fileUrl
+                        });
+                    }
+                });
+
+                const obj = {
+                    'title':title,
+                    'description':description,
+                    'images':images
+                }
+
+                if(deletedDocuments.length > 0){
+                    deleteByImageIds(deletedDocuments);
+                }
+
+                $('#tblProjectDocuments').find(`tr[data-edit="${updatingRowId}"]`).each(function () {
+                    let row = $(this);
+
+                    row.find('td[data="title"]').text(title);
+                    row.find('td[data="description"]').text(description ? description : '-');
+                    row.find('td[data="tdata"]').text(JSON.stringify(obj));
+                });
+
+                $('.mdlDocument').modal('hide');
+                $('#btnSaveDocument').removeClass('d-none');
+                $('#btnUpdateDocument').addClass('d-none');
+
+                clearModal();
+            });
+
+            $(document).on('click', '.btnDeleteDocArray', function () {
+                $(this).closest('.preview-item').remove();
+                deletedDocuments.push($(this).attr('data-id'));
+            });
+
+            $(document).on('click', '.deleteDocuments', function () {
+
+                let row = $(this).closest('tr');
+                let tData = JSON.parse(row.find('td[data="tdata"]').text());
+                let imageID = [];
+
+                if (Array.isArray(tData.images)) {
+                    tData.images.forEach(image => {
+                        imageID.push(image.fileId);
+                    });
+                }
+
+                deleteByImageIds(imageID);
+
+                row.remove();
+
+                let flag = $('#tblProjectDocuments tr').length;
+
+                if(!flag) $('#tblProjectDocuments').closest('table').addClass('d-none');
+
+                serialize('#tblProjectDocuments');
+
+                $('#btnSaveDocument').removeClass('d-none');
+                $('#btnUpdateDocument').addClass('d-none');
+
+                clearModal();
+            });
+
+            const deleteByImageIds = (id) => {
+
+                let csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+                $.ajax({
+                    url: "{{ route('projects.delete_documents') }}",
+                    type: "DELETE",
+                    data: JSON.stringify({ id: id }),
+                    contentType: "application/json",
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    success: function(response) {
+                    },
+                    error: function(xhr) {
+                        let errorMessage = 'Upload failed';
+
+                        try {
+                            let errorResponse = JSON.parse(xhr.responseText);
+                            errorMessage = errorResponse.message || errorMessage;
+                        } catch (e) {
+                            errorMessage = xhr.statusText || errorMessage;
+                        }
+
+                        console.error("Upload error:", errorMessage);
+                    }
+                });
+            }
+
+            //---------------------------End of Document image table handlers
+
+            //--------------------------Document handling helpers
+
+            const serialize = (selector) => {
+                let serialNum = 1;
+                $(`${selector} tr`).each(function () {
+                    $(this).find('td[data="serial"]').text(serialNum++);
+                });
+            };
+
+            const clearModal = () => {
+                $('#txtTitle').val('');
+                $('#txtDescription').val('');
+                $('.preview-item').remove();
+            }
+
+            //----------------------------End of Document handling helpers
+
             let stageList = $("#stage-list");
             let isEditMode = {{ $project ? 'true' : 'false' }};
 
@@ -604,17 +927,17 @@
 
                 let index = stageList.children().length;
                 let newStage = `
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span class="stage-name">${stageName}</span>
-                <div>
-                    <button type="button" class="btn btn-sm btn-warning edit-stage">Edit</button>
-                    <button type="button" class="btn btn-sm btn-danger delete-stage">Delete</button>
-                    <input type="hidden" name="stages[${index}][name]" value="${stageName}">
-                    <input type="hidden" name="stages[${index}][deleted]" value="0">
-                    <input type="hidden" name="stages[${index}][order_no]" value="${index + 1}">
-                </div>
-            </li>
-        `;
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="stage-name">${stageName}</span>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-warning edit-stage">Edit</button>
+                                <button type="button" class="btn btn-sm btn-danger delete-stage">Delete</button>
+                                <input type="hidden" name="stages[${index}][name]" value="${stageName}">
+                                <input type="hidden" name="stages[${index}][deleted]" value="0">
+                                <input type="hidden" name="stages[${index}][order_no]" value="${index + 1}">
+                            </div>
+                        </li>
+                    `;
                 stageList.append(newStage);
                 $("#stage-name").val(""); // Clear input
                 updateOrderNumbers();

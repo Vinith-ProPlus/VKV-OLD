@@ -31,6 +31,7 @@ class UserRequest extends FormRequest
             ],
             'dob' => 'required|date',
             'mobile' => 'required|digits_between:7,12',
+            'alternate_mobile' => 'nullable|digits_between:7,12',
             'address' => 'required|string|max:255',
             'state_id' => 'required|exists:states,id',
             'district_id' => 'required|exists:districts,id',

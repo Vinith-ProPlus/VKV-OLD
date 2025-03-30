@@ -12,6 +12,8 @@ use App\Models\Admin\Master\State;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -23,6 +25,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static create(mixed $data)
  * @method static findOrFail($id)
  * @method static where(string $string, mixed $id)
+ * @method static whereEmail(mixed $email)
  */
 class User extends Authenticatable
 {
@@ -39,6 +42,7 @@ class User extends Authenticatable
         'email',
         'dob',
         'mobile',
+        'alternate_mobile',
         'address',
         'state_id',
         'city_id',
@@ -48,6 +52,7 @@ class User extends Authenticatable
         'password',
         'active_status',
         'image',
+        'deleted_by',
     ];
 
     /**
@@ -98,7 +103,7 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    public function sites()
+    public function sites(): BelongsToMany
     {
         return $this->belongsToMany(Site::class, 'site_supervisor', 'supervisor_id', 'site_id');
     }
@@ -108,5 +113,14 @@ class User extends Authenticatable
         return ProjectTask::whereHas('project.site.supervisors', function ($query) {
             $query->where('users.id', $this->id);
         });
+    }
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class);
+    }
+
+    public function locations(): HasMany
+    {
+        return $this->hasMany(UserDeviceLocation::class);
     }
 }

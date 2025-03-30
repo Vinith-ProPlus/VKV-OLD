@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Admin\CRM\LeadController;
 use App\Http\Controllers\Admin\CRM\LeadSourceController;
+use App\Http\Controllers\Admin\CRM\VisitorController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\Settings\ContentController;
 use App\Http\Controllers\Admin\Users\CustomerController;
 use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\Admin\Users\VendorController;
@@ -23,7 +25,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/clear', function() {
+Route::get('/clear', static function() {
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
     Artisan::call('config:cache');
@@ -31,7 +33,7 @@ Route::get('/clear', function() {
     return "Cleared!";
 });
 
-Route::get('/', function () {
+Route::get('/', static function () {
     if(auth()->user()){
         return redirect()->route('dashboard');
     }
@@ -43,7 +45,7 @@ Route::get('/import-table-rows/{TableName}', [SqlImportController::class, 'impor
 Route::get('/export-menus', [SqlImportController::class, 'exportMenus']);
 
 
-Route::get('/dashboard', function () {
+Route::get('/dashboard', static function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -53,37 +55,37 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::group(['prefix'=>'admin'],function (){
+Route::group(['prefix'=>'admin'], static function (){
     Route::middleware('auth')->group(function () {
 
-        Route::group(['prefix'=>'manage-projects'],function () {
+        Route::group(['prefix'=>'manage-projects'], static function () {
             require __DIR__.'/admin/manage_projects.php';
         });
 
-        Route::group(['prefix'=>'master'],function (){
+        Route::group(['prefix'=>'master'], static function (){
             require __DIR__.'/admin/master.php';
-            Route::get('categories/list', function () {
+            Route::get('categories/list', static function () {
                 return response()->json(ProductCategory::select('id', 'name')->where('is_active', 1)->get());
             })->name('categories.list');
 
-            Route::get('taxes/list', function () {
+            Route::get('taxes/list', static function () {
                 return response()->json(Tax::select('id', 'name')->where('is_active', 1)->get());
             })->name('taxes.list');
 
-            Route::get('uoms/list', function () {
+            Route::get('uoms/list', static function () {
                 return response()->json(UnitOfMeasurement::select('id', 'name')->where('is_active', 1)->get());
             })->name('uoms.list');
-            Route::get('states/list', function () {
+            Route::get('states/list', static function () {
                 return response()->json(State::select('id', 'name')->where('is_active', 1)->get());
             })->name('states.list');
-            Route::get('districts/list', function (Request $request) {
+            Route::get('districts/list', static function (Request $request) {
                 logger("districts: ".$request);
                 return response()->json(District::select('id', 'name')->where('is_active', 1)->get());
             })->name('districts.list');
-            Route::get('cities/list', function () {
+            Route::get('cities/list', static function () {
                 return response()->json(City::select('id', 'name')->where('is_active', 1)->get());
             })->name('cities.list');
-            Route::get('pincodes/list', function () {
+            Route::get('pincodes/list', static function () {
                 return response()->json(Pincode::select('id', 'name')->where('is_active', 1)->get());
             })->name('pincodes.list');
         });
@@ -106,12 +108,18 @@ Route::group(['prefix'=>'admin'],function (){
 
         Route::resource('leads', LeadController::class);
         Route::put('leads/restore/{id}', [LeadController::class, 'restore'])->name('leads.restore')->middleware('can:Restore Lead');
-        
+
         Route::resource('purchase_requests', PurchaseRequestController::class);
         Route::put('purchase_requests/restore/{id}', [PurchaseRequestController::class, 'restore'])->name('purchase_requests.restore')->middleware('can:Restore Purchase Request');
-        
+
         Route::resource('purchase_orders', PurchaseOrderController::class);
         Route::put('purchase_orders/restore/{id}', [PurchaseOrderController::class, 'restore'])->name('purchase_orders.restore')->middleware('can:Restore Purchase order');
+
+        Route::resource('visitors', VisitorController::class);
+        Route::put('visitors/restore/{id}', [VisitorController::class, 'restore'])->name('visitors.restore')->middleware('can:Restore Visitors');
+
+        Route::resource('contents', ContentController::class);
+        Route::put('contents/restore/{id}', [ContentController::class, 'restore'])->name('contents.restore')->middleware('can:Restore Contents');
 
     });
 });
@@ -131,4 +139,13 @@ Route::get('/getStages', [GeneralController::class, 'getStages'])->name('getStag
 Route::get('/getSites', [GeneralController::class, 'getSites'])->name('getSites');
 Route::get('/getProducts', [GeneralController::class, 'getProducts'])->name('getProducts');
 
+Route::post('/getDocuments', [GeneralController::class, 'getDocuments'])->name('getDocuments');
+Route::post('/documentHandler', [GeneralController::class, 'documentHandler'])->name('documentHandler');
+Route::post('/updateDocuments', [GeneralController::class, 'updateDocuments'])->name('updateDocuments');
+Route::delete('deleteDocuments', [GeneralController::class,'deleteDocuments'])->name('deleteDocuments');
 require __DIR__.'/auth.php';
+
+
+Route::get('/csrf-token', static function (Request $request) {
+    return response()->json(['csrf_token' => csrf_token()]);
+});

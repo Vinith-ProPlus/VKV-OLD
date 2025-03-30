@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\ManageProjects;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
 use App\Models\Admin\ManageProjects\ProjectStage;
+use App\Models\Document;
 use App\Models\Project;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -17,7 +18,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class ProjectController extends Controller{
     use AuthorizesRequests;
@@ -64,6 +71,7 @@ class ProjectController extends Controller{
     public function store(ProjectRequest $request): RedirectResponse
     {
         $this->authorize('Create Projects');
+        DB::beginTransaction();
         try {
             $project = Project::create($request->all());
 
@@ -75,9 +83,12 @@ class ProjectController extends Controller{
                     'order_no' => $stage['order_no'],
                 ]);
             }
-
+            Document::where('module_name', 'User-Project')->where('module_id', Auth::id())
+                ->update(['module_name' => 'Project', 'module_id' => $project->id]);
+            DB::commit();
             return redirect()->route('projects.index')->with('success', 'Project created successfully.');
         } catch (Exception $exception) {
+            DB::rollBack();
             $ErrMsg = $exception->getMessage();
             info('Error::Place@ProjectController@store - ' . $ErrMsg);
             return redirect()->back()->withInput()->with("warning", "Something went wrong" . $ErrMsg);

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('profile_image')->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('mobile', 20)->nullable();
+            $table->string('alternate_mobile', 20)->nullable();
             $table->date('dob')->nullable();
             $table->date('doj')->nullable();
             $table->enum('gender', ['Male', 'Female', 'Others'])->default('Male');
@@ -34,6 +35,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->tinyInteger('d_flag')->default(0);
             $table->rememberToken();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });

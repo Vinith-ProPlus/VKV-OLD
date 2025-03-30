@@ -82,6 +82,12 @@
                                     title="">Warehouse</a>
                             </li>
                             @endcan
+                            @can('View Contract Type')
+                                <li class="">
+                                    <a href="{{ route('contract_types.index') }}" data-active-name="Contract-Type" data-original-title=""
+                                       title="">Contract Type</a>
+                                </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
@@ -203,6 +209,12 @@
                                        title="">Leads</a>
                                 </li>
                             @endcan
+                            @can('View Visitors')
+                                <li class="">
+                                    <a href="{{ route('visitors.index') }}" data-active-name="Visitor" data-original-title=""
+                                       title="">Visitor</a>
+                                </li>
+                            @endcan
                             <!--
                             <li class=""><a
                                     href="http://localhost/VKV-OLD/admin/users-and-permissions/users/"  data-active-name="Users" data-original-title="" title="">Users</a>
@@ -213,7 +225,7 @@
                                     -->
                         </ul>
                     </li>
-                    <!-- <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
+                    <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round"
@@ -226,15 +238,14 @@
                             <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
                         </a>
                         <ul class="nav-submenu menu-content" style="display: none;">
-                            <li class=""><a href="http://localhost/VKV-OLD/admin/settings/general/"
-                                            data-active-name="General-Settings" data-original-title=""
-                                            title="">General</a></li>
-                            <li class=""><a href="http://localhost/VKV-OLD/admin/settings/company/"
-                                            data-active-name="Company-Settings" data-original-title=""
-                                            title="">Company</a></li>
+                            <li class=""><a href="{{ route('contents.index') }}"
+                                            data-active-name="CMS" data-original-title=""
+                                            title="">CMS</a></li>
+{{--                            <li class=""><a href="http://localhost/VKV-OLD/admin/settings/company/"--}}
+{{--                                            data-active-name="Company-Settings" data-original-title=""--}}
+{{--                                            title="">Company</a></li>--}}
                         </ul>
                     </li>
-                    -->
                     <li class="dropdown CMenus" id="btnLogout"><a class="nav-link menu-title link-nav" data-active-name="logout"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"

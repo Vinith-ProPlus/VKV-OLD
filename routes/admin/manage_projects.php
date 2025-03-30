@@ -23,3 +23,7 @@ Route::put('project_specifications/restore/{id}', [ProjectSpecificationsControll
 
 Route::resource('sites', SiteController::class);
 Route::put('sites/restore/{id}', [SiteController::class, 'restore'])->name('sites.restore')->middleware('can:Restore Sites');
+
+Route::post('handle_documents', [ProjectController::class,'docxHandler'])->name('projects.handle_documents');
+Route::post('update_documents', [ProjectController::class,'updateDocuments'])->name('projects.updateDocuments');
+Route::delete('delete_documents', [ProjectController::class,'deleteDocx'])->name('projects.delete_documents');

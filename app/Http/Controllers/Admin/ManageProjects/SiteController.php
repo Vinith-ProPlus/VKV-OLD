@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\ManageProjects;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SiteRequest;
-use App\Models\admin\ManageProjects\ProjectTask;
+use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\Admin\ManageProjects\Site;
 use App\Models\User;
 use Exception;

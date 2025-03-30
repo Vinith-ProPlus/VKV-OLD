@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ProductCategoryRequest extends FormRequest
+class ContractTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class ProductCategoryRequest extends FormRequest
         return [
             'name' => [
                 'required', 'string', 'max:100',
-                Rule::unique('product_categories')->ignore($this->route('product_category'))
+                Rule::unique('contract_types')->ignore($this->route('contract_type'))
             ],
             'is_active' => 'required|boolean',
         ];

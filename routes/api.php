@@ -9,12 +9,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/sendForgotPasswordOTP', [AuthController::class, 'sendForgotPasswordOTP']);
 Route::post('/verifyForgotPasswordOTP', [AuthController::class, 'verifyForgotPasswordOTP']);
-Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::post('/changePassword', [AuthController::class, 'changePassword']);
 Route::get('/user', [AuthController::class, 'profile'])->middleware('auth:sanctum');
 Route::post('/updateProfile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
+Route::post('/delete-account', [AuthController::class, 'deleteAccount'])->middleware('auth:sanctum');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/logout_all_devices', [AuthController::class, 'logout_all_devices'])->middleware('auth:sanctum');
 
-Route::group(['prefix'=>'master'], static function (){
+Route::group(['prefix' => 'master', 'middleware' => 'auth:sanctum'], static function () {
     Route::post('/getCategories', [GeneralController::class, 'getCategories'])->name('getCategories');
     Route::post('/getProducts', [GeneralController::class, 'getProducts'])->name('getProducts');
     Route::post('/getStates', [GeneralController::class, 'getStates'])->name('getStates');
@@ -27,7 +29,9 @@ Route::group(['prefix'=>'master'], static function (){
     Route::post('/getRoles', [GeneralController::class, 'getRoles'])->name('getRoles');
     Route::post('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
     Route::post('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
-})->middleware('auth:sanctum');
+    Route::post('/getContents', [GeneralController::class, 'getContent'])->name('getContent');
+    Route::post('/getDocuments', [GeneralController::class, 'getDocuments'])->name('getDocuments');
+});
 
 Route::middleware('auth:sanctum')->group(static function () {
     // Attendance
@@ -40,5 +44,13 @@ Route::middleware('auth:sanctum')->group(static function () {
     Route::post('manage-task/create-task', [GeneralController::class, 'createProjectTask']);
     Route::post('manage-task/update-task-status/{task}', [GeneralController::class, 'updateTaskStatus']);
 
+    // Visitors
+    Route::post('visitors/get-visitor', [GeneralController::class, 'getVisitor']);
+    Route::post('visitors/get-visitors', [GeneralController::class, 'getVisitors']);
+    Route::post('visitors/create-visitor', [GeneralController::class, 'createVisitor']);
+
     Route::post('HomeScreen', [GeneralController::class, 'HomeScreen']);
+    Route::post('update-fcm-token', [GeneralController::class, 'updateFcmToken']);
+    Route::post('record-location-history', [GeneralController::class, 'recordLocationHistory']);
+
 });

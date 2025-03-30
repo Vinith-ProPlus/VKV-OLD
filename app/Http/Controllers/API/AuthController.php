@@ -188,6 +188,11 @@ class AuthController extends Controller
                 ->subject("Password Reset OTP");
         });
 
+        Mail::send('emails.otp', ['user' => $user, 'otpData' => $otp], static function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Your OTP for Password Reset');
+        });
+
         return $this->successResponse(compact('otp'), "OTP sent successfully to your email!");
     }
 

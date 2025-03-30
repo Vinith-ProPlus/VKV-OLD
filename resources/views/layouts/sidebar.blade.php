@@ -139,12 +139,12 @@
                         <ul class="nav-submenu menu-content" style="display: none;">
                             @can('View Purchase Requests')
                                 <li class="">
-                                    <a href="{{ route('purchase_requests.index') }}" data-active-name="Purchase Requests" data-original-title="" title="">Purchase Requests</a>
+                                    <a href="{{ route('purchase_requests.index') }}" data-active-name="Purchase-Requests" data-original-title="" title="">Purchase Requests</a>
                                 </li>
                             @endcan
                             @can('View Purchase Orders')
                                 <li class="">
-                                    <a href="{{ route('purchase_orders.index') }}" data-active-name="Purchase Orders" data-original-title="" title="">Purchase Orders</a>
+                                    <a href="{{ route('purchase_orders.index') }}" data-active-name="Purchase-Orders" data-original-title="" title="">Purchase Orders</a>
                                 </li>
                             @endcan
                         </ul>

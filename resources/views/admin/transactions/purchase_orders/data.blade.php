@@ -2,7 +2,7 @@
 
 @section('content')
     @php
-        $PageTitle="Purchase Order";
+        $PageTitle="Purchase Orders";
         $ActiveMenuName='Purchase-Orders';
     @endphp
     <div class="container-fluid">
@@ -97,7 +97,7 @@
                                         <div class="errors err-sm" id="lstProductCategory-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 mt-20">
                                     <div class="form-group">
                                         <label>Product <span class="required"> * </span></label>
@@ -107,7 +107,7 @@
                                         <div class="errors err-sm" id="lstProduct-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 mt-20">
                                     <div class="form-group">
                                         <label>Tax <span class="required"> * </span></label>
@@ -120,7 +120,7 @@
                                         <div class="errors err-sm" id="lstTax-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 mt-20">
                                     <div class="form-group">
                                         <label>Price <span class="required"> * </span></label>
@@ -128,7 +128,7 @@
                                         <div class="errors err-sm" id="txtPrice-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 mt-20">
                                     <div class="form-group">
                                         <label>Quantity <span class="required"> * </span></label>
@@ -136,7 +136,7 @@
                                         <div class="errors err-sm" id="txtQty-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 mt-20">
                                     <div class="form-group">
                                         <label>Amount <span class="required"> * </span></label>
@@ -144,7 +144,7 @@
                                         <div class="errors err-sm" id="txtAmount-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 mt-20">
                                     <div class="form-group">
                                         <label>Tax Type <span class="required"> * </span></label>
@@ -155,7 +155,7 @@
                                         <div class="errors err-sm" id="lstTaxType-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 mt-20">
                                     <div class="form-group">
                                         <label>Taxable <span class="required"> * </span></label>
@@ -171,7 +171,7 @@
                                         <div class="errors err-sm" id="txtTaxAmount-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 mt-20">
                                     <div class="form-group">
                                         <label>Total Amount</label>
@@ -179,7 +179,7 @@
                                         <div class="errors err-sm" id="txtTotalAmount-err"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-3 d-flex justify-content-center align-items-center">
                                     <button type="button" id="btnAddItem" class="btn btn-primary">Add</button>
                                 </div>
@@ -190,7 +190,7 @@
                                 <table class="table tblItems" id="tblItems">
                                     <thead>
                                         <tr>
-                                            <th class="text-center">S.No</th> 
+                                            <th class="text-center">S.No</th>
                                             <th class="text-center">Product (Category)</th>
                                             <th class="text-center">Qty</th>
                                             <th class="text-center">Price</th>
@@ -216,7 +216,7 @@
                                                 </tr>
                                             @endforeach
                                         @endif
-                                    </tbody>                                                                        
+                                    </tbody>
                                 </table>
                             </div>
                             <div class="col-12 my-2">
@@ -294,7 +294,7 @@
             $('#lstProduct').select2();
 
         }
-        
+
         getProducts();
 
         $("#lstProductCategory").change(function () {
@@ -328,7 +328,7 @@
             $('#txtTotalAmount').val(totalAmount.toFixed(2));
         });
 
-        $('#btnAddItem').click(function () { 
+        $('#btnAddItem').click(function () {
             let status = true;
             let edit_id = $(this).data('edit_id');
 
@@ -385,7 +385,7 @@
             let isDuplicate = false;
             $('#tblItems tbody tr').each(function (index) {
                 let existingItem = JSON.parse($(this).find('.itemData').val());
-                
+
                 if (edit_id && index + 1 === edit_id) {
                     return true; // Continue to the next iteration
                 }
@@ -397,7 +397,7 @@
             });
 
             if (isDuplicate) {
-                $('#lstProduct-err').text('This product is already added to the list'); 
+                $('#lstProduct-err').text('This product is already added to the list');
                 status = false;
             }
 
@@ -443,7 +443,7 @@
         $(document).on('click', '.btnEdit', function () {
             let row = $(this).closest('tr');
             let itemData = JSON.parse(row.find('.itemData').val());
-            
+
             $('#lstProduct').attr('data-selected',itemData.product_id);
             $('#txtQty').val(itemData.qty);
             $('#txtPrice').val(itemData.price);
@@ -462,7 +462,7 @@
             $('.btnEdit, .btnDelete').hide();
 
             row.find('.divItemBtn').append('<button class="btn btn-secondary btn-sm btnCancel">Cancel</button>');
-            
+
         });
 
         // Cancel Button Click - Restore Edit/Delete Buttons
@@ -632,7 +632,7 @@
             return { status, formData };
         };
 
-        
+
         $(document).on('click', '.btnDeleteItem', function () {
             $(this).closest("tr").remove();
             $('#tblItems tbody tr').each(function(index){
@@ -652,7 +652,7 @@
                     confirmButtonClass: "btn-outline-success",
                     confirmButtonText: "Yes, @if(!$purchaseOrder) Save @else Update @endif it!",
                     closeOnConfirm: false
-                }).then(function () {  
+                }).then(function () {
                     swal.close();
                     btnLoading($('#btnSave'));
                     let postUrl="{{ $purchaseOrder ? route('purchase_orders.update', $purchaseOrder->id) : route('purchase_orders.store') }}";
@@ -665,13 +665,13 @@
                         success:function(response){
                             document.documentElement.scrollTop = 0;
                             if(response.status==true){
-                                
+
                                 @if($purchaseOrder)
                                     window.location.replace("{{route('purchase_orders.index')}}");
                                 @else
                                     window.location.reload();
                                 @endif
-                                
+
                             }else{
                                 toastr.error(response.message, "Failed", { positionClass: "toast-top-right", containerId: "toast-top-right", showMethod: "slideDown", hideMethod: "slideUp", progressBar: !0 })
                                 if(response['errors']!=undefined){
@@ -690,5 +690,5 @@
 
     });
 </script>
-    
+
 @endsection

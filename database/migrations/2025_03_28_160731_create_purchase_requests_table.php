@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('req_no')->unique();
             $table->date('req_date');
             $table->string('req_by');
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->constrained('projects')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('order_id')->nullable();
             $table->enum('status', ['pending', 'purchased','deleted'])->default('pending');
             $table->softDeletes();

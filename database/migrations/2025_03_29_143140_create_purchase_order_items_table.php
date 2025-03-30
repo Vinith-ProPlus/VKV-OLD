@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('purchase_order_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('purchase_order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('purchase_order_id')->constrained('purchase_orders')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->restrictOnDelete();
             $table->integer('qty')->default(1);
             $table->double('price', 10, 2)->default(0);
             $table->double('total_amt', 10, 2)->default(0);
-            $table->foreignId('tax_id')->constrained();
+            $table->foreignId('tax_id')->constrained('taxes')->cascadeOnUpdate()->restrictOnDelete();
             $table->enum('tax_type', ['include', 'exclude'])->default('exclude');
             $table->double('taxable', 10, 2)->default(0);
             $table->double('tax_amt', 10, 2)->default(0);

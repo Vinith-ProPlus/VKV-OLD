@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('purchase_request_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('req_id')->constrained('purchase_requests')->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('req_id')->constrained('purchase_requests')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->restrictOnDelete();
             $table->double('qty')->default(1);
             $table->timestamps();
             $table->softDeletes();
         });
-        
+
     }
 
     /**

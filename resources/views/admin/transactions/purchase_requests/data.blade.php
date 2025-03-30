@@ -1,12 +1,16 @@
 @extends('layouts.admin')
 
 @section('content')
+    @php
+        $PageTitle="Purchase Requests";
+        $ActiveMenuName='Purchase-Requests';
+    @endphp
 <div class="container">
     <h2>Create Purchase Request</h2>
 
     <form action="{{ route('purchase_requests.store') }}" method="POST">
         @csrf
-        
+
         <div class="mb-3">
             <label for="request_number" class="form-label">Request Number</label>
             <input type="text" name="request_number" class="form-control" required>
@@ -32,7 +36,7 @@
                 @endforeach
             </select>
         </div>
-        
+
         <h4>Select Product</h4>
         <div class="mb-3">
             <select id="productSelect" class="form-control">
@@ -71,7 +75,7 @@
             $('#productSelect').select2(); // Apply Select2 for better UX
 
             $('#addProduct').click(function() {
-            
+
                 let selectedProduct = $('#productSelect').find(':selected');
                 let productId = selectedProduct.val();
                 let productName = selectedProduct.data('name');

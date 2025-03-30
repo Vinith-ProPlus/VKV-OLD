@@ -16,7 +16,7 @@
                             <div class="col-sm-4 my-2"><h5>{{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right">
                                 @can('Create Purchase Requests')
-                                    {{-- <a class="btn btn-sm btn-primary" href="{{ route('purchase_requests.create') }}">Create Purchase Request</a> --}}
+                                     <a class="btn btn-sm btn-primary" href="{{ route('purchase_requests.create') }}">Create Purchase Request</a>
                                 @endcan
                             </div>
                         </div>

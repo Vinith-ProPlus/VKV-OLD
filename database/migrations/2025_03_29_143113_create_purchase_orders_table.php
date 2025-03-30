@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('order_no')->unique();
             $table->date('order_date');
             $table->string('order_by');
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->constrained('projects')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('req_id')->nullable();
-            $table->foreignId('warehouse_id')->nullable();
+            $table->foreignId('warehouse_id')->constrained('warehouses')->cascadeOnUpdate()->restrictOnDelete();
             $table->enum('status', ['new', 'delivered'])->default('new');
             $table->double('taxable_amount', 10, 2)->default(0);
             $table->double('tax_amount', 10, 2)->default(0);

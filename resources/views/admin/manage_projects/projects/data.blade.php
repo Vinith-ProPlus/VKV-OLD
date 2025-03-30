@@ -271,7 +271,7 @@
                                 </div>
                                 <!-- Project Documents Tab -->
                                 <div class="tab-pane fade" id="project-documents">
-                                    <div class="text-center mb-5">
+                                    <div class="text-center mb-10">
                                         <a class="btn btn-outline-primary btnAddDocs" type="button"
                                            data-bs-toggle="modal" data-bs-target=".mdlDocument">
                                             Add Documents

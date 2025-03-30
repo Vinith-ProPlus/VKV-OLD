@@ -142,7 +142,6 @@ class GeneralController extends Controller
                     'description' => $document->description ?? '',
                     'images' => [
                         [
-                            'fileId' => $document->id,
                             'filename' => $document->file_name,
                             'url' => asset("storage/$document->file_path"),
                         ]

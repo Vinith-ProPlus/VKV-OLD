@@ -12,6 +12,7 @@ use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
 use App\Models\Admin\Master\State;
 use App\Models\Content;
+use App\Models\Document;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\Product;
@@ -395,6 +396,32 @@ class GeneralController extends Controller
             Log::error('Error::GeneralController@locationHistoryRecord - ' . $exception->getMessage());
             return $this->errorResponse($exception->getMessage(), "Failed to record location history!", 500);
         }
+    }
+
+    public function getDocuments(Request $request): JsonResponse
+    {
+        $request->validate([
+            'module_name' => ['required', 'string', Rule::exists('documents', 'module_name')],
+            'module_id' => ['required'],
+        ]);
+        $documents = Document::where('module_name', $request->module_name)
+            ->where('module_id', $request->module_id)
+            ->get()
+            ->map(static function ($document) {
+                return [
+                    'id' => $document->id,
+                    'title' => $document->title,
+                    'description' => $document->description ?? '',
+                    'images' => [
+                        [
+                            'filename' => $document->file_name,
+                            'url' => asset("storage/$document->file_path"),
+                        ]
+                    ]
+                ];
+            });
+
+        return $this->successResponse($documents, "Documents Fetched Successfully!");
     }
 
 }

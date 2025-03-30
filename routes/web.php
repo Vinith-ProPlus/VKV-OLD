@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\CRM\VisitorController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Settings\ContentController;
 use App\Http\Controllers\Admin\Users\CustomerController;
+use App\Http\Controllers\Admin\Users\SupportTicketController;
+use App\Http\Controllers\Admin\Users\SupportTicketMessageController;
 use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\Admin\Users\VendorController;
 use App\Http\Controllers\GeneralController;
@@ -113,7 +115,13 @@ Route::group(['prefix'=>'admin'], static function (){
         Route::resource('contents', ContentController::class);
         Route::put('contents/restore/{id}', [ContentController::class, 'restore'])->name('contents.restore')->middleware('can:Restore Contents');
 
+        Route::resource('support_tickets', SupportTicketController::class);
+        Route::put('support_tickets/restore/{id}', [SupportTicketController::class, 'restore'])->name('support_tickets.restore')->middleware('can:Restore Support Tickets');
+        Route::get('support_tickets/{supportTicket}/messages', [SupportTicketMessageController::class, 'loadMessages'])->name('support_tickets.loadMessages');
+        Route::post('support_tickets/{supportTicket}/messages', [SupportTicketMessageController::class, 'storeMessage'])->name('support_tickets.storeMessage');
+        Route::post('support_tickets/{supportTicket}/close', [SupportTicketController::class, 'close'])->name('support_tickets.close');
     });
+
 });
 
 Route::get('/getDistricts', [GeneralController::class, 'getDistricts'])->name('getDistricts');
@@ -129,6 +137,7 @@ Route::get('/getRoles', [GeneralController::class, 'getRoles'])->name('getRoles'
 Route::get('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
 Route::get('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
 Route::get('/getSites', [GeneralController::class, 'getSites'])->name('getSites');
+Route::get('/getSupportTypes', [GeneralController::class, 'getSupportTypes'])->name('getSupportTypes');
 Route::post('/getDocuments', [GeneralController::class, 'getDocuments'])->name('getDocuments');
 Route::post('/documentHandler', [GeneralController::class, 'documentHandler'])->name('documentHandler');
 Route::post('/updateDocuments', [GeneralController::class, 'updateDocuments'])->name('updateDocuments');

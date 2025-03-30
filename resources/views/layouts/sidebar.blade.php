@@ -225,6 +225,28 @@
 {{--                                            title="">Company</a></li>--}}
                         </ul>
                     </li>
+                    <li class="dropdown CMenus">
+                        <a class="nav-link menu-title" href="#">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" class="feather feather-headphones">
+                                <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                                <path d="M21 18a3 3 0 0 1-6 0v-6"></path>
+                                <path d="M3 18a3 3 0 0 0 6 0v-6"></path>
+                            </svg>
+                            <span>Support</span>
+                            <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
+                        </a>
+                        <ul class="nav-submenu menu-content" style="display: none;">
+                            @can('View Support Tickets')
+                                <li class="">
+                                    <a href="{{ route('support_tickets.index') }}" data-active-name="Support-Tickets" title="Support Tickets">
+                                        Support Tickets
+                                    </a>
+                                </li>
+                            @endcan
+                        </ul>
+                    </li>
                     <li class="dropdown CMenus" id="btnLogout"><a class="nav-link menu-title link-nav" data-active-name="logout"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"

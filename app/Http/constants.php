@@ -69,3 +69,12 @@ const DELETED = 'Deleted';
 
 const PROJECT_TASK_STATUSES = [CREATED, IN_PROGRESS, ON_HOLD, COMPLETED, DELETED];
 
+const OPEN = 'open';
+const CLOSED = 'closed';
+const SUPPORT_TICKET_STATUSES = [OPEN, CLOSED];
+
+const ALL = 'All';
+const BILLING = 'Billing';
+const TECHNICAL = 'Technical';
+const SUPPORT_TYPES = [ALL, BILLING, TECHNICAL, OTHERS];
+

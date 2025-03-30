@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\ContractType;
+use App\Models\SupportType;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -48,6 +49,7 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Projects'],
             ['guard_name' => 'web', 'model' => 'Project Tasks'],
             ['guard_name' => 'web', 'model' => 'Visitors'],
+            ['guard_name' => 'web', 'model' => 'Support Tickets'],
         ];
 
         $updatedModules = [];
@@ -64,7 +66,7 @@ class PermissionSeeder extends Seeder
                     $permission = $module;
                     $permission['name'] = $option . ' ' . $module['model'];
 //                    $updatedModules[] = $permission;
-                    Permission::create($permission);
+                    Permission::Create($permission);
                 }
             }
         }
@@ -80,8 +82,6 @@ class PermissionSeeder extends Seeder
             $role = Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
             $role->givePermissionTo($modulesIds);
         }
-        $admin_role_exist = Role::where('name', SUPER_ADMIN_ROLE_NAME)->exists();
-        if(!$admin_role_exist) {
             $super_admin_role_id = Role::where('name', SUPER_ADMIN_ROLE_NAME)->first()->id;
             $supervisor_role_id = Role::where('name', SITE_SUPERVISOR_ROLE_NAME)->first()->id;
             $engineer_role_id = Role::where('name', ENGINEER_ROLE_NAME)->first()->id;
@@ -107,8 +107,11 @@ class PermissionSeeder extends Seeder
             ];
 
             foreach ($users as $userData) {
-                $user = User::create($userData);
-                $user->assignRole($super_admin_role_id);
+                $admin = User::updateOrCreate(
+                    ['email' => $userData['email']],
+                    $userData
+                );
+                $admin->assignRole($super_admin_role_id);
             }
 
             $supervisors = [
@@ -132,10 +135,13 @@ class PermissionSeeder extends Seeder
                 ]
             ];
 
-            foreach ($supervisors as $supervisorData) {
-                $supervisor = User::create($supervisorData);
-                $supervisor->assignRole($supervisor_role_id);
-            }
+        foreach ($supervisors as $supervisorData) {
+            $supervisor = User::updateOrCreate(
+                ['email' => $supervisorData['email']],
+                $supervisorData
+            );
+            $supervisor->assignRole($supervisor_role_id);
+        }
 
             $engineers = [
                 [
@@ -158,10 +164,12 @@ class PermissionSeeder extends Seeder
                 ]
             ];
 
-            foreach ($engineers as $engineerData) {
-                $engineer = User::create($engineerData);
-                $engineer->assignRole($engineer_role_id);
-            }
+        foreach ($engineers as $engineerData) {
+            $engineer = User::updateOrCreate(
+                ['email' => $engineerData['email']],
+                $engineerData
+            );
+            $engineer->assignRole($engineer_role_id);
         }
 
         $construction_contract_types = [
@@ -185,6 +193,10 @@ class PermissionSeeder extends Seeder
 
         foreach ($construction_contract_types as $construction_contract_type){
             ContractType::firstOrCreate(['name' => $construction_contract_type, 'is_active' => true]);
+        }
+
+        foreach (SUPPORT_TYPES as $support_type){
+            SupportType::firstOrCreate(['name' => $support_type, 'is_active' => true]);
         }
 
     }

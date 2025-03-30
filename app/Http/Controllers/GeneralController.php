@@ -12,6 +12,7 @@ use App\Models\Document;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\Project;
+use App\Models\SupportType;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -118,6 +119,10 @@ class GeneralController extends Controller
     {
             return response()->json(Site::where('is_active', 1)->get());
     }
+    public function getSupportTypes(): JsonResponse
+    {
+            return response()->json(SupportType::all());
+    }
 
     public function getDistricts(Request $req)
     {
@@ -168,7 +173,9 @@ class GeneralController extends Controller
 
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $file) {
-                    $filename = uniqid('', true) . '_' . $file->getClientOriginalName();
+                    $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) .
+                        '_' . now()->timestamp . '_' . random_int(1000, 9999) .
+                        '.' . $file->getClientOriginalExtension();
                     $path = $file->storeAs('documents', $filename, 'public');
 
                     $document = Document::create([

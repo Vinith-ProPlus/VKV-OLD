@@ -129,9 +129,10 @@ Route::get('/getRoles', [GeneralController::class, 'getRoles'])->name('getRoles'
 Route::get('/getProjects', [GeneralController::class, 'getProjects'])->name('getProjects');
 Route::get('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
 Route::get('/getSites', [GeneralController::class, 'getSites'])->name('getSites');
-Route::post('uploadDocuments', [GeneralController::class, 'uploadDocuments'])->name('uploadDocuments');
-Route::post('deleteDocument', [GeneralController::class, 'deleteDocument'])->name('deleteDocument');
-
+Route::post('/getDocuments', [GeneralController::class, 'getDocuments'])->name('getDocuments');
+Route::post('/documentHandler', [GeneralController::class, 'documentHandler'])->name('documentHandler');
+Route::post('/updateDocuments', [GeneralController::class, 'updateDocuments'])->name('updateDocuments');
+Route::delete('deleteDocuments', [GeneralController::class,'deleteDocuments'])->name('deleteDocuments');
 require __DIR__.'/auth.php';
 
 

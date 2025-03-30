@@ -12,6 +12,7 @@
         <meta name="keywords" content="">
         <meta name="author" content="ProPlus Logics">
         <meta name="_token" content="{{ csrf_token() }}"/>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{$PageTitle ?? ''}} {{-- - {{$Company['CompanyName']}} --}}</title>
 		<link rel="icon" type="image/x-icon" href="{{-- {{url('/')}}/{{$Company['Logo']}} --}}">
@@ -43,6 +44,8 @@
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/custom.css?r={{date('YmdHis')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/custom-n.css?r={{date('YmdHis')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/datatables.css?r={{date('YmdHis')}}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
+
 		<!-- sweetalert2 -->
 		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -51,6 +54,127 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
 
     </head>
+    <style>
+        .wizard-head {
+            /* pointer-events: none !important; */
+            margin-bottom: 30px !important;
+            justify-content: space-evenly;
+        }
+
+        .wizard-head a {
+            text-decoration: none;
+        }
+
+        .wizard-head a .nav-contents {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .wizard-head .nav-title {
+            color: #c0c0c0;
+        }
+
+        .wizard-head .nav-link.active .nav-title {
+            color: #545454;
+        }
+
+        .wizard-head .nav-link i {
+            font-size: 32px;
+            color: #d8d6ff;
+        }
+
+        .wizard-head .nav-link.active i {
+            color: #7167f4 !important;
+        }
+
+        .nav-tabs {
+            border-bottom: none !important;
+        }
+
+        .wizard-head .nav-link {
+            border: none !important;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 150px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 15px;
+
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .preview-document {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-radius: 4px;
+        }
+
+        .preview-document i {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .file-name {
+            font-size: 12px;
+            text-align: center;
+            word-break: break-word;
+            margin-top: 5px;
+            color: #333;
+        }
+
+        .file-size {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-top: 3px;
+        }
+
+        .dropify-wrapper {
+            /* margin-bottom: 20px; */
+        }
+
+        .remove-file, .remove-modal-file, .btnDeleteDocumentFile, .btnDeleteDocArray {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+    </style>
 	<body>
 		<input type="hidden" style="display:none!important" id="txtRootUrl" value="{{url('/')}}/">
 		<input type="hidden" name="txtActiveName" id="txtActiveName" value="{{$ActiveMenuName ?? ''}}">

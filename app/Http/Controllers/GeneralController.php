@@ -16,7 +16,9 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
 class GeneralController extends Controller
@@ -128,55 +130,148 @@ class GeneralController extends Controller
         return response()->json($districts->get());
     }
 
-    public function uploadDocuments(Request $request): JsonResponse
+    public function getDocuments(Request $request): JsonResponse
     {
-        $request->validate([
-            'file' => 'required|file|max:10240', // 10MB limit
-            'module_name' => 'required|string',
-        ]);
+        $documents = Document::where('module_name', $request->module_name)
+            ->where('module_id', $request->module_id)
+            ->get()
+            ->map(static function ($document) {
+                return [
+                    'id' => $document->id,
+                    'title' => $document->title,
+                    'description' => $document->description ?? '',
+                    'images' => [
+                        [
+                            'fileId' => $document->id,
+                            'filename' => $document->file_name,
+                            'url' => asset("storage/$document->file_path"),
+                        ]
+                    ]
+                ];
+            });
 
-        DB::beginTransaction();
-        try {
-            if ($request->hasFile('file')) {
-                $path = $request->file('file')?->store('projects', 'public');
-                $fileName = $request->input('file_name', $request->file('file')?->getClientOriginalName());
-
-                $document = Document::create([
-                    'file_path' => $path,
-                    'file_name' => $fileName,
-                    'uploaded_by' => auth()->id(),
-                    'module_name' => $request->module_name ?? 'File',
-                    'module_id' => $request->input('module_id', auth()->id()),
-                ]);
-
-
-                DB::commit();
-                return response()->json(['success' => true, 'document' => $document]);
-            }
-            return response()->json(['success' => false]);
-        } catch (\Exception $e) {
-            info('Error::Place@GeneralController@uploadDocuments - ' . $e->getMessage());
-            DB::rollBack();
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
+        return response()->json($documents);
     }
 
-    public function deleteDocument(Request $request): JsonResponse
-    {
-        $request->validate(['id' => 'required|exists:documents,id']);
 
+    public function documentHandler(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'module_name' => 'required|string',
+                'module_id' => 'required|integer',
+                'images.*' => 'required|file|max:10240|mimes:png,jpg,jpeg,pdf,docx,xls,webp'
+            ]);
+
+            $uploadedFiles = [];
+            $title = $request->input('title', 'Untitled Document');
+            $description = $request->input('description', '');
+
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    $filename = uniqid('', true) . '_' . $file->getClientOriginalName();
+                    $path = $file->storeAs('documents', $filename, 'public');
+
+                    $document = Document::create([
+                        'title' => $title,
+                        'description' => $description,
+                        'module_name' => $validated['module_name'],
+                        'module_id' => $validated['module_id'],
+                        'file_path' => $path,
+                        'file_name' => $filename,
+                        'uploaded_by' => auth()->id()
+                    ]);
+
+                    $uploadedFiles[] = [
+                        'id' => $document->id,
+                        'name' => $filename,
+                        'path' => asset("storage/$path"),
+                        'extension' => $file->getClientOriginalExtension()
+                    ];
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'files' => $uploadedFiles
+            ]);
+        } catch (\Throwable $exception) {
+            Log::error("Error::Place@GeneralController@documentHandler - " . $exception->getMessage());
+            return response()->json([
+                'success' => false,'message' => 'An error occurred during upload',
+                'error' => $exception->getMessage()
+            ], 500);
+        }
+    }
+    public function updateDocuments(Request $request): JsonResponse
+    {
         DB::beginTransaction();
         try {
-            $document = Document::findOrFail($request->id);
-            Storage::delete($document->file_path); // Delete file from storage
-            $document->delete();
+            $request->validate([
+                'documentIds' => 'required',
+                'title' => 'required|string',
+                'description' => 'nullable|string',
+                'deletedDocuments' => 'nullable',
+            ]);
+            $documentIds = is_array($request->documentIds) ? $request->documentIds : [$request->documentIds];
+            $deletedDocuments = is_array($request->deletedDocuments) ? $request->deletedDocuments : [$request->deletedDocuments];
 
+            Document::whereIn('id', $documentIds)->update([
+                'title' => $request->input('title'),
+                'description' => $request->input('description', ''),
+            ]);
+
+            if (!empty($deletedDocuments)) {
+                $documents = Document::whereIn('id', $deletedDocuments)->get();
+                foreach ($documents as $document) {
+                    $filePath = 'project_documents/' . $document->file_name;
+                    if (Storage::disk('public')->exists($filePath)) {
+                        Storage::disk('public')->delete($filePath);
+                    }
+                    $document->delete();
+                }
+            }
             DB::commit();
             return response()->json(['success' => true]);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             DB::rollBack();
-            info('Error::Place@GeneralController@deleteDocument - ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+            Log::error('Error::GeneralController@updateDocuments - ' . $exception->getMessage());
+            return response()->json([
+                'success' => false,'message' => 'An error occurred during update',
+                'error' => $exception->getMessage(),
+            ], 500);
         }
     }
+
+    public function deleteDocuments(Request $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'id' => 'required',
+            ]);
+            $documentIds = is_array($request->id) ? $request->id : [$request->id];
+            $documents = Document::whereIn('id', $documentIds)->get(['id', 'file_path']);
+            if ($documents->isEmpty()) {
+                return response()->json(['message' => 'No documents found to delete'], 404);
+            }
+            $deletedFiles = $documents->pluck('file_path')->toArray();
+            Document::whereIn('id', $documentIds)->delete();
+            Storage::disk('public')->delete($deletedFiles);
+            DB::commit();
+            return response()->json([
+                'message' => 'Documents deleted successfully'
+            ]);
+        } catch (\Throwable $exception) {
+            DB::rollBack();
+            Log::error("Error::Place@GeneralController@deleteDocuments - " . $exception->getMessage());
+            return response()->json([
+                'success' => false, 'message' => 'An error occurred during delete',
+                'error' => $exception->getMessage()
+            ], 500);
+        }
+    }
+
+
+
 }

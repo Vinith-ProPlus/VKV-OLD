@@ -7,6 +7,7 @@ use App\Http\Requests\ProjectRequest;
 use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Document;
 use App\Models\Project;
+use App\Models\ProjectContract;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -85,6 +86,22 @@ class ProjectController extends Controller{
             }
             Document::where('module_name', 'User-Project')->where('module_id', Auth::id())
                 ->update(['module_name' => 'Project', 'module_id' => $project->id]);
+
+            $contracts = $request->contracts ?? [];
+
+            foreach ($contracts as $contract) {
+                ProjectContract::updateOrCreate(
+                    [
+                        'project_id' => $project->id,
+                        'contract_type_id' => $contract['contract_type_id'],
+                        'user_id' => $contract['user_id']
+                    ],
+                    [
+                        'amount' => $contract['amount']
+                    ]
+                );
+            }
+
             DB::commit();
             return redirect()->route('projects.index')->with('success', 'Project created successfully.');
         } catch (Exception $exception) {
@@ -139,6 +156,21 @@ class ProjectController extends Controller{
                         'order_no' => $stageData['order_no'],
                     ]);
                 }
+            }
+
+            $contracts = $request->contracts ?? [];
+
+            foreach ($contracts as $contract) {
+                ProjectContract::updateOrCreate(
+                    [
+                        'project_id' => $project_id,
+                        'contract_type_id' => $contract['contract_type_id'],
+                        'user_id' => $contract['user_id']
+                    ],
+                    [
+                        'amount' => $contract['amount']
+                    ]
+                );
             }
 
             // Soft delete missing stages

@@ -55,6 +55,30 @@
         #fileInput {
             display: none;
         }
+        .btn-green {
+            background-color: #51bb2596 !important;
+            border-color: #51bb2596 !important;
+            color: white;
+        }
+        .btn-green:hover {
+            background-color: #45a220 !important;
+            border-color: #45a220 !important;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-blue {
+            background-color: #655af3 !important;
+            border-color: #655af3 !important;
+            color: white;
+        }
+
+        .btn-blue:hover {
+            background-color: #3947f3 !important;
+            border-color: #3947f3 !important;
+            color: white;
+            font-weight: 600;
+        }
+
     </style>
 
     <div class="container-fluid">
@@ -62,7 +86,7 @@
             <!-- Support Ticket Details Card -->
             <div class="col-md-4">
                 <div class="card">
-                    <div class="card-header bg-primary text-white">Ticket Details</div>
+                    <div class="card-header bg-primary text-white" style="font-weight: 700; background-color: #655af394 !important;">Ticket Details</div>
                     <div class="card-body">
                         <p><strong>Ticket #:</strong> {{ $supportTicket->ticket_number }}</p>
                         <p><strong>Support Type :</strong> {{ $support_type }}</p>
@@ -80,7 +104,7 @@
             <!-- Conversation View Card -->
             <div class="col-md-8">
                 <div class="card mb-1">
-                    <div class="card-header bg-success text-white">Conversation</div>
+                    <div class="card-header bg-success text-white" style="background-color: #51bb2596 !important; font-weight: 700;">Conversation</div>
                     <div class="card-body chat-box" id="chatBox"></div>
                 </div>
                 @if($supportTicket->status !== CLOSED)
@@ -99,7 +123,7 @@
                                         <span class="attachment-count" id="attachmentCount">0</span>
                                     </span>
 
-                                    <button class="btn btn-primary" type="submit">Send</button>
+                                    <button class="btn btn-blue" type="submit">Send</button>
                                 </div>
                             </form>
                         </div>
@@ -190,8 +214,8 @@
                             html += `
                                 <div class="document-box border p-2 m-1" style="min-width: 100px; text-align: center;">
                                     <p class="text-truncate" style="max-width: 150px; margin-top: 5px; margin-bottom: 5px;">${doc.file_name}</p>
-                                    <a href="${doc.file_path}" target="_blank" class="btn btn-sm btn-primary">View</a>
-                                    <a href="${doc.file_path}" download class="btn btn-sm btn-success">Download</a>
+                                    <a href="${doc.file_path}" target="_blank" class="btn btn-sm btn-blue">View</a>
+                                    <a href="${doc.file_path}" download class="btn btn-sm btn-green">Download</a>
                                 </div>
                             `;
                         });

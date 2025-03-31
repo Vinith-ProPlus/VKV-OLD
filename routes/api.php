@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\GeneralController;
 use App\Http\Controllers\API\MobileUserAttendanceController;
+use App\Http\Controllers\API\SupportTicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -48,6 +49,13 @@ Route::middleware('auth:sanctum')->group(static function () {
     Route::post('visitors/get-visitor', [GeneralController::class, 'getVisitor']);
     Route::post('visitors/get-visitors', [GeneralController::class, 'getVisitors']);
     Route::post('visitors/create-visitor', [GeneralController::class, 'createVisitor']);
+
+    // Support Ticket
+    Route::post('support/getSupportTypes', [SupportTicketController::class, 'getSupportTypes'])->name('getSupportTypes');
+    Route::post('support/getSupportTicketsHistory', [SupportTicketController::class, 'getSupportTicketsHistory'])->name('getSupportTicketsHistory');
+    Route::post('support/getSupportTicketMessages', [SupportTicketController::class, 'getSupportTicketMessages'])->name('getSupportTicketMessages');
+    Route::post('support/createTicket', [SupportTicketController::class, 'createTicket'])->name('createTicket');
+    Route::post('support/storeMessage/{supportTicket}', [SupportTicketController::class, 'storeMessage'])->name('storeMessage');
 
     Route::post('HomeScreen', [GeneralController::class, 'HomeScreen']);
     Route::post('update-fcm-token', [GeneralController::class, 'updateFcmToken']);

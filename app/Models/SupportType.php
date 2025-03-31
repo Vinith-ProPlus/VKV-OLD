@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @method static firstOrCreate(array $array)
+ * @method static where(string $string, int $int)
  */
 class SupportType extends Model
 {

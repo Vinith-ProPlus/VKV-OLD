@@ -117,11 +117,12 @@ class GeneralController extends Controller
 
     public function getSites()
     {
-            return response()->json(Site::where('is_active', 1)->get());
+        return response()->json(Site::where('is_active', 1)->get());
     }
+
     public function getSupportTypes(): JsonResponse
     {
-            return response()->json(SupportType::all());
+        return response()->json(SupportType::where('is_active', 1)->get());
     }
 
     public function getDistricts(Request $req)

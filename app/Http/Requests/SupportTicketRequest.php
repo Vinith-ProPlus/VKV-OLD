@@ -19,10 +19,7 @@ class SupportTicketRequest extends FormRequest
             'user_id' => 'required|exists:users,id',
             'support_type' => 'required|exists:support_types,id',
             'message' => 'required|string|max:255',
-            'status' => [
-                'required', 'string',
-                Rule::in(SUPPORT_TICKET_STATUSES),
-            ],
+            'status' => ['required', 'string', Rule::in(SUPPORT_TICKET_STATUSES)],
         ];
     }
 }

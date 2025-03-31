@@ -15,6 +15,7 @@ use App\Models\Content;
 use App\Models\Document;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
+use App\Models\MobileUserAttendance;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Project;
@@ -24,6 +25,7 @@ use App\Models\UserDevice;
 use App\Models\UserDeviceLocation;
 use App\Models\Visitor;
 use App\Traits\ApiResponse;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -285,9 +287,17 @@ class GeneralController extends Controller
         });
         $total_today_task = $query->count();
         $notification_count = 0;
+        // Check user's last attendance entry for today
+        $lastAttendance = MobileUserAttendance::where('user_id', $userId)
+            ->whereDate('time', Carbon::today())
+            ->latest('time')
+            ->first();
+
+        // Determine if the user should check in or check out
+        $is_check_in = !$lastAttendance || $lastAttendance->type === 'check_out';
 
         return $this->successResponse(
-            compact('user', 'today_tasks', 'total_today_task', 'notification_count'),
+            compact('user', 'today_tasks', 'total_today_task', 'notification_count', 'is_check_in'),
             "Home Screen data fetched successfully!"
         );
     }

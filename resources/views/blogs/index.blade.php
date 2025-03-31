@@ -28,7 +28,7 @@
                             <div class="col-sm-4"></div>
                             <div class="col-sm-4 my-2"><h5>{{$PageTitle}}</h5></div>
                             <div class="col-sm-4 my-2 text-right text-md-right">
-                                @can('Create Support Tickets')
+                                @can('Create Blogs')
                                     <a class="btn btn-sm btnPrimaryCustomizeBlue btn-primary add-btn"
                                        href="{{ route('blogs.create') }}">Add New Blog</a>
                                 @endcan
@@ -37,10 +37,20 @@
                         <div class="row align-items-center justify-content-center">
                             <div class="col-sm-2">
                                 <div class="form-group text-center mh-60">
-                                    <label style="margin-bottom: 0px;">Project</label>
-                                    <div id="divSupportType">
-                                        <select class="form-control form-control-sm text-center" id="support_type_id">
-                                            <option value="">Select a Support Type</option>
+                                    <label style="margin-bottom: 0px;">Projects</label>
+                                    <div id="divProject">
+                                        <select class="form-control form-control-sm text-center" id="project_id">
+                                            <option value="">Select a Project</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group text-center mh-60">
+                                    <label style="margin-bottom: 0px;">Stages</label>
+                                    <div id="divStage">
+                                        <select class="form-control form-control-sm text-center" id="stage_id">
+                                            <option value="">Select a Stage</option>
                                         </select>
                                     </div>
                                 </div>
@@ -51,19 +61,6 @@
                                     <div id="divUser">
                                         <select class="form-control form-control-sm text-center" id="user_id">
                                             <option value="">Select a User</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group text-center mh-60">
-                                    <label style="margin-bottom: 0px;">Status</label>
-                                    <div id="divStatus">
-                                        <select class="form-control form-control-sm text-center" id="status">
-                                            <option value="">Select a Status</option>
-                                            @foreach(SUPPORT_TICKET_STATUSES as $status)
-                                                <option value="{{ $status }}">{{ $status }}</option>
-                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -97,11 +94,10 @@
                                         <thead class="thead-light">
                                         <tr>
                                             <th>S.No</th>
-                                            <th>Ticket Number</th>
-                                            <th>Ticket Type</th>
+                                            <th>Project</th>
+                                            <th>Stage</th>
                                             <th>Name</th>
                                             <th>Date</th>
-                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                         </thead>
@@ -119,12 +115,13 @@
 @endsection
 @section('script')
     <script>
-        @can('View Support Tickets')
+        @can('View Blogs')
         $(document).ready(function () {
+            $('#project_id').change(() => getProjectStages());
             $('#clearFilters').click(clearFilter);
 
             function initMultiSelect() {
-                $('#support_type_id, #user_id, #status').multiselect({
+                $('#project_id, #stage_id, #user_id').multiselect({
                     buttonClass: 'btn btn-link',
                     enableFiltering: true,
                     maxHeight: 250,
@@ -132,7 +129,9 @@
             }
 
             function reloadTable() {
-                $('#list_table').DataTable().ajax.reload();
+                if ($.fn.DataTable.isDataTable('#list_table')) {
+                    $('#list_table').DataTable().ajax.reload();
+                }
             }
 
             // Initialize DataTable
@@ -142,48 +141,25 @@
                 iDisplayLength: 10,
                 lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
                 ajax: {
-                    url: '{{ route("support_tickets.index") }}',
+                    url: '{{ route("blogs.index") }}',
                     type: 'GET',
                     data: function (d) {
-                        d.support_type_id = $('#support_type_id').val();
+                        d.project_id = $('#project_id').val();
+                        d.stage_id = $('#stage_id').val();
                         d.user_id = $('#user_id').val();
-                        d.status = $('#status').val();
                         d.from_date = $('#from_date').val();
                         d.to_date = $('#to_date').val();
                     }
                 },
                 columns: [
                     {data: 'DT_RowIndex', orderable: false, searchable: false},
-                    {data: 'ticket_number'},
-                    {data: 'support_type'},
+                    {data: 'project_name'},
+                    {data: 'stage_name'},
                     {data: 'user_name'},
                     {data: 'created_on'},
-                    {data: 'status'},
                     {data: 'action', orderable: false},
                 ]
             });
-
-            // Fetch support types dynamically
-            function getSupportType() {
-                let SupportTypeID = $('#support_type_id');
-                let SelectedSupportType = SupportTypeID.attr('data-selected');
-
-                $.ajax({
-                    url: "{{ route('getSupportTypes') }}",
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function (response) {
-                        let options = '<option value="">Select a Support Type</option>';
-                        response.forEach(item => {
-                            options += `<option value="${item.id}" ${item.id == SelectedSupportType ? 'selected' : ''}>${item.name}</option>`;
-                        });
-                        SupportTypeID.html(options).multiselect('rebuild');
-                    },
-                    error: function () {
-                        console.error("Error fetching support types.");
-                    }
-                });
-            }
 
             // Fetch users dynamically
             function getUsers() {
@@ -207,19 +183,67 @@
                 });
             }
 
-            $('#support_type_id, #user_id, #status, #from_date, #to_date').on('change', reloadTable);
+            // Fetch projects dynamically
+            function getProjects() {
+                let ProjectID = $('#project_id');
+                let SelectedProject = ProjectID.attr('data-selected');
+
+                $.ajax({
+                    url: "{{ route('getProjects') }}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        let options = '<option value="">Select a Project</option>';
+                        response.forEach(item => {
+                            options += `<option value="${item.id}" ${item.id == SelectedProject ? 'selected' : ''}>${item.name}</option>`;
+                        });
+                        ProjectID.html(options).multiselect('rebuild');
+                        getProjectStages();
+                    },
+                    error: function () {
+                        console.error("Error fetching projects.");
+                    }
+                });
+            }
+
+            function getProjectStages() {
+                let StageID = $('#stage_id');
+                let ProjectID = $('#project_id');
+                let SelectedProjectID = ProjectID.val() || ProjectID.attr('data-selected');
+                let SelectedStage = StageID.attr('data-selected');
+
+                if (SelectedProjectID) {
+                    $.ajax({
+                        url: "{{ route('getStages') }}",
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {'ProjectID': SelectedProjectID},
+                        success: function (response) {
+                            let options = '<option value="">Select a Stage</option>';
+                            response.forEach(item => {
+                                options += `<option value="${item.id}" ${item.id == SelectedStage ? 'selected' : ''}>${item.name}</option>`;
+                            });
+                            StageID.html(options).multiselect('rebuild');
+                        },
+                        error: function () {
+                            console.error("Error fetching stages.");
+                        }
+                    });
+                }
+            }
+
+            $('#project_id, #stage_id, #user_id, #from_date, #to_date').on('change', reloadTable);
 
             function clearFilter() {
-                $('#support_type_id').val('').multiselect('refresh');
+                $('#project_id').val('').multiselect('refresh');
+                $('#stage_id').val('').multiselect('refresh');
                 $('#user_id').val('').multiselect('refresh');
-                $('#status').val('').multiselect('refresh');
                 $('#from_date').val('');
                 $('#to_date').val('');
                 reloadTable();
             }
 
-
-            getSupportType();
+            getProjects();
             getUsers();
             initMultiSelect();
         });

@@ -630,7 +630,7 @@
 		<script src="{{url('/')}}/assets/js/lightbox/js/lightgallery.js?r={{date('dmyHis')}}"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
-		<script src="{{url('/assets/firebase.full.js')}}"></script>
+{{--		<script src="{{url('/assets/firebase.full.js')}}"></script>--}}
 
 
 		<script src="{{url('/')}}/assets/plugins/ckeditor/ckeditor.js"></script>

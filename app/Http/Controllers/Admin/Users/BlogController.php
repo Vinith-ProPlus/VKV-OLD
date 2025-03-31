@@ -6,10 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BlogRequest;
 use App\Models\Blog;
 use App\Models\Document;
-use App\Models\BlogDetail;
-use App\Models\SupportType;
 use App\Models\User;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -40,27 +37,35 @@ class BlogController extends Controller{
         $this->authorize('View Blogs');
 
         if ($request->ajax()) {
-            $query = Blog::with('user')->withTrashed()->orderByDesc()
-                ->when($request->get('project_id'), static fn($q) => $q->where('project_id', $request->project_id))
-                ->when($request->get('stage_id'), static fn($q) => $q->where('stage_id', $request->stage_id))
-                ->when($request->get('user_id'), static fn($q) => $q->where('user_id', $request->user_id))
-                ->when($request->get('from_date'), static fn($q) => $q->whereDate('created_at', '>=', $request->from_date))
-                ->when($request->get('to_date'), static fn($q) => $q->whereDate('created_at', '<=', $request->to_date));
+            $query = Blog::with(['user', 'project', 'stage'])
+                ->withTrashed()
+                ->orderByDesc('created_at')
+                ->when($request->project_id, static fn($q) => $q->whereHas('project', static fn($sub) => $sub->where('id', $request->project_id)))
+                ->when($request->stage_id, static fn($q) => $q->whereHas('stage', static fn($sub) => $sub->where('id', $request->stage_id)))
+                ->when($request->user_id, static fn($q) => $q->whereHas('user', static fn($sub) => $sub->where('id', $request->user_id)))
+                ->when($request->from_date, static fn($q) => $q->whereDate('created_at', '>=', $request->from_date))
+                ->when($request->to_date, static fn($q) => $q->whereDate('created_at', '<=', $request->to_date))
+                ->get();
 
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->editColumn('user_name', static fn($data) => $data->user?->name)
-                ->editColumn('created_on', static fn($data) => Carbon::parse($data->created_at)->format('d-m-Y'))
+                ->editColumn('project_name', static fn($data) => $data->project?->name)
+                ->editColumn('stage_name', static fn($data) => $data->stage?->name)
+                ->editColumn('created_on', static fn($data) => $data->created_at->format('d-m-Y'))
                 ->addColumn('action', static function ($data) {
-                    $button = '<div class="d-flex justify-content-center">';
-                    if ($data->deleted_at) {
-                        $button .= '<a onclick="commonRestore(\'' . route('blogs.restore', $data->id) . '\')" class="btn btn-outline-warning"><i class="fa fa-undo"></i></a>';
+                    $buttons = '<div class="d-flex justify-content-center">';
+                    if ($data->trashed()) {
+                        $buttons .= '<a onclick="commonRestore(\'' . route('blogs.restore', $data->id) . '\')" class="btn btn-outline-warning" title="Restore"><i class="fa fa-undo"></i></a>';
                     } else {
-                        $button .= '<a href="' . route('blogs.show', $data->id) . '" class="btn btn-outline-success btn-sm m-1"><i class="fa fa-eye" aria-hidden="true"></i></a>';
-                        $button .= '<a onclick="commonDelete(\'' . route('blogs.destroy', $data->id) . '\')"  class="btn btn-outline-danger btn-sm m-1"><i class="fa fa-trash" style="color: red"></i></a>';
+                        $buttons .= '<a href="' . route('blogs.show', $data->id) . '" class="btn btn-outline-success btn-sm m-1" title="View">
+                                    <i class="fa fa-eye"></i></a>
+                                    <a onclick="commonDelete(\'' . route('blogs.destroy', $data->id) . '\')" class="btn btn-outline-danger btn-sm m-1" title="Delete">
+                                    <i class="fa fa-trash text-danger"></i></a>';
                     }
-                    $button .= '</div>';
-                    return $button;
+
+                    $buttons .= '</div>';
+                    return $buttons;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -89,29 +94,43 @@ class BlogController extends Controller{
         $this->authorize('Create Blogs');
         DB::beginTransaction();
         try {
-            $blog = Blog::create(
-                [
-                'user_id'       => $request->user_id,
-                'stage_ids'       => $request->stage_ids
-            ]);
-            foreach($request->stage_ids as $stage_id) {
-                $message = BlogDetail::create([
-                    'blog_id' => $blog->id,
-                    'project_id' => $request->project_id,
-                    'project_stage_id' => $stage_id,
-                    'remarks' => $request->remarks,
-                    'is_damage' => $request->is_damage,
-                ]);
+            $attachments = [];
+            if ($request->hasFile('attachments')) {
+                $files = is_array($request->file('attachments')) ? $request->file('attachments') : [$request->file('attachments')];
+                foreach ($files as $file) {
+                    $filename = generateUniqueFileName($file);
+                    $path = $file->storeAs('documents', $filename, 'public');
+                    $attachments[] = [
+                        'title'       => 'Blog Attachment',
+                        'description' => '',
+                        'module_name' => 'Blog',
+                        'file_path'   => $path,
+                        'file_name'   => $filename,
+                        'uploaded_by' => $request->user_id,
+                    ];
+                }
             }
-            Document::where('module_name', 'User-Blog')->where('module_id', Auth::id())
-                ->update(['module_name' => 'Blog', 'module_id' => $message->id]);
+
+            foreach ($request->stage_ids as $stage_id) {
+                $blog = Blog::create([
+                    'user_id'          => $request->user_id,
+                    'project_id'       => $request->project_id,
+                    'project_stage_id' => $stage_id,
+                    'remarks'          => $request->remarks,
+                    'is_damaged'        => $request->is_damaged,
+                ]);
+
+                foreach ($attachments as $attachment) {
+                    Document::create(array_merge($attachment, ['module_id' => $blog->id]));
+                }
+            }
             DB::commit();
             return redirect()->route('blogs.index')->with('success', 'Blog created successfully.');
         } catch (Exception $exception) {
             DB::rollBack();
             $ErrMsg = $exception->getMessage();
             warning('Error::Place@BlogController@store - ' . $ErrMsg);
-            return redirect()->back()->withInput()->with("warning", "Something went wrong" . $ErrMsg);
+            return redirect()->back()->withInput()->with("warning", "Something went wrong: " . $ErrMsg);
         }
     }
 
@@ -121,8 +140,7 @@ class BlogController extends Controller{
      */
     public function show(Blog $blog): View|Factory|Application
     {
-        $user_name = User::find($blog->user_id)->first()?->name;
-        return view('blogs.show', compact('blog', 'user_name'));
+        return view('blogs.show', compact('blog'));
     }
 
     /**

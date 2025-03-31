@@ -2,8 +2,8 @@
 
 @section('content')
     @php
-        $PageTitle = "Support Ticket";
-        $ActiveMenuName = 'Support-Tickets';
+        $PageTitle = "Blog";
+        $ActiveMenuName = 'Blog';
     @endphp
 
     <div class="container-fluid">
@@ -25,33 +25,48 @@
             <div class="col-12 col-lg-12">
                 <div class="card">
                     <div class="card-header text-center">
-                        <h5>{{ $support_ticket ? 'Edit' : 'Create' }} {{$PageTitle}}</h5>
+                        <h5>{{ $blog ? 'Edit' : 'Create' }} {{$PageTitle}}</h5>
                     </div>
                     <div class="card-body">
-                        <form action="{{ $support_ticket ? route('support_tickets.update', $support_ticket->id) : route('support_tickets.store') }}" method="POST">
+                        <form action="{{ $blog ? route('blogs.update', $blog->id) : route('blogs.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            @if($support_ticket)
+                            @if($blog)
                                 @method('PUT')
                             @endif
 
                             <div class="row mt-10">
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Support Type</label>
-                                        <select name="support_type" id="support_type" class="form-control select2 @error('support_type') is-invalid @enderror"
-                                                data-selected='{{ $support_ticket ? old('support_type', $support_ticket->support_type) : old('support_type') }}' required>
-                                            <option value="">Select a Support type</option>
+                                        <label>Project</label>
+                                        <select name="project_id" id="project_id" class="form-control select2 @error('project_id') is-invalid @enderror"
+                                                data-selected='{{ $blog ? old('project_id', $blog->project_id) : old('project_id') }}' required>
+                                            <option value="">Select a Project</option>
                                         </select>
-                                        @error('support_type')
+                                        @error('project_id')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label>Support Ticket For</label>
+                                        <label>Stage</label>
+                                        <select name="stage_ids[]" id="stage_ids" class="form-control select2 @error('stage_ids') is-invalid @enderror"
+                                                data-selected='{{ json_encode(old('stage_ids', $blog->stage_ids ?? [])) }}' multiple required>
+                                            <option value="">Select a Stage</option>
+                                        </select>
+                                        @error('stage_ids')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-10">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>Blog For</label>
                                         <select name="user_id" id="user_id" class="form-control select2 @error('user_id') is-invalid @enderror"
-                                                data-selected='{{ $support_ticket ? old('user_id', $support_ticket->user_id) : old('user_id') }}' required>
+                                                data-selected='{{ $blog ? old('user_id', $blog->user_id) : old('user_id') }}' required>
                                             <option value="">Select a User</option>
                                         </select>
                                         @error('user_id')
@@ -59,40 +74,39 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>Mark as Damaged</label>
+                                        <select name="is_damaged" id="is_damaged" class="form-control select2 @error('is_damaged') is-invalid @enderror"
+                                                data-selected='{{ $blog ? old('is_damaged', $blog->is_damaged) : old('is_damaged') }}' required>
+                                            <option value="0" {{ old('is_damaged', $project->is_damaged ?? 0) == 0 ? 'selected' : '' }}>No</option>
+                                            <option value="1" {{ old('is_damaged', $project->is_damaged ?? 1) == 1 ? 'selected' : '' }}>Yes</option>
+                                        </select>
+                                        @error('is_damaged')
+                                        <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row mt-10">
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label>Subject</label>
-                                        <input type="text" name="subject" class="form-control"
-                                               value="{{ old('subject', $support_ticket->subject ?? '') }}" required>
-                                        @error('subject')
+                                        <label>Remarks</label>
+                                        <textarea type="text" name="remarks" class="form-control" required>{{ old('remarks', $blog->remarks ?? '') }}</textarea>
+                                        @error('remarks')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
                             </div>
+
                             <div class="row mt-10">
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label>Description</label>
-                                        <textarea name="message" class="form-control">{{ old('message', $support_ticket->message ?? '') }}</textarea>
-                                        @error('message')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-12 mt-10">
-                                    <div class="form-group">
-                                        <label>Status</label>
-                                        <select name="status" id="status" class="form-control select2 @error('status') is-invalid @enderror" required>
-                                            <option value="">Select a Status</option>
-                                            @foreach(SUPPORT_TICKET_STATUSES as $status)
-                                                <option value="{{ $status }}" {{ $status === ($support_ticket ? old('status', $support_ticket->status) : old('status')) ? 'selected' : '' }}>{{ $status }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('status')
+                                        <label>Upload Documents</label>
+                                        <input type="file" name="attachments[]" class="form-control @error('attachments') is-invalid @enderror" multiple accept=".pdf,.doc,.docx,.jpg,.png">
+                                        @error('attachments')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -102,7 +116,7 @@
                             <div class="row mt-15 text-end">
                                 <div>
                                     <a href="javascript:void(0)" onclick="window.history.back()" class="btn btn-warning">Back</a>
-                                    <button type="submit" class="btn btn-primary">{{ $support_ticket ? 'Update' : 'Save' }}</button>
+                                    <button type="submit" class="btn btn-primary">{{ $blog ? 'Update' : 'Save' }}</button>
                                 </div>
                             </div>
                         </form>
@@ -116,36 +130,99 @@
 @section('script')
     <script>
         $(document).ready(function () {
-            $('.select2').select2();
+            $('#project_id').change(() => getProjectStages());
 
-            function fetchOptions(url, selectElement) {
-                let selectedValue = selectElement.attr('data-selected');
+            const getProjects = () =>{
+                let ProjectID = $('#project_id');
+                let SelectedProject = ProjectID.attr('data-selected');
+                ProjectID.select2('destroy');
+                $('#project_id option').remove();
+                ProjectID.append('<option value="">Select a Project</option>');
 
                 $.ajax({
-                    url: url,
+                    url:"{{route('getProjects')}}",
                     type: 'GET',
                     dataType: 'json',
-                    success: function (response) {
-                        updateSelectBox(selectElement, response, selectedValue);
+                    success: function(response) {
+                        response.forEach(function(item) {
+                            if ((item.id == SelectedProject)) {
+                                ProjectID.append('<option selected value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            } else {
+                                ProjectID.append('<option value="' + item.id
+                                    + '">'  + item.name + '</option>');
+                            }
+                        });
                     },
-                    error: function () {
-                        console.error(`Error fetching data from ${url}`);
-                    }
+                    error: function(e, x, settings, exception) {
+                        console.error("Error fetching projects: ", exception);
+                    },
                 });
+                ProjectID.select2();
+                getProjectStages();
+            }
+            const getUsers = () =>{
+                let UserID = $('#user_id');
+                let SelectedUser = UserID.attr('data-selected');
+                UserID.select2('destroy');
+                $('#user_id option').remove();
+                UserID.append('<option value="">Select a User</option>');
+
+                $.ajax({
+                    url:"{{route('getUsers')}}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        response.forEach(function(item) {
+                            if ((item.id == SelectedUser)) {
+                                UserID.append('<option selected value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            } else {
+                                UserID.append('<option value="' + item.id
+                                    + '">'  + item.name + '</option>');
+                            }
+                        });
+                    },
+                    error: function(e, x, settings, exception) {
+                        console.error("Error fetching users: ", exception);
+                    },
+                });
+                UserID.select2();
             }
 
-            function updateSelectBox(selectElement, data, selectedValue) {
-                let options = '<option value="">Select an Option</option>';
-                data.forEach(item => {
-                    options += `<option value="${item.id}" ${item.id == selectedValue ? 'selected' : ''}>${item.name}</option>`;
-                });
+            const getProjectStages = () => {
+                let StageID = $('#stage_ids');
+                let ProjectID = $('#project_id');
+                let SelectedProjectID = ProjectID.val() ? ProjectID.val() : ProjectID.attr('data-selected');
+                let SelectedStage = StageID.attr('data-selected');
 
-                selectElement.html(options).select2();
-            }
+                StageID.select2('destroy');
+                StageID.empty().append('<option value="">Select a Stage</option>');
 
-            fetchOptions("{{ route('getSupportTypes') }}", $('#support_type'));
-            fetchOptions("{{ route('getUsers') }}", $('#user_id'));
+                if (SelectedProjectID) {
+                    $.ajax({
+                        url: "{{ route('getStages') }}",
+                        type: 'GET',
+                        dataType: 'json',
+                        data: { 'ProjectID': SelectedProjectID },
+                        success: function(response) {
+                            response.forEach(function(item) {
+                                StageID.append('<option value="' + item.id + '" ' +
+                                    (SelectedStage.includes(item.id.toString()) ? 'selected' : '') + '>' +
+                                    item.name + '</option>');
+                            });
+                        },
+                        error: function(e, x, settings, exception) {
+                            console.error("Error fetching stages: ", exception);
+                        }
+                    });
+                }
+                StageID.select2();
+            };
+
+            getProjects();
+            getUsers();
         });
-
     </script>
 @endsection
+

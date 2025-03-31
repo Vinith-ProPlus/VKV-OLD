@@ -16,10 +16,8 @@ class BlogRequest extends FormRequest
     {
         return [
             'remarks'      => 'required|string|max:500',
-            'user_id' => 'required|exists:users,id',
             'project_id' => 'required|exists:projects,id',
-            'stage_ids' => 'required|array',
-            'is_damage' => 'required|boolean'
+            'stage_ids' => 'required',
         ];
     }
 }

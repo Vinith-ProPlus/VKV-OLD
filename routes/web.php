@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CRM\LeadSourceController;
 use App\Http\Controllers\Admin\CRM\VisitorController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\Settings\ContentController;
+use App\Http\Controllers\Admin\Users\BlogController;
 use App\Http\Controllers\Admin\Users\CustomerController;
 use App\Http\Controllers\Admin\Users\SupportTicketController;
 use App\Http\Controllers\Admin\Users\SupportTicketMessageController;
@@ -114,6 +115,9 @@ Route::group(['prefix'=>'admin'], static function (){
 
         Route::resource('contents', ContentController::class);
         Route::put('contents/restore/{id}', [ContentController::class, 'restore'])->name('contents.restore')->middleware('can:Restore Contents');
+
+        Route::resource('blogs', BlogController::class);
+        Route::put('blogs/restore/{id}', [BlogController::class, 'restore'])->name('blogs.restore')->middleware('can:Restore Blogs');
 
         Route::resource('support_tickets', SupportTicketController::class);
         Route::put('support_tickets/restore/{id}', [SupportTicketController::class, 'restore'])->name('support_tickets.restore')->middleware('can:Restore Support Tickets');

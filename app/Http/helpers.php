@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Random\RandomException;
 
 /**
      * Get carbon from date string.
@@ -1235,4 +1236,15 @@ function generate_file_url($file_path): Application|string|UrlGenerator
     $dummyFile = $dummyFiles[$extension] ?? 'images/dummy.png';
 
     return url(Storage::url($dummyFile));
+}
+/**
+ * @param $file
+ * @return string
+ * @throws RandomException
+ */
+function generateUniqueFileName($file): string
+{
+    return pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) .
+        '_' . now()->timestamp . '_' . random_int(1000, 9999) .
+        '.' . $file->getClientOriginalExtension();
 }

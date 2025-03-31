@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('blog_id')->constrained('blogs')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('project_id')->constrained('projects')->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreignId('stage_id')->constrained('stages')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('project_stage_id')->constrained('project_stages')->cascadeOnUpdate()->restrictOnDelete();
             $table->text('remarks');
             $table->boolean('is_damage')->default(false);
             $table->timestamps();

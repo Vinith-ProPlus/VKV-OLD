@@ -20,4 +20,10 @@ class Blog extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class, 'module_id')
+            ->where('module_name', 'Blog');
+    }
 }

@@ -29,6 +29,7 @@ class ProjectTask extends Model
         'description',
         'status',
         'created_by_id',
+        'completed_at',
     ];
 
     /**

@@ -212,32 +212,9 @@ class GeneralController extends Controller
         $user = auth()->user();
         $userId = $user->id;
         $today = today();
-        $tasks = ProjectTask::with('project:id,name', 'stage:id,name', 'created_by:id,name')
-            ->whereHas('project.site.supervisors', static fn($q) => $q->where('users.id', $userId))
-            ->where(static function ($q) use ($today) {
-                $q->where(static function ($subQuery) use ($today) {
-                    $subQuery->where('date', '<', $today)
-                        ->whereIn('status', ['Created', 'In-progress']);
-                })->orWhere(static function ($subQuery) use ($today) {
-                    $subQuery->where('date', $today)
-                        ->whereIn('status', ['Created', 'In-progress', 'Completed']);
-                });
-            });
-        $tasks = dataFilter($tasks, $request);
-
-        $tasks->transform(static function ($task) {
-            $task->image = generate_file_url($task->image);
-            return $task;
-        });
-        return $this->successResponse(dataFormatter($tasks), "Tasks fetched successfully!");
-    }
-    public function getSupportTickets(Request $request): JsonResponse
-    {
-        $user = auth()->user();
-        $userId = $user->id;
-        $today = today();
-        $tasks = ProjectTask::with('project:id,name', 'stage:id,name', 'created_by:id,name')
-            ->whereHas('project.site.supervisors', static fn($q) => $q->where('users.id', $userId))
+        $tasks = ProjectTask::with('project:id,name', 'stage:id,name', 'created_by:id,name');
+        $tasks->whereHas('project.site.supervisors', static fn($q) => $q->where('users.id', $userId))
+            ->when($request->filled('project_id'), fn($q) => $q->where('project_id', $request->project_id))
             ->where(static function ($q) use ($today) {
                 $q->where(static function ($subQuery) use ($today) {
                     $subQuery->where('date', '<', $today)
@@ -283,7 +260,7 @@ class GeneralController extends Controller
         }
 
         DB::transaction(static function () use ($task) {
-            $task->update(['status' => COMPLETED]);
+            $task->update(['status' => COMPLETED, 'completed_at' => now()]);
         });
 
         return $this->successResponse(compact('task'), "Task status updated successfully!");

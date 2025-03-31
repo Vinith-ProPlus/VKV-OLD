@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('status')->default('Created'); // default Created, options: Created, In-progress, On-hold, Completed, Deleted
             $table->foreignId('created_by_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
+            $table->timestamp('completed_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

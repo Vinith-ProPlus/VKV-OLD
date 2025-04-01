@@ -223,15 +223,15 @@
                                     <div class="card">
                                         <div class="row" style="background-color: #7167f430;padding: 20px;border-radius: 15px;box-shadow: 1px 10px 40px #e4e2fde3;">
                                             <div class="col-4">
-                                                <label for="lstContract"><strong>Contracts</strong></label>
-                                                <select  class="form-control select2" id="lstContract">
+                                                <label for="contract_type_id"><strong>Contracts</strong></label>
+                                                <select  class="form-control select2" id="contract_type_id">
                                                     <option value="">Select</option>
                                                 </select>
                                             </div>
                                             <div class="col-3">
-                                                <label for="lstVendor"><strong>Vendors</strong></label>
-                                                <select  class="form-control select2" id="lstVendor">
-                                                    <option value="">Select</option>
+                                                <label for="contractor_id"><strong>Contractors</strong></label>
+                                                <select  class="form-control select2" id="contractor_id">
+                                                    <option value="">Select a Contractor</option>
                                                 </select>
                                             </div>
                                             <div class="col-3">
@@ -244,13 +244,13 @@
                                                 <a class="btn mx-2 btn-danger" id="clearContracts">Clear</a>
                                             </div>
                                         </div>
-                                    </div> 
+                                    </div>
                                     <table class="table table-hover mt-20 form-group">
                                         <thead>
                                             <tr>
-                                                <th>Sno</th>
-                                                <th>Contracts</th>
-                                                <th>Vendors</th>
+                                                <th>S.No</th>
+                                                <th>Contract Types</th>
+                                                <th>Contractors</th>
                                                 <th>Amount</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -264,7 +264,7 @@
                                                             {{ $contract->contract_type->name }}
                                                             <input class="d-none" value="{{ $contract->contract_type_id }}" name="contracts[{{ $contract->project_id }}][contract_type_id]" data-id="{{ $contract->project_id }}">
                                                         </td>
-                                                        <td data-vendor="{{ $contract->user_id }}">
+                                                        <td data-contractor="{{ $contract->user_id }}">
                                                             {{ $contract->user->name }}
                                                             <input class="d-none" value="{{ $contract->user_id }}" name="contracts[{{ $contract->project_id }}][user_id]" data-id="{{ $contract->project_id }}">
                                                         </td>
@@ -972,11 +972,11 @@
 
 
             const getContractTypes = () => {
-                let ContractID = $('#lstContract');
+                let ContractID = $('#contract_type_id');
                 let SelectedContractID = ContractID.attr('data-selected');
                 ContractID.select2('destroy');
-                $('#lstContract option').remove();
-                ContractID.append('<option value="">--Select a Contract Type--</option>');
+                $('#contract_type_id option').remove();
+                ContractID.append('<option value="" disabled>--Select a Contract Type--</option>');
 
                 $.ajax({
                     url: "{{route('getContractTypes')}}",
@@ -991,7 +991,7 @@
                                 ContractID.append('<option value="' + item.id
                                     + '">' + item.name + '</option>');
                             }
-                        }); 
+                        });
                         ContractID.select2();
                     },
                     error: function (xhr) {
@@ -999,28 +999,28 @@
                 });
             }
 
-            const getVendors = () => {
-                let VendorID = $('#lstVendor');
-                let SelectedVendorID = VendorID.attr('data-selected');
-                VendorID.select2('destroy');
-                $('#lstVendor option').remove();
-                VendorID.append('<option value="">--Select a Vendor--</option>');
+            const getContractors = () => {
+                let ContractorID = $('#contractor_id');
+                let SelectedContractorID = ContractorID.attr('data-selected');
+                ContractorID.select2('destroy');
+                $('#contractor_id option').remove();
+                ContractorID.append('<option value="" disabled>--Select a Contractor--</option>');
 
                 $.ajax({
-                    url: "{{route('getVendors')}}",
+                    url: "{{route('getContractors')}}",
                     type: 'GET',
                     dataType: 'json',
                     success: function (response) {
                         response.forEach(function (item) {
-                            if ((item.id == SelectedVendorID)) {
-                                VendorID.append('<option selected value="' + item.id
+                            if ((item.id == SelectedContractorID)) {
+                                ContractorID.append('<option selected value="' + item.id
                                     + '">' + item.name + '</option>');
                             } else {
-                                VendorID.append('<option value="' + item.id
+                                ContractorID.append('<option value="' + item.id
                                     + '">' + item.name + '</option>');
                             }
-                        }); 
-                        VendorID.select2();
+                        });
+                        ContractorID.select2();
                     },
                     error: function (xhr) {
                     }
@@ -1030,46 +1030,46 @@
             let rowID = 1;
 
             $('#addContracts').on('click',function(){
-                let contract = $('#lstContract').find('option:selected');
-                let vendor = $('#lstVendor').find('option:selected');
+                let contract_type = $('#contract_type_id').find('option:selected');
+                let contractor = $('#contractor_id').find('option:selected');
                 let amount = $('#txtAmount').val();
 
-                if(contract && vendor && amount){
+                if(contract_type && contractor && amount){
                     let status = true;
                     let table = $('#tblContract');
 
-                    table.find('tr').each(function () { 
-                        let contractData = $(this).find('td[data-contract]').data('contract');
-                        let vendorData = $(this).find('td[data-vendor]').data('vendor');
+                    table.find('tr').each(function () {
+                        let contractData = $(this).find('td[data-contract-type]').data('contract');
+                        let contractorData = $(this).find('td[data-contractor]').data('contractor');
 
-                        if (contractData === contract.text() && vendorData === vendor.text()) {
+                        if (contractData === contract_type.text() && contractorData === contractor.text()) {
                             status = false;
                             return false;
                         }
                     });
- 
+
                     if(status){
 
                         const obj = {
-                            'contractID':contract.val(),
-                            'contractName':contract.text(),
-                            'vendorID':vendor.val(),
-                            'vendorName':vendor.text(),
+                            'contractID':contract_type.val(),
+                            'contractName':contract_type.text(),
+                            'contractorID':contractor.val(),
+                            'contractorName':contractor.text(),
                             'amount':amount
                         };
-                        
+
                         let rowLength = $('#tblContract').find('tr').length;
 
                         if(rowLength){
-                            contractCellId = $('#tblContract').find('tr:last td[data-contract] input').attr('data-id');
+                            contractCellId = $('#tblContract').find('tr:last td[data-contract-type] input').attr('data-id');
                             contractCellId++;
                         }
 
                         let html = `
                         <tr data-new="true">
                             <td>*</td>
-                            <td data-contract="${contract.text()}">${contract.text()}<input class="d-none" value="${contract.val()}" name="contracts[${contractCellId}][contract_type_id]" data-id="${contractCellId}"></td>
-                            <td data-vendor="${vendor.text()}">${vendor.text()}<input class="d-none" value="${vendor.val()}" name="contracts[${contractCellId}][user_id]" data-id="${contractCellId}"></td>
+                            <td data-contract="${contract_type.text()}">${contract_type.text()}<input class="d-none" value="${contract_type.val()}" name="contracts[${contractCellId}][contract_type_id]" data-id="${contractCellId}"></td>
+                            <td data-contractor="${contractor.text()}">${contractor.text()}<input class="d-none" value="${contractor.val()}" name="contracts[${contractCellId}][user_id]" data-id="${contractCellId}"></td>
                             <td data-amount="${amount}">${amount}<input class="d-none" value="${amount}" name="contracts[${contractCellId}][amount]" data-id="${contractCellId}"></td>
                             <td>
                                 <a class="btn btn-outline-primary editContracts"><i class="fa fa-pencil"></i></a>
@@ -1080,7 +1080,7 @@
 
                         table.append(html);
                         serializeTable('#tblContract');
-                        
+
                         $('#tblContract').closest('table').removeClass('d-none');
                         clearContractFields();
                     }
@@ -1088,7 +1088,7 @@
             });
 
             $('#clearContracts').on('click',function(){
-                $('#updateContracts').addClass('d-none'); 
+                $('#updateContracts').addClass('d-none');
                 $('#addContracts').removeClass('d-none');
                 clearContractFields();
             })
@@ -1096,18 +1096,16 @@
             $(document).on('click','.editContracts',function(){
                 selectedContractRow = $(this).closest('tr');
                 let isNew = selectedContractRow.find('.deleteContracts').length > 0;
-                
-                contractUpdateId = selectedContractRow.find('td[data-contract] input').attr('data-id');
-                
+                contractUpdateId = selectedContractRow.find('td[data-contract-type] input').attr('data-id');
                 let tdata = JSON.parse(selectedContractRow.find('td[data-tdata]').attr('data-tdata'));
 
-                $('#lstContract').val(tdata.contractID).trigger('change');  
-                $('#lstVendor').val(tdata.vendorID).trigger('change');  
-                $('#txtAmount').val(tdata.amount);  
+                $('#contract_type_id').val(tdata.contractID).trigger('change');
+                $('#contractor_id').val(tdata.contractorID).trigger('change');
+                $('#txtAmount').val(tdata.amount);
 
                 if(!isNew){
-                    $('#lstContract').attr('disabled',true);
-                    $('#lstVendor').attr('disabled',true);
+                    $('#contract_type_id').attr('disabled',true);
+                    $('#contractor_id').attr('disabled',true);
                 }
 
                 $('#addContracts').addClass('d-none');
@@ -1118,27 +1116,26 @@
             $(document).on('click','.deleteContracts', function(){
                 $(this).closest('tr').remove();
                 let isRowEmpty = $('#tblContract').find('tr').length;
-
                 if(!isRowEmpty){
                     $('#tblContract').closest('table').addClass('d-none');
                 }
             })
 
-            $('#updateContracts').on('click', function () { 
+            $('#updateContracts').on('click', function () {
 
-                let contract = $('#lstContract').find('option:selected');
-                let vendor = $('#lstVendor').find('option:selected');
+                let contract_type = $('#contract_type_id').find('option:selected');
+                let contractor = $('#contractor_id').find('option:selected');
                 let amount = $('#txtAmount').val();
 
-                if (contract && vendor && amount) {
+                if (contract_type && contractor && amount) {
                     let status = true;
                     let table = $('#tblContract');
 
-                    table.find(`tr`).not(selectedContractRow).each(function () { 
-                        let contractData = $(this).find('td[data-contract]').attr('data-contract'); 
-                        let vendorData = $(this).find('td[data-vendor]').attr('data-vendor'); 
+                    table.find(`tr`).not(selectedContractRow).each(function () {
+                        let contractData = $(this).find('td[data-contract-type]').attr('data-contract-type');
+                        let contractorData = $(this).find('td[data-contractor]').attr('data-contractor');
 
-                        if (contractData === contract.text() && vendorData === vendor.text()) {
+                        if (contractData === contract_type.text() && contractorData === contractor.text()) {
                             status = false;
                             return false;
                         }
@@ -1146,23 +1143,23 @@
 
                     if (status) {
                         const obj = {
-                            'contractID': contract.val(),
-                            'contractName': contract.text(),
-                            'vendorID': vendor.val(),
-                            'vendorName': vendor.text(),
+                            'contractID': contract_type.val(),
+                            'contractName': contract_type.text(),
+                            'contractorID': contractor.val(),
+                            'contractorName': contractor.text(),
                             'amount': amount
                         };
 
-                        selectedContractRow.each(function () { 
-                            $(this).find('td[data-contract]').attr('data-contract', contract.text()).html(contract.text()+`<input class="d-none" value="${contract.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
-                            $(this).find('td[data-vendor]').attr('data-vendor', vendor.text()).html(vendor.text()+`<input class="d-none" value="${vendor.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                        selectedContractRow.each(function () {
+                            $(this).find('td[data-contract-type]').attr('data-contract-type', contract_type.text()).html(contract_type.text()+`<input class="d-none" value="${contract_type.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-contractor]').attr('data-contractor', contractor.text()).html(contractor.text()+`<input class="d-none" value="${contractor.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
                             $(this).find('td[data-amount]').attr('data-amount', amount).html(amount+`<input class="d-none" value="${amount}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
                             $(this).find('td[data-tdata]').attr('data-tdata', JSON.stringify(obj)).text(JSON.stringify(obj));
                         });
 
-                        $('#updateContracts').addClass('d-none'); 
+                        $('#updateContracts').addClass('d-none');
                         $('#addContracts').removeClass('d-none');
-                        
+
                         selectedContractRow = null;
                         clearContractFields();
                     }
@@ -1170,9 +1167,9 @@
             });
 
             const clearContractFields = () => {
-                $('#lstContract').attr('disabled',false);
-                $('#lstVendor').attr('disabled',false);
-                $('#lstContract, #lstVendor').val(null).trigger('change');
+                $('#contract_type_id').attr('disabled',false);
+                $('#contractor_id').attr('disabled',false);
+                $('#contract_type_id, #contractor_id').val(null).trigger('change');
                 $('#txtAmount').val('');
             };
 
@@ -1182,7 +1179,7 @@
                     $(this).find('td:first').text(i++);
                 });
             };
- 
+
             // -----------------------------end contract functionalities
 
 
@@ -1377,7 +1374,7 @@
             getDocuments();
 
             getContractTypes();
-            getVendors();
+            getContractors();
         });
     </script>
 @endsection

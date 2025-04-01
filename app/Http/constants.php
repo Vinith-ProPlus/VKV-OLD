@@ -47,19 +47,22 @@ const BLOOD_GROUPS = [A1_P, A1_N, A2_P, A2_N, B_P, B_N, A1B_P, A1B_N, A2B_P, A2B
 
 const  ACTIVE = 'Active';
 const  INACTIVE = 'Inactive';
-
 const STATUS = [ACTIVE, INACTIVE];
 
 const  YES = 'Yes';
 const  NO = 'No';
-
 const VERIFIED = [YES, NO];
+
 const SUPER_ADMIN_ROLE_NAME = 'Super Admin';
 const SITE_SUPERVISOR_ROLE_NAME = 'Site Supervisor';
 const ENGINEER_ROLE_NAME = 'Engineer';
-const SYSTEM_ROLES = ['Super Admin', 'Customer', 'Vendor', 'Site Supervisor', 'Labour', 'Contractor', 'Accountant', 'User', 'Engineer'];
-
+const VENDOR_ROLE_NAME = 'Vendor';
+const CUSTOMER_ROLE_NAME = 'Customer';
+const LABOUR_ROLE_NAME = 'Labour';
+const CONTRACTOR_ROLE_NAME = 'Contractor';
+const ACCOUNTANT_ROLE_NAME = 'Accountant';
 const USER_ROLE_NAME = 'User';
+const SYSTEM_ROLES = [SUPER_ADMIN_ROLE_NAME, CUSTOMER_ROLE_NAME, VENDOR_ROLE_NAME, SITE_SUPERVISOR_ROLE_NAME, LABOUR_ROLE_NAME, CONTRACTOR_ROLE_NAME, ACCOUNTANT_ROLE_NAME, USER_ROLE_NAME, ENGINEER_ROLE_NAME];
 
 const CREATED = 'Created';
 const IN_PROGRESS = 'In-progress';

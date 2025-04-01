@@ -287,7 +287,12 @@ class GeneralController extends Controller
 
     public function getVendors(): JsonResponse
     {
-        $vendorId = Role::where('name', 'Vendor')->pluck('id')->first();
-        return response()->json(User::where('role_id',$vendorId)->get());
+        $vendor_role_id = Role::where('name', VENDOR_ROLE_NAME)->pluck('id')->first();
+        return response()->json(User::where('role_id',$vendor_role_id)->get());
+    }
+    public function getContractors(): JsonResponse
+    {
+        $contractor_role_id = Role::where('name', CONTRACTOR_ROLE_NAME)->pluck('id')->first();
+        return response()->json(User::where('role_id',$contractor_role_id)->get());
     }
 }

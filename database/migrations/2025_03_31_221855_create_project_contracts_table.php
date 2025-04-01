@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('project_contracts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained('projects');
-            $table->foreignId('contract_type_id')->constrained('contract_types');
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('project_id')->constrained('projects')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('contract_type_id')->constrained('contract_types')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->decimal('amount');
             $table->timestamps();
             $table->softDeletes();

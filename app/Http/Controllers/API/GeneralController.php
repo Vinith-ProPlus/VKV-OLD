@@ -121,6 +121,18 @@ class GeneralController extends Controller
 
         return $this->successResponse(dataFormatter($roles), "Project fetched successfully!");
     }
+    public function getTaskProjects(Request $request): JsonResponse
+    {
+        $query = Project::with('stages')->whereHas('site', function ($q) {
+            $q->whereHas('supervisors', static function ($supervisorQuery) {
+                $supervisorQuery->where('users.id', Auth::id());
+            });
+        });
+
+        $query = dataFilter($query, $request);
+        return $this->successResponse(dataFormatter($query), "Projects fetched successfully!");
+    }
+
     public function getStages(Request $request): JsonResponse
     {
         $query = ProjectStage::with(['tasks' => fn($q) => $q->whereIn('status', ['Created', 'In-progress', 'Completed']), 'project:id,name'])

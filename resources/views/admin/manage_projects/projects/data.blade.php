@@ -263,11 +263,11 @@
                                                 @foreach ($project->contracts as $contract)
                                                 <tr data-new="false">
                                                     <td>{{$serialNum++}}</td>
-                                                    <td data-contract="{{ $contract->contract_type->name }}">
+                                                    <td data-contract-type="{{ $contract->contract_type->name }}">
                                                             {{ $contract->contract_type->name }}
                                                             <input class="d-none" value="{{ $contract->contract_type_id }}" name="contracts[{{ $contract->id }}][contract_type_id]" data-id="{{ $contract->id }}">
                                                         </td>
-                                                        <td data-vendor="{{ $contract->user->name }}">
+                                                        <td data-contractor="{{ $contract->user->name }}">
                                                             {{ $contract->user->name }}
                                                             <input class="d-none" value="{{ $contract->user_id }}" name="contracts[{{ $contract->id }}][user_id]" data-id="{{ $contract->id }}">
                                                         </td>
@@ -361,14 +361,14 @@
                                     <div class="card" style="box-shadow: none;">
                                         <div class="row" style="background-color: #7167f430;padding: 20px;border-radius: 15px;box-shadow: 1px 10px 40px #e4e2fde3; width:90%; margin:0px auto;">
                                             <div class="col-4">
-                                                <label for="lstAmenities"><strong>Amenities</strong></label>
-                                                <select  class="form-control select2" id="lstAmenities">
+                                                <label for="amenity_id"><strong>Amenities</strong></label>
+                                                <select  class="form-control select2" id="amenity_id">
                                                     <option value="">Select</option>
                                                 </select>
                                             </div>
                                             <div class="col-6">
-                                                <label for="txtAmtiDescription"><strong>Description</strong></label>
-                                                <textarea class="form-control" id="txtAmtiDescription" cols="10" rows="1"></textarea>
+                                                <label for="amenty_description"><strong>Description</strong></label>
+                                                <textarea class="form-control" id="amenty_description" cols="10" rows="1"></textarea>
                                             </div>
                                             <div class="col-2 align-self-end">
                                                 <a class="btn" id="addAmenities" style="background-color: #7167f4;color: #fff;">Add</a>
@@ -1075,7 +1075,7 @@
             $('#addContracts').on('click',function(){
                 let contract_type = $('#contract_type_id').find('option:selected');
                 let contractor = $('#contractor_id').find('option:selected');
-                let amount = $('#txtAmount').val();
+                let amount = parseFloat($('#txtAmount').val()).toFixed(2);
 
                 if(contract_type.val() && contractor.val() && amount){
                     let status = true;
@@ -1094,10 +1094,10 @@
                     if(status){
 
                         const obj = {
-                            'contract_type_id':contract.val(),
-                            'contract_name':contract.text(),
-                            'user_id':vendor.val(),
-                            'user_name':vendor.text(),
+                            'contract_type_id':contract_type.val(),
+                            'contract_name':contract_type.text(),
+                            'user_id':contractor.val(),
+                            'user_name':contractor.text(),
                             'amount':amount
                         };
 
@@ -1142,8 +1142,8 @@
                 contractUpdateId = selectedContractRow.find('td[data-contract-type] input').attr('data-id');
                 let tdata = JSON.parse(selectedContractRow.find('td[data-tdata]').attr('data-tdata'));
 
-                $('#lstContract').val(tdata.contract_type_id).trigger('change');
-                $('#lstVendor').val(tdata.user_id).trigger('change');
+                $('#contract_type_id').val(tdata.contract_type_id).trigger('change');
+                $('#contractor_id').val(tdata.user_id).trigger('change');
                 $('#txtAmount').val(tdata.amount);
 
                 if(!isNew){
@@ -1153,7 +1153,6 @@
 
                 $('#addContracts').addClass('d-none');
                 $('#updateContracts').removeClass('d-none');
-
             });
 
             $(document).on('click','.deleteContracts', function(){
@@ -1165,12 +1164,12 @@
             })
 
             $('#updateContracts').on('click', function () {
-
                 let contract_type = $('#contract_type_id').find('option:selected');
                 let contractor = $('#contractor_id').find('option:selected');
-                let amount = $('#txtAmount').val();
+                let amount = parseFloat($('#txtAmount').val()).toFixed(2);
 
                 if (contract_type.val() && contractor.val() && amount) {
+                    if (contract_type.val() && contractor.val() && amount) {
                     let status = true;
                     let table = $('#tblContract');
 
@@ -1186,16 +1185,16 @@
 
                     if (status) {
                         const obj = {
-                            'contract_type_id': contract.val(),
-                            'contract_name': contract.text(),
-                            'user_id': vendor.val(),
-                            'user_name': vendor.text(),
+                            'contract_type_id': contract_type.val(),
+                            'contract_name': contract_type.text(),
+                            'user_id': contractor.val(),
+                            'user_name': contractor.text(),
                             'amount': amount
                         };
 
                         selectedContractRow.each(function () {
-                            $(this).find('td[data-contract]').attr('data-contract', contract.text()).html(contract.text()+`<input class="d-none" value="${contract.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
-                            $(this).find('td[data-vendor]').attr('data-vendor', vendor.text()).html(vendor.text()+`<input class="d-none" value="${vendor.val()}" name="contracts[${contractUpdateId}][user_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-contract-type]').attr('data-contract-type', contract_type.text()).html(contract_type.text()+`<input class="d-none" value="${contract_type.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-contractor]').attr('data-contractor', contractor.text()).html(contractor.text()+`<input class="d-none" value="${contractor.val()}" name="contracts[${contractUpdateId}][user_id]" data-id="${contractUpdateId}">`);
                             $(this).find('td[data-amount]').attr('data-amount', amount).html(amount+`<input class="d-none" value="${amount}" name="contracts[${contractUpdateId}][amount]" data-id="${contractUpdateId}">`);
                             $(this).find('td[data-tdata]').attr('data-tdata', JSON.stringify(obj)).text(JSON.stringify(obj));
                         });
@@ -1205,8 +1204,11 @@
 
                         selectedContractRow = null;
                         clearContractFields();
+                    } else {
+                        alert("")
                     }
                 }
+                    }
             });
 
             const clearContractFields = () => {
@@ -1230,10 +1232,10 @@
 
 
             const getAmenities = () => {
-                let AmenityID = $('#lstAmenities');
+                let AmenityID = $('#amenity_id');
                 let SelectedAmenityID = AmenityID.attr('data-selected');
                 AmenityID.select2('destroy');
-                $('#lstAmenities option').remove();
+                $('#amenity_id option').remove();
                 AmenityID.append('<option value="">--Select an Amenity--</option>');
 
                 $.ajax({
@@ -1259,8 +1261,8 @@
 
 
             $('#addAmenities').on('click',function(){
-                let amenity = $('#lstAmenities').find('option:selected');
-                let description = $('#txtAmtiDescription').val();
+                let amenity = $('#amenity_id').find('option:selected');
+                let description = $('#amenty_description').val();
 
                 if(amenity.val() && description){
                     let status = true;
@@ -1324,8 +1326,8 @@
 
                 let tdata = JSON.parse(selectedAmenityRow.find('td[data-tdata]').attr('data-tdata'));
 
-                $('#lstAmenities').val(tdata.amenity_id).trigger('change');
-                $('#txtAmtiDescription').val(tdata.description);
+                $('#amenity_id').val(tdata.amenity_id).trigger('change');
+                $('#amenty_description').val(tdata.description);
 
                 $('#addAmenities').addClass('d-none');
                 $('#updateAmenities').removeClass('d-none');
@@ -1350,8 +1352,8 @@
 
             $('#updateAmenities').on('click', function () {
 
-                let amenity = $('#lstAmenities').find('option:selected');
-                let description = $('#txtAmtiDescription').val();
+                let amenity = $('#amenity_id').find('option:selected');
+                let description = $('#amenty_description').val();
 
                 if (amenity.val() && description) {
                     let status = true;
@@ -1389,8 +1391,8 @@
             });
 
             const clearAmenityFields = () => {
-                $('#lstAmenities').val(null).trigger('change');
-                $('#txtAmtiDescription').val('');
+                $('#amenity_id').val(null).trigger('change');
+                $('#amenty_description').val('');
             }
             // -----------------------------end Amenities functionalities
 

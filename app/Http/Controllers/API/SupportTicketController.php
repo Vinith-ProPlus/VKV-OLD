@@ -134,9 +134,7 @@ class SupportTicketController extends Controller
         } catch (Exception $exception) {
             DB::rollBack();
             Log::error("Error::SupportTicketController@storeMessage - " . $exception->getMessage(), [
-                'support_ticket_id' => $supportTicket->id,
-                'user_id'           => auth()->id(),
-                'request'           => $request->all(),
+                'support_ticket_id' => $supportTicket->id, 'user_id' => auth()->id(), 'request' => $request->all(),
             ]);
             return $this->errorResponse($exception->getMessage(), "Failed to create support ticket message!", 500);
         }
@@ -162,7 +160,7 @@ class SupportTicketController extends Controller
     {
         try {
             $user = auth()->user();
-            $query = SupportTicket::where('user_id', $user->id)->with(['user:id,name', 'support_type:id,name'])->latestFirst();
+            $query = SupportTicket::where('user_id', $user->id)->with(['user:id,name', 'support_type:id,name'])->orderByDesc('created_at');
             $query = dataFilter($query, $request);
             return $this->successResponse(dataFormatter($query), "Support Ticket fetched successfully!");
         } catch (Throwable $exception) {

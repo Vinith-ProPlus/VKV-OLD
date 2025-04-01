@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\BlogController;
 use App\Http\Controllers\API\GeneralController;
 use App\Http\Controllers\API\MobileUserAttendanceController;
 use App\Http\Controllers\API\SupportTicketController;
@@ -56,6 +57,13 @@ Route::middleware('auth:sanctum')->group(static function () {
     Route::post('support/getSupportTicketMessages', [SupportTicketController::class, 'getSupportTicketMessages'])->name('getSupportTicketMessages');
     Route::post('support/createTicket', [SupportTicketController::class, 'createTicket'])->name('createTicket');
     Route::post('support/storeMessage/{supportTicket}', [SupportTicketController::class, 'storeMessage'])->name('storeMessage');
+
+    // Blog
+    Route::post('blog/getBlogDateMonth', [BlogController::class, 'getBlogDateMonth'])->name('getBlogDateMonth');
+    Route::post('blog/getBlogData', [BlogController::class, 'getBlogData'])->name('getBlogData');
+    Route::post('blog/getDamagedData', [BlogController::class, 'getDamagedData'])->name('getDamagedData');
+    Route::post('blog/getCompletedTaskData', [BlogController::class, 'getCompletedTaskData'])->name('getCompletedTaskData');
+    Route::post('blog/createBlog', [BlogController::class, 'createBlog'])->name('createBlog');
 
     Route::post('HomeScreen', [GeneralController::class, 'HomeScreen']);
     Route::post('update-fcm-token', [GeneralController::class, 'updateFcmToken']);

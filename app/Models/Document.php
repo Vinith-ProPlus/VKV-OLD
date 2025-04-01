@@ -24,5 +24,12 @@ class Document extends Model
         'file_name',
         'uploaded_by',
     ];
+
+    protected $appends = ['file_url'];
+
+    public function getFileUrlAttribute()
+    {
+        return generate_file_url($this->file_path);
+    }
 }
 

@@ -976,7 +976,7 @@
                 let SelectedContractID = ContractID.attr('data-selected');
                 ContractID.select2('destroy');
                 $('#contract_type_id option').remove();
-                ContractID.append('<option value="" disabled>--Select a Contract Type--</option>');
+                ContractID.append('<option value="">--Select a Contract Type--</option>');
 
                 $.ajax({
                     url: "{{route('getContractTypes')}}",
@@ -1004,7 +1004,7 @@
                 let SelectedContractorID = ContractorID.attr('data-selected');
                 ContractorID.select2('destroy');
                 $('#contractor_id option').remove();
-                ContractorID.append('<option value="" disabled>--Select a Contractor--</option>');
+                ContractorID.append('<option value="">--Select a Contractor--</option>');
 
                 $.ajax({
                     url: "{{route('getContractors')}}",
@@ -1034,7 +1034,7 @@
                 let contractor = $('#contractor_id').find('option:selected');
                 let amount = $('#txtAmount').val();
 
-                if(contract_type && contractor && amount){
+                if(contract_type.val() && contractor.val() && amount){
                     let status = true;
                     let table = $('#tblContract');
 
@@ -1127,7 +1127,7 @@
                 let contractor = $('#contractor_id').find('option:selected');
                 let amount = $('#txtAmount').val();
 
-                if (contract_type && contractor && amount) {
+                if (contract_type.val() && contractor.val() && amount) {
                     let status = true;
                     let table = $('#tblContract');
 

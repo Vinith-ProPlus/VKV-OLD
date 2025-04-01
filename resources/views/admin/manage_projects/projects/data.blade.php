@@ -239,13 +239,13 @@
                                                 <input class="form-control" id="txtAmount" type="number">
                                             </div>
                                             <div class="col-2 align-self-end">
-                                                <a class="btn" id="addContracts" style="background-color: #7167f4;color: #fff;">Add</a>
-                                                <a class="btn btn-warning d-none" id="updateContracts">Update</a>
-                                                <a class="btn mx-2 btn-danger" id="clearContracts">Clear</a>
+                                                <a class="btn btn-sm" id="addContracts" style="background-color: #7167f4;color: #fff;">Add</a>
+                                                <a class="btn btn-sm btn-warning d-none" id="updateContracts">Update</a>
+                                                <a class="btn btn-sm mx-2 btn-danger" id="clearContracts">Clear</a>
                                             </div>
                                         </div>
                                     </div>
-                                    <table class="table table-hover mt-20 form-group">
+                                    <table class="table table-hover {{ count($project->contracts) ? '' : 'd-none' }} mt-20 form-group">
                                         <thead>
                                             <tr>
                                                 <th>S.No</th>
@@ -256,21 +256,24 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tblContract">
+                                            @php
+                                                $serialNum = 1;
+                                            @endphp
                                             @if ($project)
                                                 @foreach ($project->contracts as $contract)
-                                                <tr data-new="true">
-                                                    <td>*</td>
-                                                    <td data-contract="{{ $contract->contract_type_id }}">
+                                                <tr data-new="false">
+                                                    <td>{{$serialNum++}}</td>
+                                                    <td data-contract="{{ $contract->contract_type->name }}">
                                                             {{ $contract->contract_type->name }}
-                                                            <input class="d-none" value="{{ $contract->contract_type_id }}" name="contracts[{{ $contract->project_id }}][contract_type_id]" data-id="{{ $contract->project_id }}">
+                                                            <input class="d-none" value="{{ $contract->contract_type_id }}" name="contracts[{{ $contract->id }}][contract_type_id]" data-id="{{ $contract->id }}">
                                                         </td>
-                                                        <td data-contractor="{{ $contract->user_id }}">
+                                                        <td data-vendor="{{ $contract->user->name }}">
                                                             {{ $contract->user->name }}
-                                                            <input class="d-none" value="{{ $contract->user_id }}" name="contracts[{{ $contract->project_id }}][user_id]" data-id="{{ $contract->project_id }}">
+                                                            <input class="d-none" value="{{ $contract->user_id }}" name="contracts[{{ $contract->id }}][user_id]" data-id="{{ $contract->id }}">
                                                         </td>
                                                         <td data-amount="{{ $contract->amount }}">
                                                             {{ $contract->amount }}
-                                                            <input class="d-none" value="{{ $contract->amount }}" name="contracts[{{ $contract->project_id }}][amount]" data-id="{{ $contract->project_id }}">
+                                                            <input class="d-none" value="{{ $contract->amount }}" name="contracts[{{ $contract->id }}][amount]" data-id="{{ $contract->id }}">
                                                         </td>
                                                         <td>
                                                             <a class="btn btn-outline-primary editContracts"><i class="fa fa-pencil"></i></a>
@@ -355,23 +358,61 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane fade" id="project-amenities">
-                                    <div class="card">
-                                        <div class="row">
+                                    <div class="card" style="box-shadow: none;">
+                                        <div class="row" style="background-color: #7167f430;padding: 20px;border-radius: 15px;box-shadow: 1px 10px 40px #e4e2fde3; width:90%; margin:0px auto;">
                                             <div class="col-4">
-                                                <select name="" id="">
+                                                <label for="lstAmenities"><strong>Amenities</strong></label>
+                                                <select  class="form-control select2" id="lstAmenities">
                                                     <option value="">Select</option>
                                                 </select>
                                             </div>
-                                            <div class="col-4">
-                                                <select name="" id="">
-                                                    <option value="">Select</option>
-                                                </select>
+                                            <div class="col-6">
+                                                <label for="txtAmtiDescription"><strong>Description</strong></label>
+                                                <textarea class="form-control" id="txtAmtiDescription" cols="10" rows="1"></textarea>
                                             </div>
-                                            <div class="col-4">
-                                                <input type="number">
+                                            <div class="col-2 align-self-end">
+                                                <a class="btn" id="addAmenities" style="background-color: #7167f4;color: #fff;">Add</a>
+                                                <a class="btn btn-warning d-none" id="updateAmenities">Update</a>
+                                                <a class="btn mx-2 btn-danger" id="clearAmenities">Clear</a>
                                             </div>
                                         </div>
                                     </div>
+                                    <table class="table table-hover {{ count($project->amenities) ? '' : 'd-none' }} mt-20 form-group">
+                                        <thead>
+                                            <tr>
+                                                <th>Sno</th>
+                                                <th>Amenities</th>
+                                                <th>Description</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tblAmenity">
+                                            @php
+                                                $Sa_Num = 1;
+                                            @endphp
+                                            @if ($project)
+                                                @foreach ($project->amenities as $amenity)
+                                                <tr data-new="false">
+                                                    <td>{{$Sa_Num++}}</td>
+                                                    <td data-amenity="{{ $amenity->amenity->name }}">
+                                                            {{ $amenity->amenity->name }}
+                                                            <input class="d-none" value="{{ $amenity->amenity_id }}" name="amenities[{{ $amenity->id }}][amenity_id]" data-id="{{ $amenity->id }}">
+                                                        </td>
+                                                        <td data-description="{{ $amenity->description }}">
+                                                            {{ $amenity->description }}
+                                                            <input class="d-none" value="{{ $amenity->description }}" name="amenities[{{ $amenity->id }}][description]" data-id="{{ $amenity->id }}">
+                                                        </td>
+                                                        <td>
+                                                            <a class="btn btn-outline-primary editAmenities"><i class="fa fa-pencil"></i></a>
+                                                            <a class="btn btn-danger deleteAmenities"><i class="fa fa-trash"></i></a>
+                                                        </td>
+                                                        <td data-tdata="{{ json_encode($amenity) }}" class="d-none">{{ json_encode($amenity) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                    <input type="text" class="d-none" name="deletedAmenities" id="deletedAmenities">
                                     <div class="row mt-40 text-end">
                                         <div class="col-6 text-start">
                                             <a class="btn btn-light">Back</a>
@@ -499,6 +540,10 @@
             let selectedContractRow = null;
             let contractCellId = 0;
             let contractUpdateId = 0;
+            let selectedAmenityRow = null;
+            let amenityCellId = 0;
+            let amenityUpdateId = 0;
+            let amenityDeletedId = [];
             //-------------------start of wizard tab toggle function
 
             function validateRequiredFields($container) {
@@ -1027,8 +1072,6 @@
                 });
             }
 
-            let rowID = 1;
-
             $('#addContracts').on('click',function(){
                 let contract_type = $('#contract_type_id').find('option:selected');
                 let contractor = $('#contractor_id').find('option:selected');
@@ -1051,10 +1094,10 @@
                     if(status){
 
                         const obj = {
-                            'contractID':contract_type.val(),
-                            'contractName':contract_type.text(),
-                            'contractorID':contractor.val(),
-                            'contractorName':contractor.text(),
+                            'contract_type_id':contract.val(),
+                            'contract_name':contract.text(),
+                            'user_id':vendor.val(),
+                            'user_name':vendor.text(),
                             'amount':amount
                         };
 
@@ -1099,8 +1142,8 @@
                 contractUpdateId = selectedContractRow.find('td[data-contract-type] input').attr('data-id');
                 let tdata = JSON.parse(selectedContractRow.find('td[data-tdata]').attr('data-tdata'));
 
-                $('#contract_type_id').val(tdata.contractID).trigger('change');
-                $('#contractor_id').val(tdata.contractorID).trigger('change');
+                $('#lstContract').val(tdata.contract_type_id).trigger('change');
+                $('#lstVendor').val(tdata.user_id).trigger('change');
                 $('#txtAmount').val(tdata.amount);
 
                 if(!isNew){
@@ -1143,17 +1186,17 @@
 
                     if (status) {
                         const obj = {
-                            'contractID': contract_type.val(),
-                            'contractName': contract_type.text(),
-                            'contractorID': contractor.val(),
-                            'contractorName': contractor.text(),
+                            'contract_type_id': contract.val(),
+                            'contract_name': contract.text(),
+                            'user_id': vendor.val(),
+                            'user_name': vendor.text(),
                             'amount': amount
                         };
 
                         selectedContractRow.each(function () {
-                            $(this).find('td[data-contract-type]').attr('data-contract-type', contract_type.text()).html(contract_type.text()+`<input class="d-none" value="${contract_type.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
-                            $(this).find('td[data-contractor]').attr('data-contractor', contractor.text()).html(contractor.text()+`<input class="d-none" value="${contractor.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
-                            $(this).find('td[data-amount]').attr('data-amount', amount).html(amount+`<input class="d-none" value="${amount}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-contract]').attr('data-contract', contract.text()).html(contract.text()+`<input class="d-none" value="${contract.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-vendor]').attr('data-vendor', vendor.text()).html(vendor.text()+`<input class="d-none" value="${vendor.val()}" name="contracts[${contractUpdateId}][user_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-amount]').attr('data-amount', amount).html(amount+`<input class="d-none" value="${amount}" name="contracts[${contractUpdateId}][amount]" data-id="${contractUpdateId}">`);
                             $(this).find('td[data-tdata]').attr('data-tdata', JSON.stringify(obj)).text(JSON.stringify(obj));
                         });
 
@@ -1181,6 +1224,175 @@
             };
 
             // -----------------------------end contract functionalities
+
+            // -----------------------------Amenities functionalities
+
+
+
+            const getAmenities = () => {
+                let AmenityID = $('#lstAmenities');
+                let SelectedAmenityID = AmenityID.attr('data-selected');
+                AmenityID.select2('destroy');
+                $('#lstAmenities option').remove();
+                AmenityID.append('<option value="">--Select an Amenity--</option>');
+
+                $.ajax({
+                    url: "{{route('getAmenities')}}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        response.forEach(function (item) {
+                            if ((item.id == SelectedAmenityID)) {
+                                AmenityID.append('<option selected value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            } else {
+                                AmenityID.append('<option value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            }
+                        });
+                        AmenityID.select2();
+                    },
+                    error: function (xhr) {
+                    }
+                });
+            }
+
+
+            $('#addAmenities').on('click',function(){
+                let amenity = $('#lstAmenities').find('option:selected');
+                let description = $('#txtAmtiDescription').val();
+
+                if(amenity.val() && description){
+                    let status = true;
+                    let table = $('#tblAmenity');
+
+                    table.find('tr').each(function () {
+                        let amenityData = $(this).find('td[data-amenity]').data('amenity');
+
+                        if (amenityData === amenity.text()) {
+                            status = false;
+                            return false;
+                        }
+                    });
+
+                    if(status){
+
+                        const obj = {
+                            'amenity_id':amenity.val(),
+                            'amenity_name':amenity.text(),
+                            'description':description,
+                        };
+
+                        let rowLength = $('#tblAmenity').find('tr').length;
+
+                        if(rowLength){
+                            amenityCellId = $('#tblAmenity').find('tr:last td[data-amenity] input').attr('data-id');
+                            amenityCellId++;
+                        }
+
+                        let html = `
+                        <tr data-new="true">
+                            <td>*</td>
+                            <td data-amenity="${amenity.text()}">${amenity.text()}<input class="d-none" value="${amenity.val()}" name="amenities[${amenityCellId}][amenity_id]" data-id="${amenityCellId}"></td>
+                            <td data-description="${description}">${description}<input class="d-none" value="${description}" name="amenities[${amenityCellId}][description]" data-id="${amenityCellId}"></td>
+                            <td>
+                                <a class="btn btn-outline-primary editAmenities"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-danger deleteAmenities"><i class="fa fa-trash"></i></a>
+                            </td>
+                            <td data-tdata='${JSON.stringify(obj)}' class="d-none">${JSON.stringify(obj)}</td>
+                        </tr>`;
+
+                        table.append(html);
+                        serializeTable('#tblAmenity');
+
+                        $('#tblAmenity').closest('table').removeClass('d-none');
+                        clearAmenityFields();
+                    }
+                }
+            });
+
+            $('#clearAmenities').on('click',function(){
+                $('#updateAmenities').addClass('d-none');
+                $('#addAmenities').removeClass('d-none');
+                clearAmenityFields();
+            })
+
+            $(document).on('click','.editAmenities',function(){
+                selectedAmenityRow = $(this).closest('tr');
+
+                contractUpdateId = selectedAmenityRow.find('td[data-amenity] input').attr('data-id');
+
+                let tdata = JSON.parse(selectedAmenityRow.find('td[data-tdata]').attr('data-tdata'));
+
+                $('#lstAmenities').val(tdata.amenity_id).trigger('change');
+                $('#txtAmtiDescription').val(tdata.description);
+
+                $('#addAmenities').addClass('d-none');
+                $('#updateAmenities').removeClass('d-none');
+
+            });
+
+
+            $(document).on('click','.deleteAmenities', function(){
+                let id = $(this).closest('tr[data-new="false"]').find('td[data-amenity] input').attr('data-id');
+
+                if(id) amenityDeletedId.push(id);
+
+                $('#deletedAmenities').val(JSON.stringify(amenityDeletedId));
+
+                $(this).closest('tr').remove();
+                let isRowEmpty = $('#tblAmenity').find('tr').length;
+
+                if(!isRowEmpty){
+                    $('#tblAmenity').closest('table').addClass('d-none');
+                }
+            })
+
+            $('#updateAmenities').on('click', function () {
+
+                let amenity = $('#lstAmenities').find('option:selected');
+                let description = $('#txtAmtiDescription').val();
+
+                if (amenity.val() && description) {
+                    let status = true;
+                    let table = $('#tblAmenity');
+
+                    table.find(`tr`).not(selectedAmenityRow).each(function () {
+                        let amenityData = $(this).find('td[data-amenity]').attr('data-amenity');
+
+                        if (amenityData === amenity.text() ) {
+                            status = false;
+                            return false;
+                        }
+                    });
+
+                    if (status) {
+                        const obj = {
+                            'amenity_id': amenity.val(),
+                            'amenity_name': amenity.text(),
+                            'description': description
+                        };
+
+                        selectedAmenityRow.each(function () {
+                            $(this).find('td[data-amenity]').attr('data-amenity', amenity.text()).html(amenity.text()+`<input class="d-none" value="${amenity.val()}" name="amenities[${amenityUpdateId}][amenity_id]" data-id="${amenityUpdateId}">`);
+                            $(this).find('td[data-description]').attr('data-description', description).html(description+`<input class="d-none" value="${description}" name="amenities[${amenityUpdateId}][description]" data-id="${amenityUpdateId}">`);
+                            $(this).find('td[data-tdata]').attr('data-tdata', JSON.stringify(obj)).text(JSON.stringify(obj));
+                        });
+
+                        $('#updateAmenities').addClass('d-none');
+                        $('#addAmenities').removeClass('d-none');
+
+                        selectedAmenityRow = null;
+                        clearAmenityFields();
+                    }
+                }
+            });
+
+            const clearAmenityFields = () => {
+                $('#lstAmenities').val(null).trigger('change');
+                $('#txtAmtiDescription').val('');
+            }
+            // -----------------------------end Amenities functionalities
 
 
             let stageList = $("#stage-list");
@@ -1375,6 +1587,8 @@
 
             getContractTypes();
             getContractors();
+            getAmenities();
+
         });
     </script>
 @endsection

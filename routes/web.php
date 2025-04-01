@@ -149,6 +149,7 @@ Route::delete('deleteDocuments', [GeneralController::class,'deleteDocuments'])->
 Route::get('/getContractTypes', [GeneralController::class,'getContractTypes'])->name('getContractTypes');
 Route::get('/getVendors', [GeneralController::class, 'getVendors'])->name('getVendors');
 Route::get('/getContractors', [GeneralController::class, 'getContractors'])->name('getContractors');
+Route::get('/getAmenities', [GeneralController::class, 'getAmenities'])->name('getAmenities');
 require __DIR__.'/auth.php';
 
 

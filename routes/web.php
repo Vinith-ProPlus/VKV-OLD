@@ -146,6 +146,8 @@ Route::post('/getDocuments', [GeneralController::class, 'getDocuments'])->name('
 Route::post('/documentHandler', [GeneralController::class, 'documentHandler'])->name('documentHandler');
 Route::post('/updateDocuments', [GeneralController::class, 'updateDocuments'])->name('updateDocuments');
 Route::delete('deleteDocuments', [GeneralController::class,'deleteDocuments'])->name('deleteDocuments');
+Route::get('/getContractTypes', [GeneralController::class,'getContractTypes'])->name('getContractTypes');
+Route::get('/getVendors', [GeneralController::class, 'getVendors'])->name('getVendors');
 require __DIR__.'/auth.php';
 
 

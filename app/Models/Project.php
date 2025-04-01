@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Admin\ManageProjects\ProjectStage;
+use App\Models\ProjectContract;
 use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\Admin\ManageProjects\Site;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,6 +38,11 @@ class Project extends Model
     public function stages(): HasMany
     {
         return $this->HasMany(ProjectStage::class);
+    }
+
+    public function contracts(): HasMany
+    {
+        return $this->HasMany(ProjectContract::class);
     }
 
     public function tasks(): HasMany

@@ -32,21 +32,35 @@
                                data-name="tab-project-details" data-bs-toggle="tab">
                                 <span class="nav-contents">
                                     <i class="bi bi-1-square-fill active"></i>
-                                    <span class="nav-title">Project Details</span>
+                                    <span class="nav-title">Details</span>
                                 </span>
                             </a>
+                            <a class="nav-link" href="#project-contracts" data-tab="project-contracts"
+                            data-name="tab-project-contracts" data-bs-toggle="tab">
+                            <span class="nav-contents">
+                                <i class="bi bi-2-square-fill"></i>
+                                <span class="nav-title">Contracts</span>
+                            </span>
+                            </a>
                             <a class="nav-link" href="#project-stages" data-tab="project-stages"
-                               data-name="tab-project-stages" data-bs-toggle="tab">
+                            data-name="tab-project-stages" data-bs-toggle="tab">
                                 <span class="nav-contents">
-                                    <i class="bi bi-2-square-fill"></i>
-                                    <span class="nav-title">Project Stages</span>
+                                    <i class="bi bi-3-square-fill"></i>
+                                    <span class="nav-title">Stages</span>
+                                </span>
+                            </a>
+                            <a class="nav-link" href="#project-amenities" data-tab="project-amenities"
+                            data-name="tab-project-amenities" data-bs-toggle="tab">
+                                <span class="nav-contents">
+                                    <i class="bi bi-4-square-fill"></i>
+                                    <span class="nav-title">Amenities</span>
                                 </span>
                             </a>
                             <a class="nav-link" href="#project-documents" data-tab="project-documents"
                                data-name="tab-project-documents" data-bs-toggle="tab">
                                 <span class="nav-contents">
-                                    <i class="bi bi-3-square-fill"></i>
-                                    <span class="nav-title">Project Documents</span>
+                                    <i class="bi bi-5-square-fill"></i>
+                                    <span class="nav-title">Documents</span>
                                 </span>
                             </a>
                         </div>
@@ -205,7 +219,78 @@
                                         </div> --}}
                                     </div>
                                 </div>
-
+                                <div class="tab-pane fade" id="project-contracts">
+                                    <div class="card">
+                                        <div class="row" style="background-color: #7167f430;padding: 20px;border-radius: 15px;box-shadow: 1px 10px 40px #e4e2fde3;">
+                                            <div class="col-4">
+                                                <label for="lstContract"><strong>Contracts</strong></label>
+                                                <select  class="form-control select2" id="lstContract">
+                                                    <option value="">Select</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-3">
+                                                <label for="lstVendor"><strong>Vendors</strong></label>
+                                                <select  class="form-control select2" id="lstVendor">
+                                                    <option value="">Select</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-3">
+                                                <label for="textAmount"><strong>Amount</strong></label>
+                                                <input class="form-control" id="txtAmount" type="number">
+                                            </div>
+                                            <div class="col-2 align-self-end">
+                                                <a class="btn" id="addContracts" style="background-color: #7167f4;color: #fff;">Add</a>
+                                                <a class="btn btn-warning d-none" id="updateContracts">Update</a>
+                                                <a class="btn mx-2 btn-danger" id="clearContracts">Clear</a>
+                                            </div>
+                                        </div>
+                                    </div> 
+                                    <table class="table table-hover mt-20 form-group">
+                                        <thead>
+                                            <tr>
+                                                <th>Sno</th>
+                                                <th>Contracts</th>
+                                                <th>Vendors</th>
+                                                <th>Amount</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tblContract">
+                                            @if ($project)
+                                                @foreach ($project->contracts as $contract)
+                                                <tr data-new="true">
+                                                    <td>*</td>
+                                                    <td data-contract="{{ $contract->contract_type_id }}">
+                                                            {{ $contract->contract_type->name }}
+                                                            <input class="d-none" value="{{ $contract->contract_type_id }}" name="contracts[{{ $contract->project_id }}][contract_type_id]" data-id="{{ $contract->project_id }}">
+                                                        </td>
+                                                        <td data-vendor="{{ $contract->user_id }}">
+                                                            {{ $contract->user->name }}
+                                                            <input class="d-none" value="{{ $contract->user_id }}" name="contracts[{{ $contract->project_id }}][user_id]" data-id="{{ $contract->project_id }}">
+                                                        </td>
+                                                        <td data-amount="{{ $contract->amount }}">
+                                                            {{ $contract->amount }}
+                                                            <input class="d-none" value="{{ $contract->amount }}" name="contracts[{{ $contract->project_id }}][amount]" data-id="{{ $contract->project_id }}">
+                                                        </td>
+                                                        <td>
+                                                            <a class="btn btn-outline-primary editContracts"><i class="fa fa-pencil"></i></a>
+                                                        </td>
+                                                        <td data-tdata="{{ json_encode($contract) }}" class="d-none">{{ json_encode($contract) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                    <div class="row mt-40 text-end">
+                                        <div class="col-6 text-start">
+                                            <a class="btn btn-light">Back</a>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <a class="btn btn-outline-light btn-prev">Previous</a>
+                                            <a class="btn btn-primary btn-next">Next</a>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="tab-pane fade" id="project-stages">
                                     <!-- Stages Management -->
                                     <div class="row col-12 mt-10 card form-group">
@@ -258,6 +343,34 @@
                                                 @enderror
                                             @endforeach
                                         </ul>
+                                    </div>
+                                    <div class="row mt-40 text-end">
+                                        <div class="col-6 text-start">
+                                            <a class="btn btn-light">Back</a>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <a class="btn btn-outline-light btn-prev">Previous</a>
+                                            <a class="btn btn-primary btn-next">Next</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="project-amenities">
+                                    <div class="card">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <select name="" id="">
+                                                    <option value="">Select</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <select name="" id="">
+                                                    <option value="">Select</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number">
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="row mt-40 text-end">
                                         <div class="col-6 text-start">
@@ -383,7 +496,9 @@
         $(document).ready(function () {
             let tableEditId = 1;
             let deletedDocuments = [];
-
+            let selectedContractRow = null;
+            let contractCellId = 0;
+            let contractUpdateId = 0;
             //-------------------start of wizard tab toggle function
 
             function validateRequiredFields($container) {
@@ -852,6 +967,225 @@
 
             //----------------------------End of Document handling helpers
 
+
+            // -----------------------------contract functionalities
+
+
+            const getContractTypes = () => {
+                let ContractID = $('#lstContract');
+                let SelectedContractID = ContractID.attr('data-selected');
+                ContractID.select2('destroy');
+                $('#lstContract option').remove();
+                ContractID.append('<option value="">--Select a Contract Type--</option>');
+
+                $.ajax({
+                    url: "{{route('getContractTypes')}}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        response.forEach(function (item) {
+                            if ((item.id == SelectedContractID)) {
+                                ContractID.append('<option selected value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            } else {
+                                ContractID.append('<option value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            }
+                        }); 
+                        ContractID.select2();
+                    },
+                    error: function (xhr) {
+                    }
+                });
+            }
+
+            const getVendors = () => {
+                let VendorID = $('#lstVendor');
+                let SelectedVendorID = VendorID.attr('data-selected');
+                VendorID.select2('destroy');
+                $('#lstVendor option').remove();
+                VendorID.append('<option value="">--Select a Vendor--</option>');
+
+                $.ajax({
+                    url: "{{route('getVendors')}}",
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        response.forEach(function (item) {
+                            if ((item.id == SelectedVendorID)) {
+                                VendorID.append('<option selected value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            } else {
+                                VendorID.append('<option value="' + item.id
+                                    + '">' + item.name + '</option>');
+                            }
+                        }); 
+                        VendorID.select2();
+                    },
+                    error: function (xhr) {
+                    }
+                });
+            }
+
+            let rowID = 1;
+
+            $('#addContracts').on('click',function(){
+                let contract = $('#lstContract').find('option:selected');
+                let vendor = $('#lstVendor').find('option:selected');
+                let amount = $('#txtAmount').val();
+
+                if(contract && vendor && amount){
+                    let status = true;
+                    let table = $('#tblContract');
+
+                    table.find('tr').each(function () { 
+                        let contractData = $(this).find('td[data-contract]').data('contract');
+                        let vendorData = $(this).find('td[data-vendor]').data('vendor');
+
+                        if (contractData === contract.text() && vendorData === vendor.text()) {
+                            status = false;
+                            return false;
+                        }
+                    });
+ 
+                    if(status){
+
+                        const obj = {
+                            'contractID':contract.val(),
+                            'contractName':contract.text(),
+                            'vendorID':vendor.val(),
+                            'vendorName':vendor.text(),
+                            'amount':amount
+                        };
+                        
+                        let rowLength = $('#tblContract').find('tr').length;
+
+                        if(rowLength){
+                            contractCellId = $('#tblContract').find('tr:last td[data-contract] input').attr('data-id');
+                            contractCellId++;
+                        }
+
+                        let html = `
+                        <tr data-new="true">
+                            <td>*</td>
+                            <td data-contract="${contract.text()}">${contract.text()}<input class="d-none" value="${contract.val()}" name="contracts[${contractCellId}][contract_type_id]" data-id="${contractCellId}"></td>
+                            <td data-vendor="${vendor.text()}">${vendor.text()}<input class="d-none" value="${vendor.val()}" name="contracts[${contractCellId}][user_id]" data-id="${contractCellId}"></td>
+                            <td data-amount="${amount}">${amount}<input class="d-none" value="${amount}" name="contracts[${contractCellId}][amount]" data-id="${contractCellId}"></td>
+                            <td>
+                                <a class="btn btn-outline-primary editContracts"><i class="fa fa-pencil"></i></a>
+                                <a class="btn btn-danger deleteContracts"><i class="fa fa-trash"></i></a>
+                            </td>
+                            <td data-tdata='${JSON.stringify(obj)}' class="d-none">${JSON.stringify(obj)}</td>
+                        </tr>`;
+
+                        table.append(html);
+                        serializeTable('#tblContract');
+                        
+                        $('#tblContract').closest('table').removeClass('d-none');
+                        clearContractFields();
+                    }
+                }
+            });
+
+            $('#clearContracts').on('click',function(){
+                $('#updateContracts').addClass('d-none'); 
+                $('#addContracts').removeClass('d-none');
+                clearContractFields();
+            })
+
+            $(document).on('click','.editContracts',function(){
+                selectedContractRow = $(this).closest('tr');
+                let isNew = selectedContractRow.find('.deleteContracts').length > 0;
+                
+                contractUpdateId = selectedContractRow.find('td[data-contract] input').attr('data-id');
+                
+                let tdata = JSON.parse(selectedContractRow.find('td[data-tdata]').attr('data-tdata'));
+
+                $('#lstContract').val(tdata.contractID).trigger('change');  
+                $('#lstVendor').val(tdata.vendorID).trigger('change');  
+                $('#txtAmount').val(tdata.amount);  
+
+                if(!isNew){
+                    $('#lstContract').attr('disabled',true);
+                    $('#lstVendor').attr('disabled',true);
+                }
+
+                $('#addContracts').addClass('d-none');
+                $('#updateContracts').removeClass('d-none');
+
+            });
+
+            $(document).on('click','.deleteContracts', function(){
+                $(this).closest('tr').remove();
+                let isRowEmpty = $('#tblContract').find('tr').length;
+
+                if(!isRowEmpty){
+                    $('#tblContract').closest('table').addClass('d-none');
+                }
+            })
+
+            $('#updateContracts').on('click', function () { 
+
+                let contract = $('#lstContract').find('option:selected');
+                let vendor = $('#lstVendor').find('option:selected');
+                let amount = $('#txtAmount').val();
+
+                if (contract && vendor && amount) {
+                    let status = true;
+                    let table = $('#tblContract');
+
+                    table.find(`tr`).not(selectedContractRow).each(function () { 
+                        let contractData = $(this).find('td[data-contract]').attr('data-contract'); 
+                        let vendorData = $(this).find('td[data-vendor]').attr('data-vendor'); 
+
+                        if (contractData === contract.text() && vendorData === vendor.text()) {
+                            status = false;
+                            return false;
+                        }
+                    });
+
+                    if (status) {
+                        const obj = {
+                            'contractID': contract.val(),
+                            'contractName': contract.text(),
+                            'vendorID': vendor.val(),
+                            'vendorName': vendor.text(),
+                            'amount': amount
+                        };
+
+                        selectedContractRow.each(function () { 
+                            $(this).find('td[data-contract]').attr('data-contract', contract.text()).html(contract.text()+`<input class="d-none" value="${contract.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-vendor]').attr('data-vendor', vendor.text()).html(vendor.text()+`<input class="d-none" value="${vendor.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-amount]').attr('data-amount', amount).html(amount+`<input class="d-none" value="${amount}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-tdata]').attr('data-tdata', JSON.stringify(obj)).text(JSON.stringify(obj));
+                        });
+
+                        $('#updateContracts').addClass('d-none'); 
+                        $('#addContracts').removeClass('d-none');
+                        
+                        selectedContractRow = null;
+                        clearContractFields();
+                    }
+                }
+            });
+
+            const clearContractFields = () => {
+                $('#lstContract').attr('disabled',false);
+                $('#lstVendor').attr('disabled',false);
+                $('#lstContract, #lstVendor').val(null).trigger('change');
+                $('#txtAmount').val('');
+            };
+
+            const serializeTable = (selector) => {
+                let i = 1;
+                $(`${selector} tr`).each(function () {
+                    $(this).find('td:first').text(i++);
+                });
+            };
+ 
+            // -----------------------------end contract functionalities
+
+
             let stageList = $("#stage-list");
             let isEditMode = {{ $project ? 'true' : 'false' }};
 
@@ -1041,6 +1375,9 @@
             getSites();
             getEngineers();
             getDocuments();
+
+            getContractTypes();
+            getVendors();
         });
     </script>
 @endsection

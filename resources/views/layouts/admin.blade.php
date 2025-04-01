@@ -96,6 +96,7 @@
 
         .wizard-head .nav-link {
             border: none !important;
+			padding: 0px;
         }
 
         .preview-container {

@@ -9,6 +9,7 @@ use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
 use App\Models\Admin\Master\State;
 use App\Models\ContractType;
+use App\Models\Amenity;
 use App\Models\Document;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
@@ -289,5 +290,10 @@ class GeneralController extends Controller
     {
         $vendorId = Role::where('name', 'Vendor')->pluck('id')->first();
         return response()->json(User::where('role_id',$vendorId)->get());
+    }
+
+    public function getAmenities(Request $request): JsonResponse
+    {
+        return response()->json(Amenity::where('is_active','1')->get());
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Document;
 use App\Models\Project;
 use App\Models\ProjectContract;
+use App\Models\ProjectAmenity;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -101,6 +102,21 @@ class ProjectController extends Controller{
                     ]
                 );
             }
+ 
+
+            $amenities = $request->amenities ?? [];
+
+            foreach ($amenities as $amenity) {
+                ProjectAmenity::updateOrCreate(
+                    [
+                        'project_id' => $project->id,
+                        'amenity_id' => $amenity['amenity_id'], 
+                    ],
+                    [
+                        'description' => $amenity['description']
+                    ]
+                );
+            }
 
             DB::commit();
             return redirect()->route('projects.index')->with('success', 'Project created successfully.');
@@ -125,8 +141,7 @@ class ProjectController extends Controller{
      * @throws AuthorizationException
      */
     public function update(ProjectRequest $request, Project $project): RedirectResponse
-    {
-
+    { 
         $this->authorize('Edit Projects');
         try {
             $project_id = $project->id;
@@ -173,7 +188,29 @@ class ProjectController extends Controller{
                     ]
                 );
             }
+ 
+            $amenities = $request->amenities ?? [];
 
+            foreach ($amenities as $amenity) {
+                ProjectAmenity::updateOrCreate(
+                    [
+                        'project_id' => $project->id,
+                        'amenity_id' => $amenity['amenity_id'], 
+                    ],
+                    [
+                        'description' => $amenity['description']
+                    ]
+                );
+            }
+
+            if ($request->deletedAmenities) {
+                $deletedIds = json_decode($request->deletedAmenities, true);
+            
+                if (is_array($deletedIds) && count($deletedIds) > 0) {
+                    ProjectAmenity::whereIn('id', $deletedIds)->delete();
+                }
+            }
+            
             // Soft delete missing stages
             foreach ($existingStages as $stage) {
                 if (!$newStages->pluck('id')->contains($stage->id)) {

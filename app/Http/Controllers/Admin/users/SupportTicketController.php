@@ -39,7 +39,7 @@ class SupportTicketController extends Controller{
         $this->authorize('View Support Tickets');
 
         if ($request->ajax()) {
-            $query = SupportTicket::with('user', 'support_type')->withTrashed()->orderByDesc()
+            $query = SupportTicket::with('user', 'support_type')->withTrashed()->orderByDesc('created_at')
                 ->when($request->get('support_type_id'), static fn($q) => $q->where('support_type_id', $request->support_type_id))
                 ->when($request->get('user_id'), static fn($q) => $q->where('user_id', $request->user_id))
                 ->when($request->get('status'), static fn($q) => $q->where('status', $request->status))

@@ -26,10 +26,15 @@ class SupportTicketController extends Controller
      * Record User Check-in/Check-out
      */
 
-    public function createTicket(SupportTicketRequest $request, SupportTicket $supportTicket): JsonResponse
+    public function createTicket(Request $request, SupportTicket $supportTicket): JsonResponse
     {
         DB::beginTransaction();
         try {
+            $request->validate([
+                'subject'      => 'required|string|max:255',
+                'support_type' => 'required|exists:support_types,id',
+                'message' => 'required|string|max:255'
+            ]);
             $ticket = SupportTicket::create([
                 'user_id'        => auth()->id(),
                 'subject'        => $request->subject,
@@ -90,10 +95,14 @@ class SupportTicketController extends Controller
      * @param SupportTicket $supportTicket
      * @return JsonResponse
      */
-    public function storeMessage(SupportTicketMessageRequest $request, SupportTicket $supportTicket): JsonResponse
+    public function storeMessage(Request $request, SupportTicket $supportTicket): JsonResponse
     {
         DB::beginTransaction();
         try {
+            $request->validate([
+                'message' => 'required|string|max:5000',
+            ]);
+
             $message = SupportTicketMessage::create([
                 'support_ticket_id' => $supportTicket->id,
                 'user_id'           => auth()->id(),

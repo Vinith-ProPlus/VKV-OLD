@@ -126,6 +126,7 @@ class ProjectController extends Controller{
      */
     public function update(ProjectRequest $request, Project $project): RedirectResponse
     {
+
         $this->authorize('Edit Projects');
         try {
             $project_id = $project->id;

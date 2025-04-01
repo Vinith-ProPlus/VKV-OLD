@@ -256,15 +256,18 @@
                                             </tr>
                                         </thead>
                                         <tbody id="tblContract">
+                                            @php
+                                                $serialNum = 1;
+                                            @endphp
                                             @if ($project)
                                                 @foreach ($project->contracts as $contract)
                                                 <tr data-new="true">
-                                                    <td>*</td>
-                                                    <td data-contract="{{ $contract->contract_type_id }}">
+                                                    <td>{{$serialNum++}}</td>
+                                                    <td data-contract="{{ $contract->contract_type->name }}">
                                                             {{ $contract->contract_type->name }}
                                                             <input class="d-none" value="{{ $contract->contract_type_id }}" name="contracts[{{ $contract->project_id }}][contract_type_id]" data-id="{{ $contract->project_id }}">
                                                         </td>
-                                                        <td data-vendor="{{ $contract->user_id }}">
+                                                        <td data-vendor="{{ $contract->user->name }}">
                                                             {{ $contract->user->name }}
                                                             <input class="d-none" value="{{ $contract->user_id }}" name="contracts[{{ $contract->project_id }}][user_id]" data-id="{{ $contract->project_id }}">
                                                         </td>
@@ -1051,10 +1054,10 @@
                     if(status){
 
                         const obj = {
-                            'contractID':contract.val(),
-                            'contractName':contract.text(),
-                            'vendorID':vendor.val(),
-                            'vendorName':vendor.text(),
+                            'contract_type_id':contract.val(),
+                            'contract_name':contract.text(),
+                            'user_id':vendor.val(),
+                            'user_name':vendor.text(),
                             'amount':amount
                         };
                         
@@ -1101,8 +1104,8 @@
                 
                 let tdata = JSON.parse(selectedContractRow.find('td[data-tdata]').attr('data-tdata'));
 
-                $('#lstContract').val(tdata.contractID).trigger('change');  
-                $('#lstVendor').val(tdata.vendorID).trigger('change');  
+                $('#lstContract').val(tdata.contract_type_id).trigger('change');  
+                $('#lstVendor').val(tdata.user_id).trigger('change');  
                 $('#txtAmount').val(tdata.amount);  
 
                 if(!isNew){
@@ -1146,17 +1149,17 @@
 
                     if (status) {
                         const obj = {
-                            'contractID': contract.val(),
-                            'contractName': contract.text(),
-                            'vendorID': vendor.val(),
-                            'vendorName': vendor.text(),
+                            'contract_type_id': contract.val(),
+                            'contract_name': contract.text(),
+                            'user_id': vendor.val(),
+                            'user_name': vendor.text(),
                             'amount': amount
                         };
 
                         selectedContractRow.each(function () { 
                             $(this).find('td[data-contract]').attr('data-contract', contract.text()).html(contract.text()+`<input class="d-none" value="${contract.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
-                            $(this).find('td[data-vendor]').attr('data-vendor', vendor.text()).html(vendor.text()+`<input class="d-none" value="${vendor.val()}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
-                            $(this).find('td[data-amount]').attr('data-amount', amount).html(amount+`<input class="d-none" value="${amount}" name="contracts[${contractUpdateId}][contract_type_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-vendor]').attr('data-vendor', vendor.text()).html(vendor.text()+`<input class="d-none" value="${vendor.val()}" name="contracts[${contractUpdateId}][user_id]" data-id="${contractUpdateId}">`);
+                            $(this).find('td[data-amount]').attr('data-amount', amount).html(amount+`<input class="d-none" value="${amount}" name="contracts[${contractUpdateId}][amount]" data-id="${contractUpdateId}">`);
                             $(this).find('td[data-tdata]').attr('data-tdata', JSON.stringify(obj)).text(JSON.stringify(obj));
                         });
 

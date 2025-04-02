@@ -14,6 +14,7 @@ use App\Models\Document;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\Project;
+use App\Models\ProjectContract;
 use App\Models\SupportType;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -295,6 +296,13 @@ class GeneralController extends Controller
     {
         $contractor_role_id = Role::where('name', CONTRACTOR_ROLE_NAME)->pluck('id')->first();
         return response()->json(User::where('role_id',$contractor_role_id)->get());
+    }
+    public function getProjectContractors(Request $request): JsonResponse
+    {
+        $request->validate([
+           'project_id' => 'required|exists:projects,id'
+        ]);
+        return response()->json(ProjectContract::with('user:id,name', 'contract_type:id,name')->where('project_id', $request->project_id)->get());
     }
 
     public function getAmenities(Request $request): JsonResponse

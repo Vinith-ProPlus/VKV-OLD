@@ -126,6 +126,11 @@
                                     <a href="{{ route('project_specifications.index') }}" data-active-name="Project-Specifications" data-original-title="" title="">Project Specifications</a>
                                 </li>
                             @endcan
+                            @can('View Labors')
+                                <li class="">
+                                    <a href="{{ route('labors.index') }}" data-active-name="Labors" data-original-title="" title="">Labors</a>
+                                </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">

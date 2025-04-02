@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ManageProjects\AmenityController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectController;
+use App\Http\Controllers\Admin\ManageProjects\ProjectLaborDateController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectSpecificationsController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectTaskController;
 use App\Http\Controllers\Admin\ManageProjects\SiteController;
@@ -27,3 +28,10 @@ Route::put('sites/restore/{id}', [SiteController::class, 'restore'])->name('site
 Route::post('handle_documents', [ProjectController::class,'docxHandler'])->name('projects.handle_documents');
 Route::post('update_documents', [ProjectController::class,'updateDocuments'])->name('projects.updateDocuments');
 Route::delete('delete_documents', [ProjectController::class,'deleteDocx'])->name('projects.delete_documents');
+
+
+Route::resource('labors', ProjectLaborDateController::class);
+Route::put('labors/restore/{id}', [ProjectLaborDateController::class, 'restore'])->name('labors.restore')->middleware('can:Restore Labors');
+Route::post('/labors/add-labor', [ProjectLaborDateController::class, 'addLabor'])->name('add-labor')->middleware('can:Create Labors');
+Route::get('/labors-list', [ProjectLaborDateController::class, 'laborsList'])->name('laborsList');
+Route::get('/contract-labors/list', [ProjectLaborDateController::class, 'contractLaborsList'])->name('contractLaborsList');

@@ -123,7 +123,7 @@ class GeneralController extends Controller
     }
     public function getTaskProjects(Request $request): JsonResponse
     {
-        $query = Project::with('stages')->whereHas('site', function ($q) {
+        $query = Project::with('stages', 'engineer:id,name', 'site:id,name')->whereHas('site', static function ($q) {
             $q->whereHas('supervisors', static function ($supervisorQuery) {
                 $supervisorQuery->where('users.id', Auth::id());
             });

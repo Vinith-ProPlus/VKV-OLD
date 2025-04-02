@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\ContractType;
-use App\Models\Project;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,6 +28,5 @@ class ProjectContract extends Model
     {
         return $this->belongsTo(ContractType::class, 'contract_type_id');
     }
-    
 }
 

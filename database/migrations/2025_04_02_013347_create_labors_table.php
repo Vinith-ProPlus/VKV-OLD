@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('mobile', 15);
             $table->decimal('salary', 10, 2);
+            $table->boolean('paid_status')->default(0);
             $table->string('designation');
             $table->timestamps();
             $table->softDeletes();

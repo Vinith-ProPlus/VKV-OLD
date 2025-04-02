@@ -80,13 +80,15 @@ class ProjectLaborDateController extends Controller
                 ->addColumn('salary', static fn($data) => $data->salary ?? 'N/A')
                 ->addColumn('action', static function ($data) use ($project_labor_date) {
                     $button = '<div class="d-flex justify-content-center">';
-//                    if ($project_labor_date->date->isToday()) {
+                    if (!$data->paid_status) {
                         $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-success btn-sm m-1 editLabor">
                                     <i class="fa fa-pencil" aria-hidden="true"></i></button>';
                         $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-danger btn-sm m-1 deleteLabor">
                                     <i class="fa fa-trash" style="color: red"></i>
                                 </button>';
-//                    }
+                    } else {
+                        $button .=  '-';
+                    }
 
                     $button .= '</div>';
                     return $button;

@@ -14,7 +14,7 @@ class Labor extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['project_labor_date_id', 'name', 'mobile', 'salary', 'designation'];
+    protected $fillable = ['project_labor_date_id', 'name', 'mobile', 'salary', 'designation', 'paid_status'];
 
     /**
      * @return BelongsTo

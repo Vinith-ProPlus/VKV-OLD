@@ -245,8 +245,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <table class="table table-hover {{ count($project->contracts) ? '' : 'd-none' }} mt-20 form-group">
-                                        <thead>
+                                    <table class="table table-hover {{ (is_object($project) && count($project->contracts) > 0) ? '' : 'd-none' }} mt-20 form-group">
+                                    <thead>
                                             <tr>
                                                 <th>S.No</th>
                                                 <th>Contract Types</th>
@@ -377,7 +377,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <table class="table table-hover {{ count($project->amenities) ? '' : 'd-none' }} mt-20 form-group">
+                                    <table class="table table-hover {{ (is_object($project) && count($project->amenities) > 0) ? '' : 'd-none' }} mt-20 form-group">
                                         <thead>
                                             <tr>
                                                 <th>Sno</th>

@@ -102,27 +102,47 @@ class ProjectLaborDateController extends Controller
      */
     public function contractLaborsList(Request $request): Factory|Application|View|JsonResponse
     {
-        $this->authorize('View Labors');
         if ($request->ajax()) {
-            $project_labor_date = ProjectLaborDate::find($request->project_labor_date_id);
-            $data = ContractLabor::with('projectContract')->where('project_labor_date_id', $request->project_labor_date_id)->get();
+            $this->authorize('View Labors');
+            $project_labor_date_id = $request->project_labor_date_id;
+            if (!$project_labor_date_id) {
+                return response()->json(['error' => 'Invalid request: Missing project labor date ID.'], 400);
+            }
+
+            $project_labor_date = ProjectLaborDate::find($project_labor_date_id);
+            if (!$project_labor_date) {
+                return response()->json(['error' => 'Project labor date not found.'], 404);
+            }
+
+            $data = ContractLabor::with('projectContract.user', 'projectContract.contract_type')
+                ->where('project_labor_date_id', $project_labor_date_id)
+                ->get();
+
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->editColumn('contractor_name', static fn($data) => $data->projectContract?->user?->name .' - '. $data->projectContract?->contract_type?->name  ?? 'N/A')
+                ->editColumn('contractor_name', static function ($data) {
+                    $contractorName = $data->projectContract?->user?->name ?? 'Unknown Contractor';
+                    $contractType = $data->projectContract?->contract_type?->name ?? 'Unknown Type';
+                    return "$contractorName - $contractType";
+                })
                 ->addColumn('action', static function ($data) use ($project_labor_date) {
-//                    if($project_labor_date->date == today()) {
-                        $button = '<div class="d-flex justify-content-center">';
-                        $button .= '<button data-id="' . $data->id . '" data-type="Contract" class="btn btn-outline-success btn-sm m-1 editLabor"><i class="fa fa-pencil" aria-hidden="true"></i></button>';
-                        $button .= '<button data-id="' . $data->id . '" data-type="Contract" class="btn btn-outline-danger btn-sm m-1 deleteLabor"><i class="fa fa-trash" style="color: red"></i></button>';
-                        $button .= '</div>';
+                    $button = '<div class="d-flex justify-content-center">';
+//                    if ($project_labor_date->date->isToday()) {
+                        $button .= '<button data-id="' . $data->id . '" data-type="Contract" class="btn btn-outline-success btn-sm m-1 editLabor">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>';
+                        $button .= '<button data-id="' . $data->id . '" data-type="Contract" class="btn btn-outline-danger btn-sm m-1 deleteLabor">
+                                    <i class="fa fa-trash" style="color: red"></i>
+                                </button>';
 //                    }
+
+                    $button .= '</div>';
                     return $button;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
-        } else {
-            return [];
         }
+        return response()->json([]);
     }
 
     /**

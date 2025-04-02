@@ -64,27 +64,37 @@ class ProjectLaborDateController extends Controller
      */
     public function laborsList(Request $request): Factory|Application|View|JsonResponse
     {
-        $this->authorize('View Labors');
         if ($request->ajax()) {
-            $project_labor_date = ProjectLaborDate::find($request->project_labor_date_id);
-            $data = Labor::where('project_labor_date_id', $request->project_labor_date_id)->get();
+            $this->authorize('View Labors');
+            $project_labor_date_id = $request->project_labor_date_id;
+            if (!$project_labor_date_id) {
+                return response()->json(['error' => 'Invalid request: Missing project labor date ID.'], 400);
+            }
+            $project_labor_date = ProjectLaborDate::find($project_labor_date_id);
+            if (!$project_labor_date) {
+                return response()->json(['error' => 'Project labor date not found.'], 404);
+            }
+            $data = Labor::where('project_labor_date_id', $project_labor_date_id)->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('salary', static fn($data) => $data->salary ?? 'N/A')
                 ->addColumn('action', static function ($data) use ($project_labor_date) {
                     $button = '<div class="d-flex justify-content-center">';
-//                    if($project_labor_date->date == today()) {
-                        $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-success btn-sm m-1 editLabor"><i class="fa fa-pencil" aria-hidden="true"></i></button>';
-                        $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-danger btn-sm m-1 deleteLabor"><i class="fa fa-trash" style="color: red"></i></button>';
-                        $button .= '</div>';
+//                    if ($project_labor_date->date->isToday()) {
+                        $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-success btn-sm m-1 editLabor">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i></button>';
+                        $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-danger btn-sm m-1 deleteLabor">
+                                    <i class="fa fa-trash" style="color: red"></i>
+                                </button>';
 //                    }
+
+                    $button .= '</div>';
                     return $button;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
-        } else {
-            return [];
         }
+        return response()->json([]);
     }
 
     /**

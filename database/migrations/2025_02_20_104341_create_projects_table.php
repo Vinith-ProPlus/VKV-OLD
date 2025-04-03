@@ -23,12 +23,13 @@ return new class extends Migration
             $table->string('range');
             $table->foreignId('engineer_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('area_sqft');
+            $table->string('investment_amount')->nullable();
+            $table->string('sold_amount')->nullable();
             $table->string('status')->default('In-progress');
             $table->softDeletes();
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

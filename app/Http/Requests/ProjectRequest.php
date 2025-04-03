@@ -44,6 +44,9 @@ class ProjectRequest extends FormRequest
             'status' => ['required', 'string', Rule::in(PROJECT_STATUSES)],
             'stages' => 'nullable|array',
             'stages.*.name' => 'required|string',
+            'sold_amount' => [
+                Rule::requiredIf($this->input('status') === COMPLETED), 'numeric','regex:/^\d+(\.\d{1,2})?$/',
+            ],
         ];
     }
 }

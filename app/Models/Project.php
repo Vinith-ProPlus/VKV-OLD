@@ -33,6 +33,8 @@ class Project extends Model
         'engineer_id',
         'area_sqft',
         'status',
+        'investment_amount',
+        'sold_amount',
     ];
 
     protected $appends = ['completion_percentage'];

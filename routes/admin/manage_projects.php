@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\Labor\LaborDesignationController;
+use App\Http\Controllers\Admin\Labor\ProjectLaborDateController;
 use App\Http\Controllers\Admin\ManageProjects\AmenityController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectController;
-use App\Http\Controllers\Admin\ManageProjects\ProjectLaborDateController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectSpecificationsController;
 use App\Http\Controllers\Admin\ManageProjects\ProjectTaskController;
 use App\Http\Controllers\Admin\ManageProjects\SiteController;
@@ -39,3 +40,6 @@ Route::get('/labors-list', [ProjectLaborDateController::class, 'laborsList'])->n
 Route::get('/contract-labors/list', [ProjectLaborDateController::class, 'contractLaborsList'])->name('contractLaborsList');
 Route::view('/labor-reallocations-view', 'admin.manage_projects.labors.reallocation_history')->name('labor.reallocation.view');
 Route::get('/labor-reallocations', [ProjectLaborDateController::class, 'laborReAllocations'])->name('labor.reallocation.history');
+
+Route::resource('labor-designations', LaborDesignationController::class);
+Route::put('labor-designations/restore/{id}', [LaborDesignationController::class, 'restore'])->name('labor-designations.restore')->middleware('can:Restore Labor Designations');

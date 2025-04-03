@@ -88,6 +88,11 @@
                                        title="">Contract Type</a>
                                 </li>
                             @endcan
+                            @can('View Labor Designations')
+                                <li class="">
+                                    <a href="{{ route('labor-designations.index') }}" data-active-name="Labor-Designation" data-original-title="" title="">Labor Designation</a>
+                                </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">

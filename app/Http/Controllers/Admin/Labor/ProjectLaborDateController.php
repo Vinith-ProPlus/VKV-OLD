@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Admin\ManageProjects;
+namespace App\Http\Controllers\Admin\Labor;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectLaborDateRequest;
-use App\Models\LaborReallocation;
-use App\Models\ProjectLaborDate;
-use App\Models\Labor;
+use App\Models\Admin\Labor\ProjectLaborDate;
 use App\Models\ContractLabor;
-use App\Models\Project;
-use App\Models\ProjectContract;
+use App\Models\Labor;
+use App\Models\LaborReallocation;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -24,7 +22,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
 
 class ProjectLaborDateController extends Controller
@@ -61,7 +58,7 @@ class ProjectLaborDateController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('admin.manage_projects.labors.index');
+        return view('admin.labors.index');
     }
 
     /**
@@ -82,7 +79,7 @@ class ProjectLaborDateController extends Controller
                 ->addColumn('date', static fn($data) => $data->created_at->format('d-m-Y H:i A'))
                 ->make(true);
         }
-        return view('admin.manage_projects.labors.index');
+        return view('admin.labors.index');
     }
 
     /**
@@ -182,7 +179,7 @@ class ProjectLaborDateController extends Controller
         $labor = ProjectLaborDate::firstOrCreate(
             ['project_id' => $request->project_id, 'date' => $request->date]
         );
-        return response()->view('admin.manage_projects.labors.data', compact('labor'));
+        return response()->view('admin.labors.data', compact('labor'));
     }
 
     /**
@@ -192,7 +189,7 @@ class ProjectLaborDateController extends Controller
     {
         $this->authorize('Edit Labors');
         $ProjectLabourDate = ProjectLaborDate::with('labors')->find($ProjectLabourDate);
-        return response()->view('admin.manage_projects.labors.reallocate', compact('ProjectLabourDate'));
+        return response()->view('admin.labors.reallocate', compact('ProjectLabourDate'));
     }
 
     /**

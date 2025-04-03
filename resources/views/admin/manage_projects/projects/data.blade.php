@@ -188,18 +188,26 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="form-group">
-                                                <label>Active Status <span class="text-danger">*</span></label>
-                                                <select name="is_active" class="form-control">
-                                                    <option
-                                                        value="1" {{ old('is_active', $project->is_active ?? 1) == 1 ? 'selected' : '' }}>
-                                                        Active
-                                                    </option>
-                                                    <option
-                                                        value="0" {{ old('is_active', $project->is_active ?? 1) == 0 ? 'selected' : '' }}>
-                                                        Inactive
-                                                    </option>
+                                                <label>Area in Sq.ft <span class="text-danger">*</span></label>
+                                                <input type="number" name="area_sqft" class="form-control"
+                                                       value="{{ old('area_sqft', $project->area_sqft ?? '') }}" required>
+                                                @error('area_sqft')
+                                                <div class="err text-danger mt-1">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-10">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label>Status <span class="text-danger">*</span></label>
+                                                <select name="status" class="form-control" id="status" required>
+                                                    <option value="">Select a Status</option>
+                                                    @foreach(PROJECT_STATUSES as $status)
+                                                        <option value="{{ $status }}" {{ $status == ($project ? old('status', $project->status) : old('status')) ? 'selected' : '' }}>{{ $status }}</option>
+                                                    @endforeach
                                                 </select>
-                                                @error('is_active')
+                                                @error('status')
                                                 <div class="err text-danger mt-1">{{ $message }}</div>
                                                 @enderror
                                             </div>
@@ -544,6 +552,7 @@
             let amenityCellId = 0;
             let amenityUpdateId = 0;
             let amenityDeletedId = [];
+            $('#status').select2();
             //-------------------start of wizard tab toggle function
 
             function validateRequiredFields($container) {

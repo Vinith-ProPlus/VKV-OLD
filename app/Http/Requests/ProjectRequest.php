@@ -40,7 +40,8 @@ class ProjectRequest extends FormRequest
             'target_customers'=>'required|string|max:255',
             'range'=>'required|string|max:255',
             'engineer_id'=>'required|integer|exists:users,id',
-            'is_active' => 'required|boolean',
+            'area_sqft'=>'required',
+            'status' => ['required', 'string', Rule::in(PROJECT_STATUSES)],
             'stages' => 'nullable|array',
             'stages.*.name' => 'required|string',
         ];

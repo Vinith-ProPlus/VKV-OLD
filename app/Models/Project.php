@@ -31,7 +31,8 @@ class Project extends Model
         'target_customers',
         'range',
         'engineer_id',
-        'is_active'
+        'area_sqft',
+        'status',
     ];
 
     protected $appends = ['completion_percentage'];

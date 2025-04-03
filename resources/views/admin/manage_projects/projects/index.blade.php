@@ -47,6 +47,7 @@
                                             <th>Project Name</th>
                                             <th>Location</th>
                                             <th>Range</th>
+                                            <th>Sq.Feet</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -84,7 +85,8 @@
                         {data: 'name'},
                         {data: 'location'},
                         {data: 'range'},
-                        {data: 'is_active'},
+                        {data: 'area_sqft'},
+                        {data: 'status'},
                         {data: 'action', orderable: false},
                     ]
                 });

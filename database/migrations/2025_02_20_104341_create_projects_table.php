@@ -22,7 +22,8 @@ return new class extends Migration
             $table->string('target_customers');
             $table->string('range');
             $table->foreignId('engineer_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
-            $table->boolean('is_active')->default(1);
+            $table->string('area_sqft');
+            $table->string('status')->default('In-progress');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\ManageProjects;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectLaborDateRequest;
+use App\Models\LaborReallocation;
 use App\Models\ProjectLaborDate;
 use App\Models\Labor;
 use App\Models\ContractLabor;
@@ -20,6 +21,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -36,7 +38,7 @@ class ProjectLaborDateController extends Controller
     {
         $this->authorize('View Labors');
         if ($request->ajax()) {
-            $data = ProjectLaborDate::with(['project', 'labors', 'contractLabors'])->get();
+            $data = ProjectLaborDate::with(['project', 'labors', 'contractLabors'])->withTrashed()->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('project_name', static fn($data) => $data->project->name ?? 'N/A')
@@ -47,6 +49,9 @@ class ProjectLaborDateController extends Controller
                     if ($data->deleted_at) {
                         $button .= '<a onclick="commonRestore(\'' . route('labors.restore', $data->id) . '\')" class="btn btn-outline-warning"><i class="fa fa-undo"></i></a>';
                     } else {
+                        if(\Carbon\Carbon::parse($data->date)->isToday()) {
+                            $button .= '<a href="' . route('labors.reallocate', $data->id) . '" class="btn btn-outline-secondary">Re-Allocate</a>';
+                        }
                         $button .= '<a href="' . route('labors.create', ['project_id' => $data->project_id, 'date' => $data->date]) . '" class="btn btn-outline-success btn-sm m-1"><i class="fa fa-pencil" aria-hidden="true"></i></a>';
                         $button .= '<a onclick="commonDelete(\'' . route('labors.destroy', $data->id) . '\')"  class="btn btn-outline-danger btn-sm m-1"><i class="fa fa-trash" style="color: red"></i></a>';
                     }
@@ -54,6 +59,27 @@ class ProjectLaborDateController extends Controller
                     return $button;
                 })
                 ->rawColumns(['action'])
+                ->make(true);
+        }
+        return view('admin.manage_projects.labors.index');
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function laborReAllocations(Request $request): Factory|Application|View|JsonResponse
+    {
+        $this->authorize('View Labors');
+        if ($request->ajax()) {
+            $data = LaborReallocation::with(['labor', 'fromProjectLaborDate.project', 'toProjectLaborDate.project', 'reallocatedBy'])->get();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('labor_name', static fn($data) => $data->labor->name ?? 'N/A')
+                ->addColumn('from_project_name', static fn($data) => $data->fromProjectLaborDate->project->name ?? 'N/A')
+                ->addColumn('to_project_name', static fn($data) => $data->toProjectLaborDate->project->name ?? 'N/A')
+                ->addColumn('reallocatedBy', static fn($data) => $data->reallocatedBy->name ?? 'N/A')
+                ->addColumn('remarks', static fn($data) => $data->remarks ?? 'N/A')
+                ->addColumn('date', static fn($data) => $data->created_at->format('d-m-Y H:i A'))
                 ->make(true);
         }
         return view('admin.manage_projects.labors.index');
@@ -157,6 +183,81 @@ class ProjectLaborDateController extends Controller
             ['project_id' => $request->project_id, 'date' => $request->date]
         );
         return response()->view('admin.manage_projects.labors.data', compact('labor'));
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function reallocate($ProjectLabourDate)
+    {
+        $this->authorize('Edit Labors');
+        $ProjectLabourDate = ProjectLaborDate::with('labors')->find($ProjectLabourDate);
+        return response()->view('admin.manage_projects.labors.reallocate', compact('ProjectLabourDate'));
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function reallocateStore(Request $request): RedirectResponse|null
+    {
+        logger($request->all());
+        $this->authorize('Edit Labors');
+        DB::beginTransaction();
+
+        try {
+            $request->validate([
+                'project_labor_date_id' => 'required|exists:project_labor_dates,id',
+                'project_id' => 'required|exists:projects,id',
+                'labors' => 'required|array',
+                'labors.*' => 'exists:labors,id',
+            ]);
+
+            $toProjectId = $request->project_id;
+            $fromProjectLaborDateId = $request->project_labor_date_id;
+            $date = $request->date;
+
+            // Ensure project_labor_date_id exists for the selected date and project
+            $projectLaborDate = ProjectLaborDate::firstOrCreate([
+                'project_id' => $toProjectId,
+                'date' => $date,
+            ]);
+
+            $toProjectLaborDateId = $projectLaborDate->id;
+            $selectedLaborIds = $request->labors;
+
+            // Fetch labor records based on selected labor IDs
+            $labors = Labor::whereIn('id', $selectedLaborIds)->get();
+
+            // Check for duplicate labor entries based on mobile number
+            $existingLabors = Labor::where('project_labor_date_id', $toProjectLaborDateId)
+                ->whereIn('mobile', $labors->pluck('mobile'))
+                ->pluck('name')
+                ->toArray();
+
+            if (!empty($existingLabors)) {
+                return redirect()->back()->withErrors([
+                    'labors' => 'Some labors (' . implode(', ', $existingLabors) . ') already exist in the selected project.',
+                ]);
+            }
+
+            foreach ($labors as $labor) {
+                LaborReallocation::create([
+                    'labor_id' => $labor->id,
+                    'from_project_labor_date_id' => $fromProjectLaborDateId,
+                    'to_project_labor_date_id' => $toProjectLaborDateId,
+                    'remarks' => $request->remarks,
+                    'reallocated_by' => Auth::id(),
+                ]);
+                $labor->update(['project_labor_date_id' => $toProjectLaborDateId]);
+            }
+
+            DB::commit();
+            return redirect()->route('labors.index')->with('success', 'Labors Re-Allocated successfully.');
+        } catch (Exception $exception) {
+            DB::rollBack();
+            Log::error("Error-ProjectLaborDateController@reallocateStore: " . $exception->getMessage());
+            return redirect()->back()->withInput()->with("warning", "Something went wrong: " . $exception->getMessage());
+        }
     }
 
     /**
@@ -340,19 +441,18 @@ class ProjectLaborDateController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function destroy($labor): JsonResponse
+    public function destroy($labor): ResponseFactory|Application|Response
     {
         $this->authorize('Delete Labors');
         try {
-            $labor = Labor::find($labor) ?? ContractLabor::find($labor);
+            $labor = ProjectLaborDate::find($labor);
             if ($labor) {
                 $labor->delete();
-                return response()->json(['success' => 'Labor deleted successfully']);
+                return response(['status' => 'warning', 'message' => 'Labor deleted successfully']);
             }
-
-            return response()->json(['error' => 'Labor not found'], 404);
+            return response(['status' => 'warning', 'message' => 'Labor not  found']);
         } catch (Exception $exception) {
-            return response()->json(['status' => 'error', 'message' => 'Something went wrong: ' . $exception->getMessage()]);
+            return response(['status' => 'warning', 'message' => 'Something went wrong: ' . $exception->getMessage()]);
         }
     }
     /**

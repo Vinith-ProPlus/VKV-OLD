@@ -31,7 +31,11 @@ Route::delete('delete_documents', [ProjectController::class,'deleteDocx'])->name
 
 
 Route::resource('labors', ProjectLaborDateController::class);
+Route::get('labors/reallocate/view/{ProjectLabourDate}', [ProjectLaborDateController::class, 'reallocate'])->name('labors.reallocate')->middleware('can:Edit Labors');
+Route::post('labors/reallocate-store', [ProjectLaborDateController::class, 'reallocateStore'])->name('labors.reallocateStore')->middleware('can:Edit Labors');
 Route::put('labors/restore/{id}', [ProjectLaborDateController::class, 'restore'])->name('labors.restore')->middleware('can:Restore Labors');
 Route::post('/labors/add-labor', [ProjectLaborDateController::class, 'addLabor'])->name('add-labor')->middleware('can:Create Labors');
 Route::get('/labors-list', [ProjectLaborDateController::class, 'laborsList'])->name('laborsList');
 Route::get('/contract-labors/list', [ProjectLaborDateController::class, 'contractLaborsList'])->name('contractLaborsList');
+Route::view('/labor-reallocations-view', 'admin.manage_projects.labors.reallocation_history')->name('labor.reallocation.view');
+Route::get('/labor-reallocations', [ProjectLaborDateController::class, 'laborReAllocations'])->name('labor.reallocation.history');

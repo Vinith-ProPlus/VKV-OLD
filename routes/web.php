@@ -21,7 +21,7 @@ use App\Models\Tax;
 use App\Models\UnitOfMeasurement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 
 
 Route::get('/clear', static function() {
@@ -150,6 +150,13 @@ Route::get('/getContractors', [GeneralController::class, 'getContractors'])->nam
 Route::get('/getAmenities', [GeneralController::class, 'getAmenities'])->name('getAmenities');
 Route::get('/getProjectContractors', [GeneralController::class, 'getProjectContractors'])->name('getProjectContractors');
 Route::get('/getLaborDesignations', [GeneralController::class, 'getLaborDesignations'])->name('getLaborDesignations');
+
+Route::get('/getAllProjects', [GeneralController::class,'getAllProjects'])->name('projects.all');
+Route::get('/getProjectTasks', [GeneralController::class,'getProjectTasks'])->name('project.tasks');
+Route::get('/getSupervisors', [GeneralController::class,'getSupervisors'])->name('getSupervisors');
+Route::get('/getCheckedInSupervisors', [GeneralController::class,'getCheckedInSupervisors'])->name('getCheckedInSupervisors');
+
+
 require __DIR__.'/auth.php';
 
 

@@ -215,7 +215,7 @@
                                         <div class="col-6 d-none" id="sold_amount_div">
                                             <div class="form-group">
                                                 <label>Sold Price <span class="text-danger">*</span></label>
-                                                <input type="number" name="sold_amount" id="sold_amount" class="form-control" value="{{ old('sold_amount', $project->sold_amount ?? '') }}">
+                                                <input type="number" id="sold_amount" class="form-control" value="{{ old('sold_amount', $project->sold_amount ?? '') }}">
                                                 @error('sold_amount')
                                                 <div class="err text-danger mt-1">{{ $message }}</div>
                                                 @enderror
@@ -1601,13 +1601,18 @@
                 });
             }
 
+            if ($('#status').val() === 'Completed') {
+                $('#sold_amount_div').removeClass('d-none');
+                $('#sold_amount').attr('required', true).attr('name','sold_amount');
+            }
+            
             $('#status').on('change', function () {
                 if ($('#status').val() === 'Completed') {
                     $('#sold_amount_div').removeClass('d-none');
-                    $('#sold_amount').attr('required', true);
+                    $('#sold_amount').attr('required', true).attr('name','sold_amount');
                 } else {
                     $('#sold_amount_div').addClass('d-none');
-                    $('#sold_amount').removeAttr('required');
+                    $('#sold_amount').removeAttr('required').removeAttr('name');
                 }
             });
 

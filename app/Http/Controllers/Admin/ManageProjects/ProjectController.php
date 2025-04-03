@@ -7,6 +7,7 @@ use App\Http\Requests\ProjectRequest;
 use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Document;
 use App\Models\Project;
+use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\ProjectContract;
 use App\Models\ProjectAmenity;
 use Exception;
@@ -72,6 +73,8 @@ class ProjectController extends Controller{
      */
     public function store(ProjectRequest $request): RedirectResponse
     {
+        logger('req');
+        logger($request);
         $this->authorize('Create Projects');
         DB::beginTransaction();
         try {
@@ -253,4 +256,5 @@ class ProjectController extends Controller{
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
     }
+
 }

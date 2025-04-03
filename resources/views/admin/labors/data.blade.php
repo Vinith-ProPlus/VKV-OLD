@@ -425,17 +425,32 @@
                 $('#addLaborModal').modal('show');
             });
 
-            // Delete Labor Record
-            $(document).on('click','.deleteLabor',function(){
+            // Delete Self Labor Record
+            $(document).on('click','.deleteSelfLabor',function(){
                 let id = $(this).data('id');
 
                 if (confirm("Are you sure you want to delete this labor?")) {
                     $.ajax({
-                        url: '{{ route("labors.destroy", ":id") }}'.replace(':id', id),
+                        url: '{{ route("labors.destroySelfLabor", ":id") }}'.replace(':id', id),
                         type: 'DELETE',
                         headers: {'X-CSRF-Token': $('meta[name=_token]').attr('content')},
                         success: function() {
                             $('#laborTable').DataTable().ajax.reload();
+                        }
+                    });
+                }
+            });
+
+            // Delete Contract Labor Record
+            $(document).on('click','.deleteContractLabor',function(){
+                let id = $(this).data('id');
+
+                if (confirm("Are you sure you want to delete this labor?")) {
+                    $.ajax({
+                        url: '{{ route("labors.destroyContractLabor", ":id") }}'.replace(':id', id),
+                        type: 'DELETE',
+                        headers: {'X-CSRF-Token': $('meta[name=_token]').attr('content')},
+                        success: function() {
                             $('#contractLaborTable').DataTable().ajax.reload();
                         }
                     });

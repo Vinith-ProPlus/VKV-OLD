@@ -6,6 +6,9 @@ use App\Http\Controllers\API\GeneralController;
 use App\Http\Controllers\API\LaborController;
 use App\Http\Controllers\API\MobileUserAttendanceController;
 use App\Http\Controllers\API\SupportTicketController;
+use App\Models\Admin\Labor\LaborDesignation;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -35,6 +38,8 @@ Route::group(['prefix' => 'master', 'middleware' => 'auth:sanctum'], static func
     Route::post('/getStages', [GeneralController::class, 'getStages'])->name('getStages');
     Route::post('/getContents', [GeneralController::class, 'getContent'])->name('getContent');
     Route::post('/getDocuments', [GeneralController::class, 'getDocuments'])->name('getDocuments');
+    Route::post('/getLaborDesignations', [GeneralController::class, 'getLaborDesignations'])->name('getLaborDesignations');
+    Route::post('/getProjectContractors', [GeneralController::class, 'getProjectContractors'])->name('getProjectContractors');
 });
 
 Route::middleware('auth:sanctum')->group(static function () {
@@ -72,9 +77,9 @@ Route::middleware('auth:sanctum')->group(static function () {
     // Blog
     Route::post('labors/getLaborDates', [LaborController::class, 'getLaborDates'])->name('getLaborDates');
     Route::post('labors/getLaborData', [LaborController::class, 'getLaborData'])->name('getLaborData');
-    Route::post('labors/getDamagedData', [LaborController::class, 'getDamagedData'])->name('getDamagedData');
-    Route::post('labors/getCompletedTaskData', [LaborController::class, 'getCompletedTaskData'])->name('getCompletedTaskData');
-    Route::post('labors/createLabor', [LaborController::class, 'createLabor'])->name('createLabor');
+    Route::post('labors/create', [LaborController::class, 'storeMultipleLabors'])->name('storeMultipleLabors');
+    Route::post('labors/getLaborsByProject', [LaborController::class, 'getLaborsByProject'])->name('getLaborsByProject');
+    Route::post('labors/reallocateLabors', [LaborController::class, 'reallocateLabors'])->name('reallocateLabors');
 
 
 

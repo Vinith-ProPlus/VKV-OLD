@@ -107,7 +107,7 @@ class ProjectLaborDateController extends Controller
                     if (!$data->paid_status) {
                         $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-success btn-sm m-1 editLabor">
                                     <i class="fa fa-pencil" aria-hidden="true"></i></button>';
-                        $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-danger btn-sm m-1 deleteLabor">
+                        $button .= '<button data-id="' . $data->id . '" data-type="Self" class="btn btn-outline-danger btn-sm m-1 deleteSelfLabor">
                                     <i class="fa fa-trash" style="color: red"></i>
                                 </button>';
                     } else {
@@ -157,7 +157,7 @@ class ProjectLaborDateController extends Controller
                         $button .= '<button data-id="' . $data->id . '" data-type="Contract" class="btn btn-outline-success btn-sm m-1 editLabor">
                                     <i class="fa fa-pencil" aria-hidden="true"></i>
                                 </button>';
-                        $button .= '<button data-id="' . $data->id . '" data-type="Contract" class="btn btn-outline-danger btn-sm m-1 deleteLabor">
+                        $button .= '<button data-id="' . $data->id . '" data-type="Contract" class="btn btn-outline-danger btn-sm m-1 deleteContractLabor">
                                     <i class="fa fa-trash" style="color: red"></i>
                                 </button>';
 //                    }
@@ -446,6 +446,37 @@ class ProjectLaborDateController extends Controller
             if ($labor) {
                 $labor->delete();
                 return response(['status' => 'warning', 'message' => 'Labor deleted successfully']);
+            }
+            return response(['status' => 'warning', 'message' => 'Labor not  found']);
+        } catch (Exception $exception) {
+            return response(['status' => 'warning', 'message' => 'Something went wrong: ' . $exception->getMessage()]);
+        }
+    }
+    /**
+     * @throws AuthorizationException
+     */
+    public function destroySelfLabor($id): ResponseFactory|Application|Response
+    {
+        $this->authorize('Delete Labors');
+        try {
+            $labor = Labor::find($id);
+            if ($labor) {
+                $labor->delete();
+                return response(['status' => 'warning', 'message' => 'Labor deleted successfully']);
+            }
+            return response(['status' => 'warning', 'message' => 'Labor not  found']);
+        } catch (Exception $exception) {
+            return response(['status' => 'warning', 'message' => 'Something went wrong: ' . $exception->getMessage()]);
+        }
+    }
+    public function destroyContractLabor($id): ResponseFactory|Application|Response
+    {
+        $this->authorize('Delete Labors');
+        try {
+            $labor = ContractLabor::find($id);
+            if ($labor) {
+                $labor->delete();
+                return response(['status' => 'warning', 'message' => 'Contract Labor deleted successfully']);
             }
             return response(['status' => 'warning', 'message' => 'Labor not  found']);
         } catch (Exception $exception) {

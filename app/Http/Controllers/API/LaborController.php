@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\Labor\ProjectLaborDate;
 use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\Blog;
+use App\Models\ContractLabor;
 use App\Models\Document;
+use App\Models\Labor;
+use App\Models\LaborReallocation;
 use App\Traits\ApiResponse;
 use Carbon\Carbon;
 use Exception;
@@ -14,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use function Laravel\Prompts\warning;
 
@@ -107,75 +111,193 @@ class LaborController extends Controller
             'project_labor_date_id' => 'required|integer|exists:project_labor_dates,id',
         ]);
 
-        $projectLaborDate = ProjectLaborDate::with(['labors', 'contractLabors.projectContract'])
+        $projectLaborDate = ProjectLaborDate::with(['labors.labor_designation', 'contractLabors.projectContract'])
             ->findOrFail($request->input('project_labor_date_id'));
         $projectLaborDate->count = $projectLaborDate->labor_count + $projectLaborDate->contract_count;
 
         return $this->successResponse($projectLaborDate, "Labor data fetched successfully!");
     }
 
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function getCompletedTaskData(Request $request): JsonResponse
+    public function storeMultipleLabors(Request $request): JsonResponse
     {
-        $request->validate([
-            'project_id' => 'required|integer|exists:projects,id',
-            'stage_id'   => 'required|integer|exists:project_stages,id',
-            'type'       => ['required', Rule::in(['month', 'date'])],
-            'value'      => 'required',
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'labors' => 'required|array|min:1',
+                'labors.*.project_labor_date_id' => 'required|exists:project_labor_dates,id',
+                'labors.*.labor_type' => 'required|in:Self,Contract',
+                'labors.*.project_contract_id' => [
+                    'required_if:labors.*.labor_type,Contract',
+                    'nullable',
+                    static function ($attribute, $value, $fail) use ($request) {
+                        foreach ($request->labors as $labor) {
+                            if ($labor['labor_type'] === 'Contract') {
+                                $exists = ContractLabor::where('project_labor_date_id', $labor['project_labor_date_id'])
+                                    ->where('project_contract_id', $value)
+                                    ->exists();
+                                if ($exists) {
+                                    $fail('This contractor is already assigned for the selected project labor date.');
+                                }
+                            }
+                        }
+                    },
+                ],
+                'labors.*.name' => 'required_if:labors.*.labor_type,Self',
+                'labors.*.mobile' => [
+                    'required_if:labors.*.labor_type,Self',
+                    'digits:10',
+                    static function ($attribute, $value, $fail) use ($request) {
+                        foreach ($request->labors as $labor) {
+                            if ($labor['labor_type'] === 'Self') {
+                                $exists = Labor::where('project_labor_date_id', $labor['project_labor_date_id'])
+                                    ->where('mobile', $value)
+                                    ->exists();
+                                if ($exists) {
+                                    $fail("Mobile number {$value} is already registered for this project labor date.");
+                                }
+                            }
+                        }
+                    },
+                ],
+                'labors.*.labor_designation_id' => 'required_if:labors.*.labor_type,Self|exists:labor_designations,id',
+                'labors.*.salary' => 'required_if:labors.*.labor_type,Self|numeric',
+                'labors.*.count' => 'required_if:labors.*.labor_type,Contract|numeric|min:1',
+            ], [
+                'labors.required' => 'Labors array is required.',
+                'labors.min' => 'At least one labor entry is required.',
+                'labors.*.project_labor_date_id.required' => 'Project labor date is required.',
+                'labors.*.project_labor_date_id.exists' => 'Invalid project labor date.',
+                'labors.*.labor_type.required' => 'Labor type is required.',
+                'labors.*.labor_type.in' => 'Invalid labor type.',
+                'labors.*.project_contract_id.required_if' => 'Contractor is required for contract labor.',
+                'labors.*.name.required_if' => 'Labor name is required for self labor.',
+                'labors.*.mobile.required_if' => 'Mobile number is required for self labor.',
+                'labors.*.mobile.digits' => 'Mobile number must be 10 digits.',
+                'labors.*.labor_designation_id.required' => 'Designation is required.',
+                'labors.*.salary.required_if' => 'Salary is required for self labor.',
+                'labors.*.salary.numeric' => 'Salary must be numeric.',
+                'labors.*.count.required_if' => 'Contract labor count is required.',
+                'labors.*.count.numeric' => 'Count must be numeric.',
+                'labors.*.count.min' => 'Contract labor count must be at least 1.',
+            ]);
+
+            $createdLabors = [];
+            foreach ($request->labors as $labor) {
+                if ($labor['labor_type'] === 'Self') {
+                    $createdLabors[] = Labor::create([
+                        'project_labor_date_id' => $labor['project_labor_date_id'],
+                        'name' => $labor['name'],
+                        'mobile' => $labor['mobile'],
+                        'salary' => $labor['salary'],
+                        'labor_designation_id' => $labor['labor_designation_id'],
+                    ]);
+                } else {
+                    $createdLabors[] = ContractLabor::create([
+                        'project_labor_date_id' => $labor['project_labor_date_id'],
+                        'project_contract_id' => $labor['project_contract_id'],
+                        'count' => $labor['count'],
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Labors added successfully!',
+                'data' => $createdLabors,
+            ]);
+
+        } catch (Exception $exception) {
+            DB::rollBack();
+            Log::error("Error in ProjectLaborDateController@storeMultipleLabors: " . $exception->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $exception->getMessage(),
+            ]);
+        }
+    }
+
+    public function getLaborsByProject(Request $request)
+    {
+        $request->validate(['project_id' => 'required|integer|exists:projects,id']);
+
+        $projectId = $request->input('project_id');
+
+        $projectLaborDate = ProjectLaborDate::firstOrCreate([
+            'project_id' => $projectId,
+            'date' => today()->format('Y-m-d'),
         ]);
 
-        $user = auth()->user();
-        $userId = $user->id;
-        $type = $request->input('type');
-        $value = $request->input('value');
+        $query = Labor::where('project_labor_date_id', $projectLaborDate->id)->get();
 
-        // Start building the query for completed tasks
-        $query = ProjectTask::with(['project:id,name', 'stage:id,name', 'created_by:id,name'])
-            ->whereHas('project.site.supervisors', fn($q) => $q->where('users.id', $userId))
-            ->whereNotNull('completed_at');
+        return $this->successResponse($query, "Labors fetched successfully!");
 
-        if ($request->filled('project_id')) {
-            $query->where('project_id', $request->project_id);
-        }
-        if ($request->filled('stage_id')) {
-            $query->where('stage_id', $request->stage_id);
-        }
+    }
+    public function reallocateLabors(Request $request): JsonResponse
+    {
+        DB::beginTransaction();
 
-        // Filter based on type and value
-        if ($type === 'month') {
-            try {
-                $monthDate = Carbon::createFromFormat('F, Y', $value, 'Asia/Kolkata')->startOfMonth();
-                $startOfMonth = $monthDate->copy()->setTime(0, 0, 0);
-                $endOfMonth = $monthDate->copy()->endOfMonth()->setTime(23, 59, 59);
-                $query->whereBetween('completed_at', [$startOfMonth, $endOfMonth]);
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Invalid month format. Please use "Month, Year" (e.g., March, 2025).'], 422);
+        try {
+            $request->validate([
+                'from_project_id' => 'required|exists:projects,id',
+                'to_project_id' => 'required|exists:projects,id',
+                'labors' => 'required|array',
+                'labors.*' => 'exists:labors,id',
+                'remarks' => 'nullable|string',
+            ]);
+
+            $fromProjectId = $request->from_project_id;
+            $fromProjectLaborDate = ProjectLaborDate::firstOrCreate([
+                'project_id' => $fromProjectId,
+                'date' => today()->format('Y-m-d'),
+            ]);
+            $fromProjectLaborDateId = $fromProjectLaborDate->id;
+            $toProjectId = $request->to_project_id;
+            $toProjectLaborDate = ProjectLaborDate::firstOrCreate([
+                'project_id' => $toProjectId,
+                'date' => today()->format('Y-m-d'),
+            ]);
+
+            $toProjectLaborDateId = $toProjectLaborDate->id;
+            $selectedLaborIds = $request->labors;
+            $labors = Labor::whereIn('id', $selectedLaborIds)->get();
+            $existingLabors = Labor::where('project_labor_date_id', $toProjectLaborDateId)
+                ->whereIn('mobile', $labors->pluck('mobile'))
+                ->pluck('name')
+                ->toArray();
+
+            if (!empty($existingLabors)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Some labors (' . implode(', ', $existingLabors) . ') already exist in the selected project.',
+                ], 422);
             }
-        } elseif ($type === 'date') {
-            try {
-                $date = Carbon::createFromFormat('d/m/Y', $value);
-                $formattedDate = $date->toDateString();
-                $query->whereDate('completed_at', $formattedDate);
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Invalid date format. Please use "DD/MM/YYYY" (e.g., 01/04/2025).'], 422);
+
+            foreach ($labors as $labor) {
+                LaborReallocation::create([
+                    'labor_id' => $labor->id,
+                    'from_project_labor_date_id' => $fromProjectLaborDateId,
+                    'to_project_labor_date_id' => $toProjectLaborDateId,
+                    'remarks' => $request->remarks,
+                    'reallocated_by' => Auth::id(),
+                ]);
+                $labor->update(['project_labor_date_id' => $toProjectLaborDateId]);
             }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Labors reallocated successfully.',
+            ], 200);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            Log::error("Error in reallocateLabors: " . $exception->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => "Something went wrong: " . $exception->getMessage(),
+            ], 500);
         }
-
-        $tasks = $query->orderByDesc('completed_at');
-
-        // Apply additional data filtering if needed
-        $filteredData = dataFilter($tasks, $request);
-
-        // Add file URL conversion
-        $filteredData->transform(static function ($task) {
-            $task->image = generate_file_url($task->image);
-            return $task;
-        });
-
-        return $this->successResponse(dataFormatter($filteredData), "Completed tasks fetched successfully!");
     }
 }

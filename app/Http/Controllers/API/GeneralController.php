@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectTaskRequest;
 use App\Http\Requests\VisitorRequest;
+use App\Models\Admin\Labor\LaborDesignation;
 use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\Admin\Master\City;
@@ -19,6 +20,7 @@ use App\Models\MobileUserAttendance;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Project;
+use App\Models\ProjectContract;
 use App\Models\SupportType;
 use App\Models\User;
 use App\Models\UserDevice;
@@ -447,4 +449,28 @@ class GeneralController extends Controller
         return $this->successResponse($documents, "Documents Fetched Successfully!");
     }
 
+    public function getLaborDesignations(Request $request): JsonResponse
+    {
+        $query = LaborDesignation::whereIsActive('1');
+
+        $query = dataFilter($query, $request, ['name']);
+
+        return $this->successResponse(dataFormatter($query), "Labor Designation fetched successfully!");
+    }
+
+    public function getProjectContractors(Request $request): JsonResponse
+    {
+        $request->validate(['project_id' => 'required|exists:projects,id']);
+
+        $contractors = ProjectContract::with('user:id,name', 'contract_type:id,name')
+            ->where('project_id', $request->project_id)
+            ->get()
+            ->map(static fn($contractor) => [
+                'id' => $contractor->id,
+                'contractor_name' => $contractor->user?->name,
+                'contract_type' => $contractor->contract_type?->name,
+            ]);
+
+        return $this->successResponse($contractors, "Project Contractors fetched successfully!");
+    }
 }

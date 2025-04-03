@@ -25,7 +25,10 @@
                     <div class="row card-header text-center">
                         <div class="col-sm-4"></div>
                         <div class="col-sm-4 my-2"><h5>{{$PageTitle}}</h5></div>
-                        <div class="col-sm-4 my-2 text-right text-md-right"></div>
+                        <div class="col-sm-4 my-2 text-right text-md-right">
+                            <a href="javascript:void(0)" onclick="window.history.back()" type="button"
+                               class="btn btn-primary">Back</a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">

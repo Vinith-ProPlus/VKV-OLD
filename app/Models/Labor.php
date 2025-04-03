@@ -29,4 +29,8 @@ class Labor extends Model
     {
         return $this->belongsTo(LaborDesignation::class);
     }
+
+    public function payrolls() {
+        return $this->hasMany(Payroll::class);
+    }
 }

@@ -53,6 +53,7 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Blogs'],
             ['guard_name' => 'web', 'model' => 'Labor Designations'],
             ['guard_name' => 'web', 'model' => 'Labors'],
+            ['guard_name' => 'web', 'model' => 'Payrolls'],
         ];
 
         $updatedModules = [];

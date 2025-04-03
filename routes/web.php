@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Users\SupportTicketController;
 use App\Http\Controllers\Admin\Users\SupportTicketMessageController;
 use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\GeneralController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SqlImportController;
 use App\Models\Admin\Master\City;
@@ -122,6 +123,15 @@ Route::group(['prefix'=>'admin'], static function (){
         Route::get('support_tickets/{supportTicket}/messages', [SupportTicketMessageController::class, 'loadMessages'])->name('support_tickets.loadMessages');
         Route::post('support_tickets/{supportTicket}/messages', [SupportTicketMessageController::class, 'storeMessage'])->name('support_tickets.storeMessage');
         Route::post('support_tickets/{supportTicket}/close', [SupportTicketController::class, 'close'])->name('support_tickets.close');
+
+
+        Route::prefix('payroll')->group(function () {
+            Route::view('/', 'payroll.index')->name('payroll.index');
+            Route::post('/unpaid-labor', [PayrollController::class, 'getUnpaidLabor'])->name('payroll.getUnpaidLabor');
+            Route::post('/process-payment', [PayrollController::class, 'processPayment'])->name('payroll.processPayment');
+            Route::get('/payroll/history', [PayrollController::class, 'payrollHistory'])->name('payroll.history');
+
+        });
     });
 
 });

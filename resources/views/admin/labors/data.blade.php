@@ -97,7 +97,9 @@
                             </div>
                             <div class="mb-3">
                                 <label>Designation</label>
-                                <input type="text" class="form-control" id="designation">
+                                <select class="form-control" id="designation_id">
+                                    <option value="">Select Designation</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label>Mobile</label>
@@ -196,6 +198,7 @@
                 $('#saveLaborBtn').text('Save');
                 $('#labor_type').val('Self').trigger('change').attr('disabled', false);
                 $('#project_contract_id').attr('disabled', false).trigger('change');
+                $('#designation_id').val('').trigger('change');
                 $('#submitLaborForm').attr('action', '{{ route("labors.store") }}');
             }
 
@@ -236,6 +239,35 @@
 
                 ContractorID.select2({ dropdownParent: $('#addLaborModal') });
             };
+            const getDesignations = () => {
+                let DesignationID = $('#designation_id');
+                let SelectedContractor = DesignationID.attr('data-selected');
+
+                if (DesignationID.length) {
+                    if ($.fn.select2 && DesignationID.hasClass("select2-hidden-accessible")) {
+                        DesignationID.select2('destroy');
+                    }
+                    DesignationID.empty().append('<option value="">Select Designation</option>');
+
+                    $.ajax({
+                        url: "{{ route('getLaborDesignations') }}",
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (response) {
+                            response.forEach(function (item) {
+                                DesignationID.append(
+                                    '<option value="' + item.id + '" ' + (item.id == SelectedContractor ? 'selected' : '') + '>' +item.name +'</option>'
+                                );
+                            });
+                        },
+                        error: function (e, x, settings, exception) {
+                            console.error("Error fetching contractor: ", exception);
+                        }
+                    });
+                }
+
+                DesignationID.select2({ dropdownParent: $('#addLaborModal') });
+            };
 
 
             $('#submitLaborForm').submit(function(e) {
@@ -256,7 +288,7 @@
 
                 if (laborType === 'Self') {
                     let name = $('#name').val();
-                    let designation = $('#designation').val();
+                    let designation = $('#designation_id').val();
                     let mobile = $('#mobile').val();
                     let salary = $('#salary').val();
 
@@ -265,7 +297,7 @@
                         isValid = false;
                     }
                     if (!designation) {
-                        $('#designation').after('<span class="text-danger error-message">This field is required</span>');
+                        $('#designation_id').after('<span class="text-danger error-message">This field is required</span>');
                         isValid = false;
                     }
                     if (!mobile) {
@@ -280,7 +312,7 @@
                     data = {
                         project_labor_date_id: projectLaborDateId,
                         name: name,
-                        designation: designation,
+                        labor_designation_id: designation,
                         mobile: mobile,
                         salary: salary,
                         labor_type: laborType
@@ -376,7 +408,7 @@
                         $('#project_labor_date_id').val(response.project_labor_date_id);
                         if (type === 'Self') {
                             $('#name').val(response.name);
-                            $('#designation').val(response.designation);
+                            $('#designation_id').val(response.labor_designation_id).trigger('change');
                             $('#mobile').val(response.mobile);
                             $('#salary').val(response.salary);
                         } else {
@@ -410,6 +442,7 @@
                 }
             });
             getContracts();
+            getDesignations();
         });
     </script>
 @endsection

@@ -97,9 +97,10 @@ class ProjectLaborDateController extends Controller
             if (!$project_labor_date) {
                 return response()->json(['error' => 'Project labor date not found.'], 404);
             }
-            $data = Labor::where('project_labor_date_id', $project_labor_date_id)->get();
+            $data = Labor::with('labor_designation')->where('project_labor_date_id', $project_labor_date_id)->get();
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->editColumn('designation', static fn($data) => optional($data->labor_designation)->name ?? 'N/A')
                 ->addColumn('salary', static fn($data) => $data->salary ?? 'N/A')
                 ->addColumn('action', static function ($data) use ($project_labor_date) {
                     $button = '<div class="d-flex justify-content-center">';
@@ -293,7 +294,7 @@ class ProjectLaborDateController extends Controller
                         }
                     },
                 ],
-                'designation' => 'required_if:labor_type,Self',
+                'labor_designation_id' => 'required|exists:labor_designations,id',
                 'salary' => 'required_if:labor_type,Self|numeric',
                 'count' => 'required_if:labor_type,Contract|numeric|min:1',
             ], [
@@ -305,7 +306,7 @@ class ProjectLaborDateController extends Controller
                 'name.required_if' => 'Please enter the laborer\'s name.',
                 'mobile.required_if' => 'Please enter the laborer\'s mobile number.',
                 'mobile.digits' => 'The mobile number must be exactly 10 digits.',
-                'designation.required_if' => 'Please enter the laborer\'s designation.',
+                'labor_designation_id.required' => 'Please select the laborer\'s designation.',
                 'salary.required_if' => 'Please enter the salary amount.',
                 'salary.numeric' => 'Salary must be a numeric value.',
                 'count.required_if' => 'Please enter the number of contract laborers.',
@@ -314,7 +315,7 @@ class ProjectLaborDateController extends Controller
             ]);
 
             if ($request->labor_type === 'Self') {
-                $labor = Labor::create($request->only(['project_labor_date_id', 'name', 'designation', 'mobile', 'salary']));
+                $labor = Labor::create($request->only(['project_labor_date_id', 'name', 'labor_designation_id', 'mobile', 'salary']));
             } else {
                 $labor = ContractLabor::create($request->only(['project_labor_date_id', 'project_contract_id', 'count']));
             }
@@ -389,7 +390,7 @@ class ProjectLaborDateController extends Controller
                         }
                     },
                 ],
-                'designation' => 'required_if:labor_type,Self',
+                'labor_designation_id' => 'required|exists:labor_designations,id',
                 'salary' => 'required_if:labor_type,Self|numeric',
                 'count' => 'required_if:labor_type,Contract|numeric|min:1',
             ], [
@@ -401,7 +402,7 @@ class ProjectLaborDateController extends Controller
                 'name.required_if' => 'Please enter the laborer\'s name.',
                 'mobile.required_if' => 'Please enter the laborer\'s mobile number.',
                 'mobile.digits' => 'The mobile number must be exactly 10 digits.',
-                'designation.required_if' => 'Please enter the laborer\'s designation.',
+                'labor_designation_id.required' => 'Please enter the laborer\'s designation.',
                 'salary.required_if' => 'Please enter the salary amount.',
                 'salary.numeric' => 'Salary must be a numeric value.',
                 'count.required_if' => 'Please enter the number of contract laborers.',

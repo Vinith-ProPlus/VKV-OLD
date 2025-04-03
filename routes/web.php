@@ -149,6 +149,7 @@ Route::get('/getVendors', [GeneralController::class, 'getVendors'])->name('getVe
 Route::get('/getContractors', [GeneralController::class, 'getContractors'])->name('getContractors');
 Route::get('/getAmenities', [GeneralController::class, 'getAmenities'])->name('getAmenities');
 Route::get('/getProjectContractors', [GeneralController::class, 'getProjectContractors'])->name('getProjectContractors');
+Route::get('/getLaborDesignations', [GeneralController::class, 'getLaborDesignations'])->name('getLaborDesignations');
 require __DIR__.'/auth.php';
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin\Labor\LaborDesignation;
 use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Admin\ManageProjects\Site;
 use App\Models\Admin\Master\City;
@@ -303,6 +304,10 @@ class GeneralController extends Controller
            'project_id' => 'required|exists:projects,id'
         ]);
         return response()->json(ProjectContract::with('user:id,name', 'contract_type:id,name')->where('project_id', $request->project_id)->get());
+    }
+    public function getLaborDesignations(Request $request): JsonResponse
+    {
+        return response()->json(LaborDesignation::whereIsActive('1')->get());
     }
 
     public function getAmenities(Request $request): JsonResponse

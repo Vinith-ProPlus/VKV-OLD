@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('mobile', 15);
             $table->decimal('salary', 10, 2);
             $table->boolean('paid_status')->default(0);
-            $table->string('designation');
+            $table->foreignId('labor_designation_id')->constrained('labor_designations')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1152,63 +1152,17 @@ use Random\RandomException;
         return " ONLY";
     }
 
-    /**
-     * @param $query
-     * @param Request $request
-     * @param array $searchColumns
-     * @return mixed
-     */
-    function dataFilter($query, Request $request, array $searchColumns = []): mixed
-    {
-        // Get only non-empty request inputs
-        $inputs = collect($request->all())->filter();
-
-        // Search filter
-        $query->when($inputs->has('search') && !empty($searchColumns), function ($q) use ($inputs, $searchColumns) {
-            $search = $inputs->get('search');
-            $q->where(function ($subQuery) use ($searchColumns, $search) {
-                foreach ($searchColumns as $column) {
-                    $subQuery->orWhere($column, 'like', "%{$search}%");
-                }
-            });
-        });
-
-        // Date filter
-        $query->when($inputs->has('created_from') && $inputs->has('created_to'), function ($q) use ($inputs) {
-            $q->whereBetween('created_at', [
-                Carbon::parse($inputs->get('created_from'))->startOfDay(),
-                Carbon::parse($inputs->get('created_to'))->endOfDay()
-            ]);
-        });
-
-        // Sorting
-        $sortBy = $inputs->get('sort_by', 'created_at');
-        $sortOrder = $inputs->get('sort_order', 'desc');
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Pagination
-        $perPage = $inputs->get('per_page', 10);
-        $page = $inputs->get('page', 1);
-
-        return $query->paginate($perPage, ['*'], 'page', $page);
-    }
-
-    /**
-     * Format paginated data into an array.
-     *
-     * @param $query
-     * @return array
-     */
-    function dataFormatter($query): array
-    {
-        return [
-            'current_page' => $query->currentPage(),
-            'data' => $query->items(),
-            'total' => $query->total(),
-            'per_page' => $query->perPage(),
-            'last_page' => $query->lastPage(),
-        ];
-    }
+/**
+ * @param $file
+ * @return string
+ * @throws RandomException
+ */
+function generateUniqueFileName($file): string
+{
+    return pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) .
+        '_' . now()->timestamp . '_' . random_int(1000, 9999) .
+        '.' . $file->getClientOriginalExtension();
+}
 
 function generate_file_url($file_path): Application|string|UrlGenerator
 {
@@ -1237,14 +1191,61 @@ function generate_file_url($file_path): Application|string|UrlGenerator
 
     return url(Storage::url($dummyFile));
 }
+
 /**
- * @param $file
- * @return string
- * @throws RandomException
+ * @param $query
+ * @param Request $request
+ * @param array $searchColumns
+ * @return mixed
  */
-function generateUniqueFileName($file): string
+function dataFilter($query, Request $request, array $searchColumns = []): mixed
 {
-    return pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) .
-        '_' . now()->timestamp . '_' . random_int(1000, 9999) .
-        '.' . $file->getClientOriginalExtension();
+    // Get only non-empty request inputs
+    $inputs = collect($request->all())->filter();
+
+    // Search filter
+    $query->when($inputs->has('search') && !empty($searchColumns), function ($q) use ($inputs, $searchColumns) {
+        $search = $inputs->get('search');
+        $q->where(function ($subQuery) use ($searchColumns, $search) {
+            foreach ($searchColumns as $column) {
+                $subQuery->orWhere($column, 'like', "%{$search}%");
+            }
+        });
+    });
+
+    // Date filter
+    $query->when($inputs->has('created_from') && $inputs->has('created_to'), function ($q) use ($inputs) {
+        $q->whereBetween('created_at', [
+            Carbon::parse($inputs->get('created_from'))->startOfDay(),
+            Carbon::parse($inputs->get('created_to'))->endOfDay()
+        ]);
+    });
+
+    // Sorting
+    $sortBy = $inputs->get('sort_by', 'created_at');
+    $sortOrder = $inputs->get('sort_order', 'desc');
+    $query->orderBy($sortBy, $sortOrder);
+
+    // Pagination
+    $perPage = $inputs->get('per_page', 10);
+    $page = $inputs->get('page', 1);
+
+    return $query->paginate($perPage, ['*'], 'page', $page);
+}
+
+/**
+ * Format paginated data into an array.
+ *
+ * @param $query
+ * @return array
+ */
+function dataFormatter($query): array
+{
+    return [
+        'current_page' => $query->currentPage(),
+        'data' => $query->items(),
+        'total' => $query->total(),
+        'per_page' => $query->perPage(),
+        'last_page' => $query->lastPage(),
+    ];
 }

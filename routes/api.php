@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\BlogController;
 use App\Http\Controllers\API\GeneralController;
+use App\Http\Controllers\API\LaborController;
 use App\Http\Controllers\API\MobileUserAttendanceController;
 use App\Http\Controllers\API\SupportTicketController;
 use Illuminate\Support\Facades\Route;
@@ -66,6 +67,48 @@ Route::middleware('auth:sanctum')->group(static function () {
     Route::post('blog/getDamagedData', [BlogController::class, 'getDamagedData'])->name('getDamagedData');
     Route::post('blog/getCompletedTaskData', [BlogController::class, 'getCompletedTaskData'])->name('getCompletedTaskData');
     Route::post('blog/createBlog', [BlogController::class, 'createBlog'])->name('createBlog');
+
+
+    // Blog
+    Route::post('labors/getLaborDates', [LaborController::class, 'getLaborDates'])->name('getLaborDates');
+    Route::post('labors/getLaborData', [LaborController::class, 'getLaborData'])->name('getLaborData');
+    Route::post('labors/getDamagedData', [LaborController::class, 'getDamagedData'])->name('getDamagedData');
+    Route::post('labors/getCompletedTaskData', [LaborController::class, 'getCompletedTaskData'])->name('getCompletedTaskData');
+    Route::post('labors/createLabor', [LaborController::class, 'createLabor'])->name('createLabor');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Route::post('HomeScreen', [GeneralController::class, 'HomeScreen']);
     Route::post('update-fcm-token', [GeneralController::class, 'updateFcmToken']);

@@ -200,7 +200,6 @@ class ProjectLaborDateController extends Controller
      */
     public function reallocateStore(Request $request): RedirectResponse|null
     {
-        logger($request->all());
         $this->authorize('Edit Labors');
         DB::beginTransaction();
 

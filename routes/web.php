@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\SqlImportController;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
@@ -124,6 +125,9 @@ Route::group(['prefix'=>'admin'], static function (){
         Route::post('support_tickets/{supportTicket}/messages', [SupportTicketMessageController::class, 'storeMessage'])->name('support_tickets.storeMessage');
         Route::post('support_tickets/{supportTicket}/close', [SupportTicketController::class, 'close'])->name('support_tickets.close');
 
+        Route::resource('purchase-requests', PurchaseRequestController::class);
+        Route::post('purchase-requests/restore/{id}', [PurchaseRequestController::class, 'restore'])->name('purchase-requests.restore');
+
 
         Route::prefix('payroll')->group(function () {
             Route::view('/', 'payroll.index')->name('payroll.index');
@@ -160,6 +164,8 @@ Route::get('/getContractors', [GeneralController::class, 'getContractors'])->nam
 Route::get('/getAmenities', [GeneralController::class, 'getAmenities'])->name('getAmenities');
 Route::get('/getProjectContractors', [GeneralController::class, 'getProjectContractors'])->name('getProjectContractors');
 Route::get('/getLaborDesignations', [GeneralController::class, 'getLaborDesignations'])->name('getLaborDesignations');
+Route::get('/getCategories', [GeneralController::class, 'getCategories'])->name('getCategories');
+Route::get('/getProductsByCategory', [GeneralController::class, 'getProductsByCategory'])->name('getProductsByCategory');
 require __DIR__.'/auth.php';
 
 

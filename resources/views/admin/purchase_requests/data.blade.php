@@ -4,7 +4,7 @@
     @php
         $PageTitle = "Purchase Request";
         $ActiveMenuName = 'Purchase Requests';
-        $isEdit = isset($purchaseRequest) && $purchaseRequest->id;
+        $isEdit = $purchaseRequest && $purchaseRequest->id;
     @endphp
 
     <div class="container-fluid">

@@ -130,6 +130,9 @@
                             <div class="text-center mt-3">
                                 <button type="submit" class="btn btn-success">{{ $isEdit ? 'Update' : 'Submit' }} Request</button>
                                 <a href="{{ route('purchase-requests.index') }}" class="btn btn-secondary">Cancel</a>
+                                <button type="button" class="btn btn-primary convert-to-po" data-request-id="{{ $purchaseRequest->id }}">
+                                    Convert to Purchase Order
+                                </button>
                             </div>
 
                         </form>
@@ -149,6 +152,13 @@
             let contractCellId = {{ $isEdit ? ($purchaseRequest->details->count() > 0 ? $purchaseRequest->details->max('id') + 1 : 0) : 0 }};
             let contractUpdateId = 0;
             $('.select2').select2();
+
+            $(document).on('click', '.convert-to-po', function() {
+                debugger
+                var requestId = $(this).data('request-id');
+                var route = "{{ route('purchase-orders.create') }}";
+                window.location.href = route + '?request_id=' + requestId;
+            });
 
             // Function to get product categories
             const getContractTypes = () => {

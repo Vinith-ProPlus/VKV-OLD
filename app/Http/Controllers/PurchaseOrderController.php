@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Project;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderDetail;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestDetail;
+use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\Foundation\Application;
@@ -19,20 +20,15 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 
 class PurchaseOrderController extends Controller
 {
     use AuthorizesRequests;
 
-    /**
-     * @param Request $request
-     * @return Factory|Application|View|JsonResponse
-     * @throws AuthorizationException
-     */
     public function index(Request $request): Factory|Application|View|JsonResponse
     {
         $this->authorize('View Purchase Orders');
@@ -47,15 +43,15 @@ class PurchaseOrderController extends Controller
                 ->editColumn('status', static function ($data) {
                     $deliveredCount = $data->details->where('status', 'Delivered')->count();
                     $total = $data->details->count();
-
                     $badgeClass = $deliveredCount === $total ? 'success' : 'warning';
                     return '<span class="badge bg-' . $badgeClass . '">' . $deliveredCount . '/' . $total . ' Delivered</span>';
                 })
                 ->addColumn('action', static function ($data) {
-                    $button = '<div class="d-flex justify-content-center">';
-                    $button .= '<a href="' . route('purchase-orders.show', $data->id) . '" class="btn btn-outline-success btn-sm m-1"><i class="fa fa-pencil"></i></a>';
-                    $button .= '</div>';
-                    return $button;
+                    return '<div class="d-flex justify-content-center">
+                        <a href="' . route('purchase-orders.show', $data->id) . '" class="btn btn-outline-success btn-sm m-1">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                    </div>';
                 })
                 ->rawColumns(['status', 'action'])
                 ->make(true);
@@ -63,7 +59,6 @@ class PurchaseOrderController extends Controller
 
         return view('admin.purchase_orders.index');
     }
-
 
     public function show($id)
     {
@@ -73,8 +68,19 @@ class PurchaseOrderController extends Controller
 
     public function create()
     {
-        // You can pass projects, supervisors, and purchase requests to the view if needed
-        return view('admin.purchase_orders.create');
+        $projects = Project::all();
+
+        $supervisors = User::whereHas('roles', static function ($query) {
+            $query->where('name', 'Supervisor');
+        })->get();
+
+        $categories = ProductCategory::all();
+        $products = Product::all();
+        $purchaseRequests = PurchaseRequest::all();
+
+        return view('admin.purchase_orders.create', compact(
+            'projects', 'supervisors', 'categories', 'products', 'purchaseRequests'
+        ));
     }
 
     public function store(Request $request)

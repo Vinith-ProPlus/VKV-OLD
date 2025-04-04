@@ -172,6 +172,8 @@ Route::get('/getProjectTasks', [GeneralController::class,'getProjectTasks'])->na
 Route::get('/getSupervisors', [GeneralController::class,'getSupervisors'])->name('getSupervisors');
 Route::get('/getCheckedInSupervisors', [GeneralController::class,'getCheckedInSupervisors'])->name('getCheckedInSupervisors');
 
+Route::get('/getLaborStatus', [GeneralController::class,'getLaborStatus'])->name('getLaborStatus');
+
 
 require __DIR__.'/auth.php';
 

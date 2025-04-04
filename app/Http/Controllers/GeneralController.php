@@ -20,6 +20,7 @@ use App\Models\Project;
 use App\Models\ProjectContract;
 use App\Models\SupportType;
 use App\Models\User;
+use App\Models\Labor;
 use App\Models\MobileUserAttendance;
 use App\Models\Admin\ManageProjects\ProjectTask;
 use Illuminate\Http\JsonResponse;
@@ -328,7 +329,7 @@ class GeneralController extends Controller
     }
 
     public function getSupervisors(){
-        return User::where('role_id',4)->get();
+        return User::where('role_id',4)->where('active_status','Active')->get();
     }
 
     public function getCheckedInSupervisors(){
@@ -354,4 +355,10 @@ class GeneralController extends Controller
         $products = Product::with('category', 'unit')->whereIsActive(1)->where('category_id', $request->category_id)->get();
         return response()->json($products);
     }
+
+    public function getLaborStatus(Request $request): JsonResponse
+    { 
+        return response()->json(Labor::wherePaidStatus($request->status)->get());
+    }
+
 }

@@ -72,16 +72,16 @@ class ProjectController extends Controller{
      * @throws AuthorizationException
      */
     public function store(ProjectRequest $request): RedirectResponse
-    {
-        logger('req');
-        logger($request);
+    { 
         $this->authorize('Create Projects');
         DB::beginTransaction();
         try {
             $project = Project::create($request->all());
 
             // Save Stages
-            foreach ($request->stages as $stage) {
+            $stages = $request->stages ?? [];
+
+            foreach ($stages as $stage) {
                 ProjectStage::create([
                     'project_id' => $project->id,
                     'name' => $stage['name'],

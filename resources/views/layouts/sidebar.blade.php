@@ -88,11 +88,6 @@
                                        title="">Contract Type</a>
                                 </li>
                             @endcan
-                            @can('View Labor Designations')
-                                <li class="">
-                                    <a href="{{ route('labor-designations.index') }}" data-active-name="Labor-Designation" data-original-title="" title="">Labor Designation</a>
-                                </li>
-                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">
@@ -129,11 +124,6 @@
                             @can('View Project Specifications')
                                 <li class="">
                                     <a href="{{ route('project_specifications.index') }}" data-active-name="Project-Specifications" data-original-title="" title="">Project Specifications</a>
-                                </li>
-                            @endcan
-                            @can('View Labors')
-                                <li class="">
-                                    <a href="{{ route('labors.index') }}" data-active-name="Labors" data-original-title="" title="">Labors</a>
                                 </li>
                             @endcan
                         </ul>
@@ -223,13 +213,26 @@
                                 <path
                                     d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                             </svg>
-                            <span>Re-Allocations</span>
+                            <span>Labor Management</span>
                             <div class="according-menu"><i class="fa fa-angle-double-right"></i></div>
                         </a>
                         <ul class="nav-submenu menu-content" style="display: none;">
-                            <li class=""><a href="{{ route('labor.reallocation.view') }}"
-                                            data-active-name="Labor-Re-Allocation-History" data-original-title=""
-                                            title="">Labor Re-Allocations</a></li>
+                            @can('View Labor Designations')
+                                <li class="">
+                                    <a href="{{ route('labor-designations.index') }}" data-active-name="Labor-Designation" data-original-title="" title="">Labor Designation</a>
+                                </li>
+                            @endcan
+                            @can('View Labors')
+                                <li class="">
+                                    <a href="{{ route('labors.index') }}" data-active-name="Labors" data-original-title="" title="">Labors</a>
+                                </li>
+                                <li class=""><a href="{{ route('labor.reallocation.view') }}" data-active-name="Labor-Re-Allocation-History" data-original-title="" title="">Labor Re-Allocations</a></li>
+                            @endcan
+                            @can('View Payrolls')
+                                <li class="">
+                                    <a href="{{ route('payroll.index') }}" data-active-name="Payroll" data-original-title="" title="">Payrolls</a>
+                                </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">

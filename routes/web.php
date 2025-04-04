@@ -10,7 +10,9 @@ use App\Http\Controllers\Admin\Users\SupportTicketController;
 use App\Http\Controllers\Admin\Users\SupportTicketMessageController;
 use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\GeneralController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\SqlImportController;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
@@ -21,7 +23,7 @@ use App\Models\Tax;
 use App\Models\UnitOfMeasurement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Route; 
+use Illuminate\Support\Facades\Route;
 
 
 Route::get('/clear', static function() {
@@ -122,6 +124,18 @@ Route::group(['prefix'=>'admin'], static function (){
         Route::get('support_tickets/{supportTicket}/messages', [SupportTicketMessageController::class, 'loadMessages'])->name('support_tickets.loadMessages');
         Route::post('support_tickets/{supportTicket}/messages', [SupportTicketMessageController::class, 'storeMessage'])->name('support_tickets.storeMessage');
         Route::post('support_tickets/{supportTicket}/close', [SupportTicketController::class, 'close'])->name('support_tickets.close');
+
+        Route::resource('purchase-requests', PurchaseRequestController::class);
+        Route::post('purchase-requests/restore/{id}', [PurchaseRequestController::class, 'restore'])->name('purchase-requests.restore');
+
+
+        Route::prefix('payroll')->group(function () {
+            Route::view('/', 'payroll.index')->name('payroll.index');
+            Route::post('/unpaid-labor', [PayrollController::class, 'getUnpaidLabor'])->name('payroll.getUnpaidLabor');
+            Route::post('/process-payment', [PayrollController::class, 'processPayment'])->name('payroll.processPayment');
+            Route::get('/payroll/history', [PayrollController::class, 'payrollHistory'])->name('payroll.history');
+
+        });
     });
 
 });
@@ -150,6 +164,8 @@ Route::get('/getContractors', [GeneralController::class, 'getContractors'])->nam
 Route::get('/getAmenities', [GeneralController::class, 'getAmenities'])->name('getAmenities');
 Route::get('/getProjectContractors', [GeneralController::class, 'getProjectContractors'])->name('getProjectContractors');
 Route::get('/getLaborDesignations', [GeneralController::class, 'getLaborDesignations'])->name('getLaborDesignations');
+Route::get('/getCategories', [GeneralController::class, 'getCategories'])->name('getCategories');
+Route::get('/getProductsByCategory', [GeneralController::class, 'getProductsByCategory'])->name('getProductsByCategory');
 
 Route::get('/getAllProjects', [GeneralController::class,'getAllProjects'])->name('projects.all');
 Route::get('/getProjectTasks', [GeneralController::class,'getProjectTasks'])->name('project.tasks');

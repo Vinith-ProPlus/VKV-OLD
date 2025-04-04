@@ -14,11 +14,13 @@ use App\Models\Amenity;
 use App\Models\Document;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
+use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\Project;
 use App\Models\ProjectContract;
 use App\Models\SupportType;
-use App\Models\User; 
-use App\Models\MobileUserAttendance; 
+use App\Models\User;
+use App\Models\MobileUserAttendance;
 use App\Models\Admin\ManageProjects\ProjectTask;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -319,11 +321,11 @@ class GeneralController extends Controller
 
     public function getAllProjects(){
         return Project::whereNull('deleted_at')->get();
-    }    
-    
+    }
+
     public function getProjectTasks(Request $req){
         return ProjectTask::where('project_id', $req->id)->whereDate('created_at', now())->with('project:id,name')->get();
-    }    
+    }
 
     public function getSupervisors(){
         return User::where('role_id',4)->get();
@@ -339,5 +341,17 @@ class GeneralController extends Controller
         });
 
         return $checkedInUsers;
+    }
+
+    public function getCategories(Request $request): JsonResponse
+    {
+        $categories = ProductCategory::whereIsActive(1)->get();
+        return response()->json($categories);
+    }
+
+    public function getProductsByCategory(Request $request): JsonResponse
+    {
+        $products = Product::with('category', 'unit')->whereIsActive(1)->where('category_id', $request->category_id)->get();
+        return response()->json($products);
     }
 }

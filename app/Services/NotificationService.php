@@ -48,10 +48,6 @@ class NotificationService
         $validFcmTokens = [];
         $status = 'failed';
 
-        $devices->push((object)[
-            'device_id' => 'manual_device_id',
-            'fcm_token' => "d7ryTj8yQ4mwvgdfFLggUO:APA91bGqUw-ARJtzSTy6WR1Os7ctWLv3ANgxUO-WwDDafjwjfwe2-CZoba0EZiSxsbFMoJF6bZH3_ffPRUsX7I_ZJAR4XUFGmiJRapqBdPkTFjWpZ-xELjM"
-        ]);
         foreach ($devices as $device) {
             $payload = [
                 'message' => [

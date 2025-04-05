@@ -75,8 +75,6 @@
                             <div class="tab-content mt-3">
                                 <!-- Project Details Tab -->
                                 <div class="tab-pane fade show active" id="project-details">
-
-
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="form-group">

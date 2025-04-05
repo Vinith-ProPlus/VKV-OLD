@@ -357,7 +357,8 @@ class GeneralController extends Controller
     }
 
     public function getLaborStatus(Request $request): JsonResponse
-    { 
+    {
+        logger($request);
         return response()->json(Labor::wherePaidStatus($request->status)->get());
     }
 

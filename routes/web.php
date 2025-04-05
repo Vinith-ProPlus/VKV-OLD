@@ -14,6 +14,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\SqlImportController;
+use App\Http\Controllers\Admin\ProjectReports\ProjectReportsController;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
@@ -171,12 +172,15 @@ Route::get('/getAllProjects', [GeneralController::class,'getAllProjects'])->name
 Route::get('/getProjectTasks', [GeneralController::class,'getProjectTasks'])->name('project.tasks');
 Route::get('/getSupervisors', [GeneralController::class,'getSupervisors'])->name('getSupervisors');
 Route::get('/getCheckedInSupervisors', [GeneralController::class,'getCheckedInSupervisors'])->name('getCheckedInSupervisors');
-
 Route::get('/getLaborStatus', [GeneralController::class,'getLaborStatus'])->name('getLaborStatus');
 
+Route::group(['prefix' => 'project_reports'], static function () {
+    Route::get('/', [ProjectReportsController::class, 'index'])->name('project_reports.index');
+    Route::get('/create', [ProjectReportsController::class, 'create'])->name('project_reports.create');
+    Route::get('/getProjectTasks', [ProjectReportsController::class, 'getProjectTasks'])->name('getProjectTasks');
+});
 
 require __DIR__.'/auth.php';
-
 
 Route::get('/csrf-token', static function (Request $request) {
     return response()->json(['csrf_token' => csrf_token()]);

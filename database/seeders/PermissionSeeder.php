@@ -55,6 +55,7 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Labors'],
             ['guard_name' => 'web', 'model' => 'Payrolls'],
             ['guard_name' => 'web', 'model' => 'Purchase Requests'],
+            ['guard_name' => 'web', 'model' => 'Purchase Orders'],
             ['guard_name' => 'web', 'model' => 'Project Reports'],
         ];
 
@@ -83,10 +84,12 @@ class PermissionSeeder extends Seeder
 //        $differenceArray = array_diff($dbPermission->toArray(), $collectionPermission->toArray());
 //        Permission::whereIn('name', $differenceArray)->delete();
 
-        $modulesIds = Permission::all()->pluck('id');
+//        $modulesIds = Permission::all()->pluck('id');
+        $permissions = Permission::all();
         foreach (SYSTEM_ROLES as $role) {
             $role = Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
-            $role->givePermissionTo($modulesIds);
+//            $role->givePermissionTo($modulesIds);
+            $role->syncPermissions($permissions);
         }
         $super_admin_role_id = Role::where('name', SUPER_ADMIN_ROLE_NAME)->first()->id;
         $supervisor_role_id = Role::where('name', SITE_SUPERVISOR_ROLE_NAME)->first()->id;

@@ -84,6 +84,8 @@ return [
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
+    'FIREBASE_PROJECT_ID' => env('FIREBASE_PROJECT_ID', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Encryption Key

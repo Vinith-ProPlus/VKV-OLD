@@ -3,8 +3,8 @@
 @section('content')
     @php
         $PageTitle = "Purchase Request";
-        $ActiveMenuName = 'Purchase Requests';
-        $isEdit = isset($purchaseRequest) && $purchaseRequest->id;
+        $ActiveMenuName = 'Purchase-Requests';
+        $isEdit = $purchaseRequest && $purchaseRequest->id;
     @endphp
 
     <div class="container-fluid">
@@ -130,6 +130,11 @@
                             <div class="text-center mt-3">
                                 <button type="submit" class="btn btn-success">{{ $isEdit ? 'Update' : 'Submit' }} Request</button>
                                 <a href="{{ route('purchase-requests.index') }}" class="btn btn-secondary">Cancel</a>
+                                @if($purchaseRequest)
+                                    <button type="button" class="btn btn-primary convert-to-po" data-request-id="{{ $purchaseRequest && $purchaseRequest->id }}">
+                                        Convert to Purchase Order
+                                    </button>
+                                @endif
                             </div>
 
                         </form>
@@ -149,6 +154,12 @@
             let contractCellId = {{ $isEdit ? ($purchaseRequest->details->count() > 0 ? $purchaseRequest->details->max('id') + 1 : 0) : 0 }};
             let contractUpdateId = 0;
             $('.select2').select2();
+
+            $(document).on('click', '.convert-to-po', function() {
+                var requestId = $(this).data('request-id');
+                var route = "{{ route('purchase-orders.convertRequestForm') }}";
+                window.location.href = route + '?request_id=' + requestId;
+            });
 
             // Function to get product categories
             const getContractTypes = () => {

@@ -1,17 +1,20 @@
 <?php
 
-    use Carbon\Carbon;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Random\RandomException;
 
-/**
+    /**
      * Get carbon from date string.
      *
      * @param $date
@@ -596,7 +599,6 @@ use Random\RandomException;
     }
 
 
-
     /**
      * Map the given collection with the given key value as the array of each item key
      *
@@ -800,7 +802,6 @@ use Random\RandomException;
     }
 
 
-
     /**
      * Replace '_' in snake case and converting it to title case
      *
@@ -872,8 +873,6 @@ use Random\RandomException;
     }
 
 
-
-
     /**
      * Get list of month year for the given limit.
      *
@@ -893,8 +892,6 @@ use Random\RandomException;
 
         return $monthYear;
     }
-
-
 
 
     /**
@@ -1005,18 +1002,18 @@ use Random\RandomException;
     function sumAmountFunctionDeclaration()
     {
         return '
-            jQuery.fn.dataTable.Api.register("sumAmount()", function () {
-                return this.flatten().reduce(function (a, b) {
-                    if (typeof a === "string") {
-                        a = a.replace(/[^\d.0]/g, "") * 1;
-                    }
-                    if (typeof b === "string") {
-                        b = b.replace(/[^\d.0]/g, "") * 1;
-                    }
-                    return a + b;
-                }, 0);
-            });
-        ';
+                jQuery.fn.dataTable.Api.register("sumAmount()", function () {
+                    return this.flatten().reduce(function (a, b) {
+                        if (typeof a === "string") {
+                            a = a.replace(/[^\d.0]/g, "") * 1;
+                        }
+                        if (typeof b === "string") {
+                            b = b.replace(/[^\d.0]/g, "") * 1;
+                        }
+                        return a + b;
+                    }, 0);
+                });
+            ';
     }
 
     /**
@@ -1027,18 +1024,18 @@ use Random\RandomException;
     function sumAmountUnsignedFunctionDeclaration()
     {
         return '
-            jQuery.fn.dataTable.Api.register("sumAmount()", function () {
-                return this.flatten().reduce(function (a, b) {
-                    if (typeof a === "string") {
-                        a = a.replace(/[,\/]/g, "") * 1;
-                    }
-                    if (typeof b === "string") {
-                        b = b.replace(/[,\/]/g, "") * 1;
-                    }
-                    return a + b;
-                }, 0);
-            });
-        ';
+                jQuery.fn.dataTable.Api.register("sumAmount()", function () {
+                    return this.flatten().reduce(function (a, b) {
+                        if (typeof a === "string") {
+                            a = a.replace(/[,\/]/g, "") * 1;
+                        }
+                        if (typeof b === "string") {
+                            b = b.replace(/[,\/]/g, "") * 1;
+                        }
+                        return a + b;
+                    }, 0);
+                });
+            ';
     }
 
     /**
@@ -1071,13 +1068,13 @@ use Random\RandomException;
     function formatMobileNumber($phone)
     {
         // Remove the spaces from the given mobile number
-        $phone = str_replace(' ','',$phone);
+        $phone = str_replace(' ', '', $phone);
         // Remove the hyphens from the given mobile number
-        $phone = str_replace('-','',$phone);
+        $phone = str_replace('-', '', $phone);
         // Remove the open bracket from the given mobile number
-        $phone = str_replace('(','',$phone);
+        $phone = str_replace('(', '', $phone);
         // Remove the close bracket from the given mobile number
-        $phone = str_replace(')','',$phone);
+        $phone = str_replace(')', '', $phone);
         // Remove the +91 from the mobile number
         return substr($phone, -10);
     }
@@ -1109,7 +1106,8 @@ use Random\RandomException;
         return call_user_func_array('Request::is', (array)$path) ? $active : '';
     }
 
-    function displaywords($number){
+    function displaywords($number)
+    {
         info('sdinhs');
         $words = array('0' => '', '1' => 'ONE', '2' => 'TWO',
             '3' => 'THREE', '4' => 'FOUR', '5' => 'FIVE', '6' => 'SIX',
@@ -1117,135 +1115,185 @@ use Random\RandomException;
             '10' => 'TEN', '11' => 'ELEVEN', '12' => 'TWELVE',
             '13' => 'THIRTEEN', '14' => 'FOURTEEN',
             '15' => 'FIFTEEN', '16' => 'SIXTEEN', '17' => 'SEVENTEEN',
-            '18' => 'EIGHTEEN', '19' =>'NINETEEN', '20' => 'TWENTY',
+            '18' => 'EIGHTEEN', '19' => 'NINETEEN', '20' => 'TWENTY',
             '30' => 'THIRTY', '40' => 'FORTY', '50' => 'FIFTY',
             '60' => 'SIXTY', '70' => 'SEVENTY',
             '80' => 'EIGHTY', '90' => 'NINETY');
         $digits = array('', '', 'HUNDRED', 'THOUSAND', 'LAKH', 'CRORE');
 
         $number = explode(".", $number);
-        $result = array("","");
-        $j =0;
-        foreach($number as $val){
+        $result = array("", "");
+        $j = 0;
+        foreach ($number as $val) {
             // loop each part of number, right and left of dot
-            for($i=0;$i<strlen($val);$i++){
+            for ($i = 0; $i < strlen($val); $i++) {
                 // look at each part of the number separately  [1] [5] [4] [2]  and  [5] [8]
 
-                $numberpart = str_pad($val[$i], strlen($val)-$i, "0", STR_PAD_RIGHT); // make 1 => 1000, 5 => 500, 4 => 40 etc.
-                if($numberpart <= 20){ // if it's below 20 the number should be one word
-                    $numberpart = 1*substr($val, $i,2); // use two digits as the word
+                $numberpart = str_pad($val[$i], strlen($val) - $i, "0", STR_PAD_RIGHT); // make 1 => 1000, 5 => 500, 4 => 40 etc.
+                if ($numberpart <= 20) { // if it's below 20 the number should be one word
+                    $numberpart = 1 * substr($val, $i, 2); // use two digits as the word
                     $i++; // increment i since we used two digits
-                    $result[$j] .= $words[$numberpart] ." ";
-                }else{
+                    $result[$j] .= $words[$numberpart] . " ";
+                } else {
                     //echo $numberpart . "<br>\n"; //debug
-                    if($numberpart > 90){  // more than 90 and it needs a $digit.
-                        $result[$j] .= $words[$val[$i]] . " " . $digits[strlen($numberpart)-1] . " ";
-                    }else if($numberpart != 0){ // don't print zero
-                        $result[$j] .= $words[str_pad($val[$i], strlen($val)-$i, "0", STR_PAD_RIGHT)] ." ";
+                    if ($numberpart > 90) {  // more than 90 and it needs a $digit.
+                        $result[$j] .= $words[$val[$i]] . " " . $digits[strlen($numberpart) - 1] . " ";
+                    } else if ($numberpart != 0) { // don't print zero
+                        $result[$j] .= $words[str_pad($val[$i], strlen($val) - $i, "0", STR_PAD_RIGHT)] . " ";
                     }
                 }
             }
             $j++;
         }
-        if(trim($result[0]) != "") return $result[0] . "RUPEES ";
-        if($result[1] != "") return $result[1] . "PAISE";
+        if (trim($result[0]) != "") return $result[0] . "RUPEES ";
+        if ($result[1] != "") return $result[1] . "PAISE";
         return " ONLY";
     }
 
-/**
- * @param $file
- * @return string
- * @throws RandomException
- */
-function generateUniqueFileName($file): string
-{
-    return pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) .
-        '_' . now()->timestamp . '_' . random_int(1000, 9999) .
-        '.' . $file->getClientOriginalExtension();
-}
-
-function generate_file_url($file_path): Application|string|UrlGenerator
-{
-    if ($file_path && Storage::disk('public')->exists($file_path)) {
-        return url(Storage::url($file_path));
+    /**
+     * @param $file
+     * @return string
+     * @throws RandomException
+     */
+    function generateUniqueFileName($file): string
+    {
+        return pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) .
+            '_' . now()->timestamp . '_' . random_int(1000, 9999) .
+            '.' . $file->getClientOriginalExtension();
     }
 
-    $extension = pathinfo($file_path, PATHINFO_EXTENSION) ?? 'png';
-
-    $dummyFiles = [
-        'jpg'  => 'images/dummy.jpg',
-        'jpeg' => 'images/dummy.jpg',
-        'png'  => 'images/dummy.png',
-        'gif'  => 'images/dummy.png',
-        'pdf'  => 'files/dummy.pdf',
-        'doc'  => 'files/dummy.doc',
-        'docx' => 'files/dummy.docx',
-        'xls'  => 'files/dummy.xls',
-        'xlsx' => 'files/dummy.xlsx',
-        'txt'  => 'files/dummy.txt',
-        'mp4'  => 'videos/dummy.mp4',
-        'mp3'  => 'audio/dummy.mp3',
-    ];
-
-    $dummyFile = $dummyFiles[$extension] ?? 'images/dummy.png';
-
-    return url(Storage::url($dummyFile));
-}
-
 /**
- * @param $query
- * @param Request $request
- * @param array $searchColumns
- * @return mixed
+ * @param $file_path
+ * @return Application|string|UrlGenerator
  */
-function dataFilter($query, Request $request, array $searchColumns = []): mixed
-{
-    // Get only non-empty request inputs
-    $inputs = collect($request->all())->filter();
+function generate_file_url($file_path): Application|string|UrlGenerator
+    {
+        if ($file_path && Storage::disk('public')->exists($file_path)) {
+            return url(Storage::url($file_path));
+        }
 
-    // Search filter
-    $query->when($inputs->has('search') && !empty($searchColumns), function ($q) use ($inputs, $searchColumns) {
-        $search = $inputs->get('search');
-        $q->where(function ($subQuery) use ($searchColumns, $search) {
-            foreach ($searchColumns as $column) {
-                $subQuery->orWhere($column, 'like', "%{$search}%");
-            }
-        });
-    });
+        $extension = pathinfo($file_path, PATHINFO_EXTENSION) ?? 'png';
 
-    // Date filter
-    $query->when($inputs->has('created_from') && $inputs->has('created_to'), function ($q) use ($inputs) {
-        $q->whereBetween('created_at', [
-            Carbon::parse($inputs->get('created_from'))->startOfDay(),
-            Carbon::parse($inputs->get('created_to'))->endOfDay()
+        $dummyFiles = [
+            'jpg' => 'images/dummy.jpg',
+            'jpeg' => 'images/dummy.jpg',
+            'png' => 'images/dummy.png',
+            'gif' => 'images/dummy.png',
+            'pdf' => 'files/dummy.pdf',
+            'doc' => 'files/dummy.doc',
+            'docx' => 'files/dummy.docx',
+            'xls' => 'files/dummy.xls',
+            'xlsx' => 'files/dummy.xlsx',
+            'txt' => 'files/dummy.txt',
+            'mp4' => 'videos/dummy.mp4',
+            'mp3' => 'audio/dummy.mp3',
+        ];
+
+        $dummyFile = $dummyFiles[$extension] ?? 'images/dummy.png';
+
+        return url(Storage::url($dummyFile));
+    }
+
+    /**
+     * @throws JsonException
+     * @throws ConnectionException
+     */
+    function generateFirebaseAccessToken(#[SensitiveParameter] $serviceAccountPath)
+    {
+        $serviceAccount = json_decode(file_get_contents($serviceAccountPath), true, 512, JSON_THROW_ON_ERROR);
+
+        $now = time();
+        $expires = $now + 3600;
+        $jwtHeader = base64UrlEncode(json_encode(['alg' => 'RS256', 'typ' => 'JWT'], JSON_THROW_ON_ERROR));
+        $jwtClaimSet = base64UrlEncode(json_encode([
+            'iss' => $serviceAccount['client_email'],
+            'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+            'aud' => 'https://oauth2.googleapis.com/token',
+            'exp' => $expires,
+            'iat' => $now,
+        ], JSON_THROW_ON_ERROR));
+
+        $unsignedJwt = $jwtHeader . '.' . $jwtClaimSet;
+        $signature = '';
+        openssl_sign($unsignedJwt, $signature, $serviceAccount['private_key'], 'sha256');
+        $signedJwt = $unsignedJwt . '.' . base64UrlEncode($signature);
+
+        // Exchange JWT for access token
+        $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion' => $signedJwt,
         ]);
-    });
 
-    // Sorting
-    $sortBy = $inputs->get('sort_by', 'created_at');
-    $sortOrder = $inputs->get('sort_order', 'desc');
-    $query->orderBy($sortBy, $sortOrder);
+        if ($response->successful()) {
+            return $response->json()['access_token'];
+        }
 
-    // Pagination
-    $perPage = $inputs->get('per_page', 10);
-    $page = $inputs->get('page', 1);
+        return null;
+    }
 
-    return $query->paginate($perPage, ['*'], 'page', $page);
-}
+    /**
+     * @param $data
+     * @return string
+     */
+    function base64UrlEncode($data): string
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
 
-/**
- * Format paginated data into an array.
- *
- * @param $query
- * @return array
- */
-function dataFormatter($query): array
-{
-    return [
-        'current_page' => $query->currentPage(),
-        'data' => $query->items(),
-        'total' => $query->total(),
-        'per_page' => $query->perPage(),
-        'last_page' => $query->lastPage(),
-    ];
-}
+    /**
+     * @param $query
+     * @param Request $request
+     * @param array $searchColumns
+     * @return mixed
+     */
+    function dataFilter($query, Request $request, array $searchColumns = []): mixed
+    {
+        // Get only non-empty request inputs
+        $inputs = collect($request->all())->filter();
+
+        // Search filter
+        $query->when($inputs->has('search') && !empty($searchColumns), function ($q) use ($inputs, $searchColumns) {
+            $search = $inputs->get('search');
+            $q->where(function ($subQuery) use ($searchColumns, $search) {
+                foreach ($searchColumns as $column) {
+                    $subQuery->orWhere($column, 'like', "%{$search}%");
+                }
+            });
+        });
+
+        // Date filter
+        $query->when($inputs->has('created_from') && $inputs->has('created_to'), function ($q) use ($inputs) {
+            $q->whereBetween('created_at', [
+                Carbon::parse($inputs->get('created_from'))->startOfDay(),
+                Carbon::parse($inputs->get('created_to'))->endOfDay()
+            ]);
+        });
+
+        // Sorting
+        $sortBy = $inputs->get('sort_by', 'created_at');
+        $sortOrder = $inputs->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $perPage = $inputs->get('per_page', 10);
+        $page = $inputs->get('page', 1);
+
+        return $query->paginate($perPage, ['*'], 'page', $page);
+    }
+
+    /**
+     * Format paginated data into an array.
+     *
+     * @param $query
+     * @return array
+     */
+    function dataFormatter($query): array
+    {
+        return [
+            'current_page' => $query->currentPage(),
+            'data' => $query->items(),
+            'total' => $query->total(),
+            'per_page' => $query->perPage(),
+            'last_page' => $query->lastPage(),
+        ];
+    }

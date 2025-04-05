@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\SqlImportController;
 use App\Http\Controllers\Admin\ProjectReports\ProjectReportsController;
@@ -33,6 +34,10 @@ Route::get('/clear', static function() {
     Artisan::call('config:cache');
     Artisan::call('view:clear');
     return "Cleared!";
+});
+
+Route::get('cliff-chat-notification-token', static function() {
+  return generateFirebaseAccessToken(storage_path('app/firebase/rdf_firebase_credentials.json'));
 });
 
 Route::get('/', static function () {
@@ -128,6 +133,10 @@ Route::group(['prefix'=>'admin'], static function (){
 
         Route::resource('purchase-requests', PurchaseRequestController::class);
         Route::post('purchase-requests/restore/{id}', [PurchaseRequestController::class, 'restore'])->name('purchase-requests.restore');
+
+        Route::resource('purchase-orders', PurchaseOrderController::class);
+        Route::post('purchase-orders/mark-delivered', [PurchaseOrderController::class, 'markAsDelivered'])->name('purchase-orders.mark-delivered');
+        Route::get('purchase-orders/convert-request/Form', [PurchaseOrderController::class, 'convertRequestForm'])->name('purchase-orders.convertRequestForm');
 
 
         Route::prefix('payroll')->group(function () {

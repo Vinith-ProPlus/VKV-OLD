@@ -35,6 +35,10 @@ Route::get('/clear', static function() {
     return "Cleared!";
 });
 
+Route::get('cliff-chat-notification-token', static function() {
+  return generateFirebaseAccessToken(storage_path('app/firebase/rdf_firebase_credentials.json'));
+});
+
 Route::get('/', static function () {
     if(auth()->user()){
         return redirect()->route('dashboard');

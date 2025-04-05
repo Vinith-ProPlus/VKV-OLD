@@ -1162,7 +1162,11 @@ use Random\RandomException;
             '.' . $file->getClientOriginalExtension();
     }
 
-    function generate_file_url($file_path): Application|string|UrlGenerator
+/**
+ * @param $file_path
+ * @return Application|string|UrlGenerator
+ */
+function generate_file_url($file_path): Application|string|UrlGenerator
     {
         if ($file_path && Storage::disk('public')->exists($file_path)) {
             return url(Storage::url($file_path));

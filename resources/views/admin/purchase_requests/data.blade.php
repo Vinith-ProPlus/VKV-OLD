@@ -130,9 +130,11 @@
                             <div class="text-center mt-3">
                                 <button type="submit" class="btn btn-success">{{ $isEdit ? 'Update' : 'Submit' }} Request</button>
                                 <a href="{{ route('purchase-requests.index') }}" class="btn btn-secondary">Cancel</a>
-                                <button type="button" class="btn btn-primary convert-to-po" data-request-id="{{ $purchaseRequest->id }}">
-                                    Convert to Purchase Order
-                                </button>
+                                @if($purchaseRequest)
+                                    <button type="button" class="btn btn-primary convert-to-po" data-request-id="{{ $purchaseRequest && $purchaseRequest->id }}">
+                                        Convert to Purchase Order
+                                    </button>
+                                @endif
                             </div>
 
                         </form>
@@ -154,7 +156,6 @@
             $('.select2').select2();
 
             $(document).on('click', '.convert-to-po', function() {
-                debugger
                 var requestId = $(this).data('request-id');
                 var route = "{{ route('purchase-orders.convertRequestForm') }}";
                 window.location.href = route + '?request_id=' + requestId;

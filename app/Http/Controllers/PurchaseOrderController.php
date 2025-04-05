@@ -71,10 +71,27 @@ class PurchaseOrderController extends Controller
         logger("ksdjdcbids");
         logger($request->all());
 
-        $purchaseRequest = PurchaseRequest::with('details.product.category')->findOrFail($request->request_id);
-        $products = $purchaseRequest->details; // Pass the details as products
+//        $purchaseRequest = PurchaseRequest::with('details.product.category')->findOrFail($request->request_id);
+//        $products = $purchaseRequest->details; // Pass the details as products
+//
+//        return view('admin.purchase_orders.create', compact('purchaseRequest', 'products'));
 
-        return view('admin.purchase_orders.create', compact('purchaseRequest', 'products'));
+        $purchaseRequest = null;
+        $products = collect();
+        $project = null;
+
+        if ($request->has('request_id')) {
+            $purchaseRequest = PurchaseRequest::with(['project', 'details.product.category'])->findOrFail($request->request_id);
+            $products = $purchaseRequest->details;
+            $project = $purchaseRequest->project;
+        }
+
+        $projects = Project::all(); // For dropdown if manual create
+        $categories = ProductCategory::with('products')->get();
+
+        return view('admin.purchase_orders.create', compact(
+            'purchaseRequest', 'products', 'project', 'projects', 'categories'
+        ));
     }
 
 

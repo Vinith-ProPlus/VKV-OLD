@@ -135,8 +135,6 @@ Route::group(['prefix'=>'admin'], static function (){
 
         Route::resource('purchase-orders', PurchaseOrderController::class);
         Route::post('purchase-orders/mark-delivered', [PurchaseOrderController::class, 'markAsDelivered'])->name('purchase-orders.mark-delivered');
-        Route::get('purchase-orders/convert-request/Form', [PurchaseOrderController::class, 'convertRequestForm'])->name('purchase-orders.convertRequestForm');
-
 
         Route::prefix('payroll')->group(function () {
             Route::view('/', 'payroll.index')->name('payroll.index');

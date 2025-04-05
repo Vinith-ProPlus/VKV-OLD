@@ -68,14 +68,6 @@ class PurchaseOrderController extends Controller
 
     public function convertRequestForm(Request $request)
     {
-        logger("ksdjdcbids");
-        logger($request->all());
-
-//        $purchaseRequest = PurchaseRequest::with('details.product.category')->findOrFail($request->request_id);
-//        $products = $purchaseRequest->details; // Pass the details as products
-//
-//        return view('admin.purchase_orders.create', compact('purchaseRequest', 'products'));
-
         $purchaseRequest = null;
         $products = collect();
         $project = null;
@@ -94,63 +86,110 @@ class PurchaseOrderController extends Controller
         ));
     }
 
-
-    public function create()
+    public function create(Request $request)
     {
-        $projects = Project::all();
+        $purchaseRequest = null;
+        $products = collect();
+        $project = null;
 
-        $supervisors = User::whereHas('roles', static function ($query) {
-            $query->where('name', 'Supervisor');
-        })->get();
+        if ($request->has('request_id')) {
+            $purchaseRequest = PurchaseRequest::with(['project', 'details.product.category'])->findOrFail($request->request_id);
+            $products = $purchaseRequest->details;
+            $project = $purchaseRequest->project;
+        }
 
-        $categories = ProductCategory::all();
-        $products = Product::all();
-        $purchaseRequests = PurchaseRequest::all();
+        $projects = Project::all(); // For dropdown if manual create
+        $categories = ProductCategory::with('products')->get();
 
         return view('admin.purchase_orders.create', compact(
-            'projects', 'supervisors', 'categories', 'products', 'purchaseRequests'
+            'purchaseRequest', 'products', 'project', 'projects', 'categories'
         ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'purchase_request_id' => 'required|exists:purchase_requests,id',
-            'project_id' => 'required',
-            'supervisor_id' => 'required',
+            'project_id' => 'required|exists:projects,id',
+            'supervisor_id' => 'required|exists:users,id',
             'order_date' => 'required|date',
             'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|exists:products,id',
+            'products.*.category_id' => 'required|exists:product_categories,id',
+            'products.*.quantity' => 'required|numeric|min:1',
+            'products.*.rate' => 'required|numeric|min:0.01',
         ]);
 
         DB::beginTransaction();
         try {
+            // Create purchase request first if not provided
+            $purchaseRequestId = $request->purchase_request_id;
+
+            if (empty($purchaseRequestId)) {
+                // Create a new purchase request since this is a direct PO creation
+                $purchaseRequest = PurchaseRequest::create([
+                    'supervisor_id' => $request->supervisor_id,
+                    'project_id' => $request->project_id,
+                    'product_count' => count($request->products),
+                    'remarks' => $request->remarks,
+                    'status' => 'Approved', // Auto-approve since we're creating a PO directly
+                ]);
+
+                // Create purchase request details
+                foreach ($request->products as $product) {
+                    PurchaseRequestDetail::create([
+                        'purchase_request_id' => $purchaseRequest->id,
+                        'category_id' => $product['category_id'],
+                        'product_id' => $product['product_id'],
+                        'quantity' => $product['quantity']
+                    ]);
+                }
+
+                $purchaseRequestId = $purchaseRequest->id;
+            }
+
+            // Create purchase order
             $order = PurchaseOrder::create([
-                'purchase_request_id' => $request->purchase_request_id,
+                'purchase_request_id' => $purchaseRequestId,
                 'project_id' => $request->project_id,
                 'supervisor_id' => $request->supervisor_id,
                 'order_id' => 'PO-' . strtoupper(Str::random(6)),
                 'order_date' => $request->order_date,
                 'remarks' => $request->remarks,
+                'status' => 'Pending' // Default status for new POs
             ]);
 
-            foreach ($request->products as $product) {
-                $rate = $product['rate'];
-                $qty = $product['quantity'];
-                $total = $rate * $qty;
+            // Create purchase order details
+            $totalAmount = 0;
+            $totalGst = 0;
+            $totalWithGst = 0;
 
-                $gst = $product['gst_applicable'] ? ($total * $product['gst_percentage']) / 100 : 0;
+            foreach ($request->products as $product) {
+                $quantity = floatval($product['quantity']);
+                $rate = floatval($product['rate']);
+                $total = $quantity * $rate;
+
+                $gstApplicable = isset($product['gst_applicable']) && $product['gst_applicable'] == 1;
+                $gstPercentage = $gstApplicable ? floatval($product['gst_percentage']) : 0;
+                $gstValue = $gstApplicable ? ($total * $gstPercentage / 100) : 0;
+                $totalWithGstValue = $total + $gstValue;
+
+                // Update running totals
+                $totalAmount += $total;
+                $totalGst += $gstValue;
+                $totalWithGst += $totalWithGstValue;
 
                 PurchaseOrderDetail::create([
                     'purchase_order_id' => $order->id,
                     'category_id' => $product['category_id'],
                     'product_id' => $product['product_id'],
-                    'quantity' => $qty,
+                    'quantity' => $quantity,
                     'rate' => $rate,
-                    'gst_applicable' => $product['gst_applicable'],
-                    'gst_percentage' => $product['gst_applicable'] ? $product['gst_percentage'] : null,
-                    'gst_value' => $gst,
+                    'gst_applicable' => $gstApplicable,
+                    'gst_percentage' => $gstApplicable ? $gstPercentage : null,
+                    'gst_value' => $gstValue,
                     'total_amount' => $total,
-                    'total_amount_with_gst' => $total + $gst,
+                    'total_amount_with_gst' => $totalWithGstValue,
+                    'status' => 'Pending', // Default status for new items
                 ]);
             }
 
@@ -158,7 +197,7 @@ class PurchaseOrderController extends Controller
             return redirect()->route('purchase-orders.index')->with('success', 'Purchase Order Created Successfully.');
         } catch (\Exception $e) {
             DB::rollback();
-            return back()->with('error', 'Error: ' . $e->getMessage());
+            return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
         }
     }
 

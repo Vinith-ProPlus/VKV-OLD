@@ -157,7 +157,7 @@
 
             $(document).on('click', '.convert-to-po', function() {
                 var requestId = $(this).data('request-id');
-                var route = "{{ route('purchase-orders.convertRequestForm') }}";
+                var route = "{{ route('purchase-orders.create') }}";
                 window.location.href = route + '?request_id=' + requestId;
             });
 

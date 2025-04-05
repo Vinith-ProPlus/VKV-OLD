@@ -159,49 +159,6 @@
                                 </table>
                             </div>
 
-                            <!-- Order Summary Section -->
-                            <div class="card mt-4 mb-4">
-                                <div class="card-header bg-light">
-                                    <h5 class="mb-0">Order Summary</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6 offset-md-6">
-                                            <table class="table table-sm">
-                                                <tr>
-                                                    <td class="text-right"><strong>Total Items:</strong></td>
-                                                    <td width="150">
-                                                        <span id="totalItems">0</span>
-                                                        <input type="hidden" name="total_items">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-right"><strong>Total Amount (Without GST):</strong></td>
-                                                    <td>
-                                                        <span id="totalAmount">₹0.00</span>
-                                                        <input type="hidden" name="total_amount">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-right"><strong>Total GST:</strong></td>
-                                                    <td>
-                                                        <span id="totalGST">₹0.00</span>
-                                                        <input type="hidden" name="total_gst">
-                                                    </td>
-                                                </tr>
-                                                <tr class="bg-light">
-                                                    <td class="text-right"><strong>Grand Total:</strong></td>
-                                                    <td>
-                                                        <span id="grandTotal" class="font-weight-bold">₹0.00</span>
-                                                        <input type="hidden" name="grand_total">
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="row mt-4">
                                 <div class="col-md-12 text-right">
                                     <button type="submit" class="btn btn-success" id="submitBtn">Create Purchase Order</button>
@@ -267,7 +224,6 @@
             $(document).on('input change', '.quantity, .rate, .gst-applicable, .gst-percentage', function () {
                 let row = $(this).closest('tr');
                 calculateRowTotals(row);
-                updateOrderSummary();
             });
 
             // Toggle GST percentage field based on checkbox
@@ -282,7 +238,6 @@
                 }
 
                 calculateRowTotals(row);
-                updateOrderSummary();
             });
 
             // Calculate row totals
@@ -299,39 +254,6 @@
                 row.find('.total-amount').val(totalAmount.toFixed(2));
                 row.find('.gst-value').val(gstValue.toFixed(2));
                 row.find('.total-with-gst').val(totalWithGst.toFixed(2));
-            }
-
-            // Update order summary totals
-            function updateOrderSummary() {
-                let totalItems = 0;
-                let totalAmount = 0;
-                let totalGST = 0;
-                let grandTotal = 0;
-
-                // Calculate total from each row
-                $('#productsList tr').each(function() {
-                    let quantity = parseInt($(this).find('.quantity').val()) || 0;
-                    let amount = parseFloat($(this).find('.total-amount').val()) || 0;
-                    let gst = parseFloat($(this).find('.gst-value').val()) || 0;
-                    let total = parseFloat($(this).find('.total-with-gst').val()) || 0;
-
-                    totalItems += quantity;
-                    totalAmount += amount;
-                    totalGST += gst;
-                    grandTotal += total;
-                });
-
-                // Update the summary fields
-                $('#totalItems').text(totalItems);
-                $('#totalAmount').text('₹' + totalAmount.toFixed(2));
-                $('#totalGST').text('₹' + totalGST.toFixed(2));
-                $('#grandTotal').text('₹' + grandTotal.toFixed(2));
-
-                // Update hidden fields for form submission
-                $('input[name="total_items"]').val(totalItems);
-                $('input[name="total_amount"]').val(totalAmount.toFixed(2));
-                $('input[name="total_gst"]').val(totalGST.toFixed(2));
-                $('input[name="grand_total"]').val(grandTotal.toFixed(2));
             }
 
             // Show add product modal
@@ -436,10 +358,6 @@
                 newProductIndex++;
 
                 $('#productModal').modal('hide');
-
-                // Calculate totals for the new row
-                calculateRowTotals($('#productsList tr:last'));
-                updateOrderSummary();
             });
 
             // Remove product row
@@ -448,9 +366,6 @@
 
                 // Reindex the remaining rows
                 reindexProductRows();
-
-                // Update order summary after removing a product
-                updateOrderSummary();
             });
 
             // Reindex product rows after removal
@@ -493,14 +408,6 @@
 
                 return true;
             });
-
-            // Initialize calculations for existing products
-            $('#productsList tr').each(function() {
-                calculateRowTotals($(this));
-            });
-
-            // Initialize order summary
-            updateOrderSummary();
         });
     </script>
 @endsection

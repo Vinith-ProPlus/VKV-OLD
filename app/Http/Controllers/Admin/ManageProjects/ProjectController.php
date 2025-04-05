@@ -7,6 +7,7 @@ use App\Http\Requests\ProjectRequest;
 use App\Models\Admin\ManageProjects\ProjectStage;
 use App\Models\Document;
 use App\Models\Project;
+use App\Models\Admin\ManageProjects\ProjectTask;
 use App\Models\ProjectContract;
 use App\Models\ProjectAmenity;
 use Exception;
@@ -71,14 +72,16 @@ class ProjectController extends Controller{
      * @throws AuthorizationException
      */
     public function store(ProjectRequest $request): RedirectResponse
-    {
+    { 
         $this->authorize('Create Projects');
         DB::beginTransaction();
         try {
             $project = Project::create($request->all());
 
             // Save Stages
-            foreach ($request->stages as $stage) {
+            $stages = $request->stages ?? [];
+
+            foreach ($stages as $stage) {
                 ProjectStage::create([
                     'project_id' => $project->id,
                     'name' => $stage['name'],
@@ -253,4 +256,5 @@ class ProjectController extends Controller{
             return redirect()->back()->with("warning", "Something went wrong" . $exception->getMessage());
         }
     }
+
 }

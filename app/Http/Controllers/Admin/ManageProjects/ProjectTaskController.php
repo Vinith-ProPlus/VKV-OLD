@@ -98,6 +98,9 @@ class ProjectTaskController extends Controller{
         DB::beginTransaction();
         try {
             $data = $request->validated();
+            if ($request->input('status') == 'Completed') {
+                $data['completed_at'] = now();
+            }
             if ($request->hasFile('image')) {
                 $data['image'] = $request->file('image')?->store('project_tasks', 'public');
             }
@@ -131,6 +134,9 @@ class ProjectTaskController extends Controller{
         DB::beginTransaction();
         try {
             $data = $request->validated();
+            if ($request->input('status') == 'Completed') {
+                $data['completed_at'] = now();
+            }
             if ($request->hasFile('image')) {
                 $oldImage = $project_task->image;
                 $newImage = $data['image'] = $request->file('image')?->store('project_tasks', 'public');

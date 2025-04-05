@@ -34,14 +34,37 @@ class ProjectLaborDateController extends Controller
     public function index(Request $request): Factory|Application|View|JsonResponse
     {
         $this->authorize('View Labors');
+    
         if ($request->ajax()) {
-            $data = ProjectLaborDate::with(['project', 'labors', 'contractLabors'])->withTrashed()->get();
-            return DataTables::of($data)
+            $query = ProjectLaborDate::with(['project', 'labors', 'contractLabors'])->withTrashed();
+    
+            // Project
+            if ($request->filled('project_id')) {
+                $query->whereIn('project_id', $request->project_id);
+            }
+    
+            // From and To Date
+            if ($request->filled('from_date')) {
+                $query->whereDate('date', '>=', $request->from_date);
+            }
+    
+            if ($request->filled('to_date')) {
+                $query->whereDate('date', '<=', $request->to_date);
+            }
+    
+            // paid_status on related labors
+            if ($request->filled('paid_status')) {
+                $query->whereHas('labors', function ($q) use ($request) {
+                    $q->where('paid_status', $request->paid_status);
+                });
+            }
+            
+            return DataTables::eloquent($query)
                 ->addIndexColumn()
-                ->addColumn('project_name', static fn($data) => $data->project->name ?? 'N/A')
-                ->addColumn('labor_count', static fn($data) => $data->labors->count())
-                ->addColumn('contract_labor_count', static fn($data) => $data->contractLabors->sum('count'))
-                ->addColumn('action', static function ($data) {
+                ->addColumn('project_name', fn($data) => $data->project->name ?? 'N/A')
+                ->addColumn('labor_count', fn($data) => $data->labors->count())
+                ->addColumn('contract_labor_count', fn($data) => $data->contractLabors->sum('count'))
+                ->addColumn('action', function ($data) {
                     $button = '<div class="d-flex justify-content-center">';
                     if ($data->deleted_at) {
                         $button .= '<a onclick="commonRestore(\'' . route('labors.restore', $data->id) . '\')" class="btn btn-outline-warning"><i class="fa fa-undo"></i></a>';
@@ -58,8 +81,10 @@ class ProjectLaborDateController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
+    
         return view('admin.labors.index');
     }
+    
 
     /**
      * @throws AuthorizationException

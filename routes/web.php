@@ -171,6 +171,15 @@ Route::get('/getProjectContractors', [GeneralController::class, 'getProjectContr
 Route::get('/getLaborDesignations', [GeneralController::class, 'getLaborDesignations'])->name('getLaborDesignations');
 Route::get('/getCategories', [GeneralController::class, 'getCategories'])->name('getCategories');
 Route::get('/getProductsByCategory', [GeneralController::class, 'getProductsByCategory'])->name('getProductsByCategory');
+
+Route::get('/getAllProjects', [GeneralController::class,'getAllProjects'])->name('projects.all');
+Route::get('/getProjectTasks', [GeneralController::class,'getProjectTasks'])->name('project.tasks');
+Route::get('/getSupervisors', [GeneralController::class,'getSupervisors'])->name('getSupervisors');
+Route::get('/getCheckedInSupervisors', [GeneralController::class,'getCheckedInSupervisors'])->name('getCheckedInSupervisors');
+
+Route::get('/getLaborStatus', [GeneralController::class,'getLaborStatus'])->name('getLaborStatus');
+
+
 require __DIR__.'/auth.php';
 
 

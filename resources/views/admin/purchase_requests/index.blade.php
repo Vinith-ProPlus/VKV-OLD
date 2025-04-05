@@ -3,7 +3,7 @@
 @section('content')
     @php
         $PageTitle = "Purchase Requests";
-        $ActiveMenuName = 'Purchase Requests';
+        $ActiveMenuName = 'Purchase-Requests';
     @endphp
 
     <div class="container-fluid">

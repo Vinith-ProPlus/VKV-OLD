@@ -3,7 +3,7 @@
 @section('content')
     @php
         $PageTitle = "Purchase Request";
-        $ActiveMenuName = 'Purchase Requests';
+        $ActiveMenuName = 'Purchase-Requests';
         $isEdit = $purchaseRequest && $purchaseRequest->id;
     @endphp
 

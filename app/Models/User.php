@@ -28,6 +28,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static whereEmail(mixed $email)
  * @method static firstOrCreate(array $supervisorData)
  * @method static updateOrCreate(array $array, array $contractorData)
+ * @method static find(int $userId)
  */
 class User extends Authenticatable
 {

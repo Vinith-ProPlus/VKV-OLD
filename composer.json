@@ -19,7 +19,8 @@
         "nesbot/carbon": "*",
         "psr/simple-cache": "*",
         "spatie/laravel-permission": "*",
-        "yajra/laravel-datatables": "11.0"
+        "yajra/laravel-datatables": "11.0",
+        "ext-openssl": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

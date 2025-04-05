@@ -29,9 +29,6 @@
                             <div class="col-sm-4"></div>
                             <div class="col-sm-4 my-2"><h5>{{ $PageTitle }}</h5></div>
                             <div class="col-sm-4 my-2 text-right">
-{{--                                @can('Create Purchase Orders')--}}
-{{--                                    <a class="btn btn-sm btn-primary add-btn" href="{{ route('purchase-orders.create') }}">Create Purchase Order</a>--}}
-{{--                                @endcan--}}
                             </div>
                         </div>
                     </div>

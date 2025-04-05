@@ -66,6 +66,18 @@ class PurchaseOrderController extends Controller
         return view('admin.purchase_orders.show', compact('order'));
     }
 
+    public function convertRequestForm(Request $request)
+    {
+        logger("ksdjdcbids");
+        logger($request->all());
+
+        $purchaseRequest = PurchaseRequest::with('details.product.category')->findOrFail($request->request_id);
+        $products = $purchaseRequest->details; // Pass the details as products
+
+        return view('admin.purchase_orders.create', compact('purchaseRequest', 'products'));
+    }
+
+
     public function create()
     {
         $projects = Project::all();

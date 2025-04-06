@@ -66,26 +66,6 @@ class PurchaseOrderController extends Controller
         return view('admin.purchase_orders.show', compact('order'));
     }
 
-    public function convertRequestForm(Request $request)
-    {
-        $purchaseRequest = null;
-        $products = collect();
-        $project = null;
-
-        if ($request->has('request_id')) {
-            $purchaseRequest = PurchaseRequest::with(['project', 'details.product.category'])->findOrFail($request->request_id);
-            $products = $purchaseRequest->details;
-            $project = $purchaseRequest->project;
-        }
-
-        $projects = Project::all(); // For dropdown if manual create
-        $categories = ProductCategory::with('products')->get();
-
-        return view('admin.purchase_orders.create', compact(
-            'purchaseRequest', 'products', 'project', 'projects', 'categories'
-        ));
-    }
-
     public function create(Request $request)
     {
         $purchaseRequest = null;

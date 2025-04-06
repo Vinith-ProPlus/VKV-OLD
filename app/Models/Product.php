@@ -3,8 +3,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @method static create(mixed $data)
+ * @method static findOrFail($id)
+ */
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
@@ -13,17 +18,26 @@ class Product extends Model
         'name', 'code', 'is_active', 'image', 'category_id', 'tax_id', 'uom_id'
     ];
 
-    public function category()
+    /**
+     * @return BelongsTo
+     */
+    public function category(): BelongsTo
     {
         return $this->belongsTo(ProductCategory::class, 'category_id');
     }
 
-    public function tax()
+    /**
+     * @return BelongsTo
+     */
+    public function tax(): BelongsTo
     {
         return $this->belongsTo(Tax::class, 'tax_id');
     }
 
-    public function unit()
+    /**
+     * @return BelongsTo
+     */
+    public function unit(): BelongsTo
     {
         return $this->belongsTo(UnitOfMeasurement::class, 'uom_id');
     }

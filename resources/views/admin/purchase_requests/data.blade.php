@@ -34,9 +34,13 @@
                             <div class="alert alert-danger">{{ session('error') }}</div>
                         @endif
 
-                        <form action="{{ $isEdit ? route('purchase-requests.update', $purchaseRequest->id) : route('purchase-requests.store') }}" method="POST">
+                        <form
+                            action="{{ $isEdit ? route('purchase-requests.update', $purchaseRequest->id) : route('purchase-requests.store') }}"
+                            method="POST">
                             @csrf
-                            @if($isEdit) @method('PUT') @endif
+                            @if($isEdit)
+                                @method('PUT')
+                            @endif
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -44,7 +48,8 @@
                                     <select class="form-control select2" name="project_id" id="project_id" required>
                                         <option value="">Select Project</option>
                                         @foreach($projects as $project)
-                                            <option value="{{ $project->id }}" {{ $isEdit && $purchaseRequest->project_id == $project->id ? 'selected' : '' }}>
+                                            <option
+                                                value="{{ $project->id }}" {{ $isEdit && $purchaseRequest->project_id == $project->id ? 'selected' : '' }}>
                                                 {{ $project->name }}
                                             </option>
                                         @endforeach
@@ -64,7 +69,8 @@
 
                             <hr>
                             <div class="card">
-                                <div class="row" style="background-color: #7167f430;padding: 20px;border-radius: 15px;box-shadow: 1px 10px 40px #e4e2fde3;">
+                                <div class="row"
+                                     style="background-color: #7167f430;padding: 20px;border-radius: 15px;box-shadow: 1px 10px 40px #e4e2fde3;">
                                     <div class="col-4">
                                         <label for="contract_type_id"><strong>Category</strong></label>
                                         <select class="form-control select2" id="contract_type_id">
@@ -82,14 +88,17 @@
                                         <input class="form-control" id="txtAmount" type="number" step="0.01" min="0">
                                     </div>
                                     <div class="col-2 align-self-end">
-                                        <a class="btn btn-sm" id="addContracts" style="background-color: #7167f4;color: #fff;">Add</a>
+                                        <a class="btn btn-sm" id="addContracts"
+                                           style="background-color: #7167f4;color: #fff;">Add</a>
                                         <a class="btn btn-sm btn-warning d-none" id="updateContracts">Update</a>
                                         <a class="btn btn-sm mx-2 btn-danger" id="clearContracts">Clear</a>
                                     </div>
                                 </div>
                             </div>
 
-                            <table class="table table-hover {{ ($isEdit && count($purchaseRequest->details) > 0) ? '' : 'd-none' }} mt-20 form-group" id="productsTable">
+                            <table
+                                class="table table-hover {{ ($isEdit && count($purchaseRequest->details) > 0) ? '' : 'd-none' }} mt-20 form-group"
+                                id="productsTable">
                                 <thead>
                                 <tr>
                                     <th>S.No</th>
@@ -106,21 +115,30 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td data-contract-type="{{ $detail->category->name }}">
                                                 {{ $detail->category->name }}
-                                                <input type="hidden" value="{{ $detail->category_id }}" name="products[{{ $detail->id }}][category_id]" data-id="{{ $detail->id }}">
+                                                <input type="hidden" value="{{ $detail->category_id }}"
+                                                       name="products[{{ $detail->id }}][category_id]"
+                                                       data-id="{{ $detail->id }}">
                                             </td>
                                             <td data-contractor="{{ $detail->product->name }}">
                                                 {{ $detail->product->name }}
-                                                <input type="hidden" value="{{ $detail->product_id }}" name="products[{{ $detail->id }}][product_id]" data-id="{{ $detail->id }}">
+                                                <input type="hidden" value="{{ $detail->product_id }}"
+                                                       name="products[{{ $detail->id }}][product_id]"
+                                                       data-id="{{ $detail->id }}">
                                             </td>
                                             <td data-amount="{{ $detail->quantity }}">
                                                 {{ $detail->quantity }}
-                                                <input type="hidden" value="{{ $detail->quantity }}" name="products[{{ $detail->id }}][quantity]" data-id="{{ $detail->id }}">
+                                                <input type="hidden" value="{{ $detail->quantity }}"
+                                                       name="products[{{ $detail->id }}][quantity]"
+                                                       data-id="{{ $detail->id }}">
                                             </td>
                                             <td>
-                                                <a class="btn btn-outline-primary editContracts"><i class="fa fa-pencil"></i></a>
-                                                <a class="btn btn-danger deleteContracts"><i class="fa fa-trash"></i></a>
+                                                <a class="btn btn-outline-primary editContracts"><i
+                                                        class="fa fa-pencil"></i></a>
+                                                <a class="btn btn-danger deleteContracts"><i
+                                                        class="fa fa-trash"></i></a>
                                             </td>
-                                            <td data-tdata='{{ json_encode(["contract_type_id" => $detail->category_id, "contract_name" => $detail->category->name, "user_id" => $detail->product_id, "user_name" => $detail->product->name, "amount" => $detail->quantity]) }}' class="d-none"></td>
+                                            <td data-tdata='{{ json_encode(["contract_type_id" => $detail->category_id, "contract_name" => $detail->category->name, "user_id" => $detail->product_id, "user_name" => $detail->product->name, "amount" => $detail->quantity], JSON_THROW_ON_ERROR) }}'
+                                                class="d-none"></td>
                                         </tr>
                                     @endforeach
                                 @endif
@@ -128,10 +146,13 @@
                             </table>
 
                             <div class="text-center mt-3">
-                                <button type="submit" class="btn btn-success">{{ $isEdit ? 'Update' : 'Submit' }} Request</button>
+                                <button type="submit" class="btn btn-success">{{ $isEdit ? 'Update' : 'Submit' }}
+                                    Request
+                                </button>
                                 <a href="{{ route('purchase-requests.index') }}" class="btn btn-secondary">Cancel</a>
                                 @if($purchaseRequest)
-                                    <button type="button" class="btn btn-primary convert-to-po" data-request-id="{{ $purchaseRequest && $purchaseRequest->id }}">
+                                    <button type="button" class="btn btn-primary convert-to-po"
+                                            data-request-id="{{ $purchaseRequest && $purchaseRequest->id }}">
                                         Convert to Purchase Order
                                     </button>
                                 @endif
@@ -155,7 +176,7 @@
             let contractUpdateId = 0;
             $('.select2').select2();
 
-            $(document).on('click', '.convert-to-po', function() {
+            $(document).on('click', '.convert-to-po', function () {
                 var requestId = $(this).data('request-id');
                 var route = "{{ route('purchase-orders.create') }}";
                 window.location.href = route + '?request_id=' + requestId;
@@ -319,12 +340,12 @@
                 $('#contract_type_id').val(tdata.contract_type_id).attr('data-selected', tdata.contract_type_id).trigger('change');
 
                 // Need to wait for category dropdown to load products
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#contractor_id').attr('data-selected', tdata.user_id);
                     getContractors();
 
                     // Need to wait for products to load before setting value
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#contractor_id').val(tdata.user_id).trigger('change');
                         $('#txtAmount').val(tdata.amount);
                     }, 500);
@@ -419,7 +440,7 @@
             }
 
             // Add debugging before form submission
-            $('form').on('submit', function() {
+            $('form').on('submit', function () {
                 console.log('Form submitted with data:', $(this).serialize());
                 return true;
             });

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('order_date');                  // Date of creation
             $table->text('remarks')->nullable();         // Optional notes
             $table->enum('status', ['Pending', 'Completed'])->default('Pending');
+            $table->foreignId('approved_by')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

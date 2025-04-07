@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -40,5 +41,13 @@ class Product extends Model
     public function unit(): BelongsTo
     {
         return $this->belongsTo(UnitOfMeasurement::class, 'uom_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function projectStocks(): HasMany
+    {
+        return $this->hasMany(ProjectStock::class);
     }
 }

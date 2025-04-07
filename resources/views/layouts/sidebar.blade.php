@@ -262,6 +262,9 @@
                                 <li class="">
                                     <a href="{{ route('project-stocks.index') }}" data-active-name="Project-Stock-Management" data-original-title="" title="">Project Stock</a>
                                 </li>
+                                <li class="">
+                                    <a href="{{ route('stock-usages.index') }}" data-active-name="Stock-Usage" data-original-title="" title="">Stock Usage Log</a>
+                                </li>
                             @endcan
                         </ul>
                     </li>

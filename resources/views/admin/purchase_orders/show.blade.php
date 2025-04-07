@@ -4,7 +4,7 @@
     @php
         $PageTitle = "Purchase Order";
         $ActiveMenuName = 'Purchase-Orders';
-        $isEdit = $purchaseOrder && $purchaseOrder->id;
+        $isEdit = $order && $order->id;
     @endphp
 
     <div class="container-fluid">
@@ -87,7 +87,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3">
+                        <div class="mb-15">
                             <label>Remarks (Optional)</label>
                             <textarea class="form-control" name="remarks"></textarea>
                         </div>
@@ -105,33 +105,40 @@
     </div>
 @endsection
 
-@push('scripts')
+@section('script')
     <script>
-        $(document).on('click', '.mark-delivered-btn', function () {
-            const id = $(this).data('id');
-            $('#detail_id').val(id);
-            $('#deliveryModal').modal('show');
-        });
+        $(document).ready(function() {
+            // Remove the debugger statement
+            $('.mark-delivered-btn').on('click', function() {
+                const id = $(this).data('id');
+                $('#detail_id').val(id);
+                $('#deliveryModal').modal('show');
+            });
 
-        $(document).on('submit', '#deliveryForm', function (e) {
-            e.preventDefault();
-            let formData = new FormData(this);
+            $('#deliveryForm').on('submit', function(e) {
+                e.preventDefault();
+                let formData = new FormData(this);
 
-            $.ajax({
-                url: "{{ route('purchase-orders.mark-delivered') }}",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (res) {
-                    if (res.success) {
-                        $('#deliveryModal').modal('hide');
-                        const row = $('#row-' + formData.get('id'));
-                        row.find('td:nth-child(7)').html('<span class="badge bg-success">Delivered</span>');
-                        row.find('td:nth-child(8)').html('');
+                $.ajax({
+                    url: "{{ route('purchase-orders.mark-delivered') }}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.success) {
+                            $('#deliveryModal').modal('hide');
+                            const row = $('#row-' + formData.get('id'));
+                            row.find('td:nth-child(7)').html('<span class="badge bg-success">Delivered</span>');
+                            row.find('td:nth-child(8)').html('-');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error:", error);
+                        alert("There was an error processing your request. Please try again.");
                     }
-                }
+                });
             });
         });
     </script>
-@endpush
+@endsection

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Users\UserController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProjectStockController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\SqlImportController;
@@ -19,6 +20,7 @@ use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
 use App\Models\Admin\Master\State;
+use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Tax;
 use App\Models\UnitOfMeasurement;
@@ -136,6 +138,9 @@ Route::group(['prefix'=>'admin'], static function (){
         Route::resource('purchase-orders', PurchaseOrderController::class);
         Route::post('purchase-orders/mark-delivered', [PurchaseOrderController::class, 'markAsDelivered'])->name('purchase-orders.mark-delivered');
 
+        Route::resource('project-stocks', ProjectStockController::class);
+        Route::post('project-stocks/adjust', [ProjectStockController::class, 'adjust'])->name('project-stocks.adjust');
+
         Route::prefix('payroll')->group(function () {
             Route::view('/', 'payroll.index')->name('payroll.index');
             Route::post('/unpaid-labor', [PayrollController::class, 'getUnpaidLabor'])->name('payroll.getUnpaidLabor');
@@ -180,6 +185,9 @@ Route::get('/getSupervisors', [GeneralController::class,'getSupervisors'])->name
 Route::get('/getCheckedInSupervisors', [GeneralController::class,'getCheckedInSupervisors'])->name('getCheckedInSupervisors');
 
 Route::get('/getLaborStatus', [GeneralController::class,'getLaborStatus'])->name('getLaborStatus');
+Route::get('/project-products', static function () {
+    return Product::with('category')->get();
+});
 
 
 require __DIR__.'/auth.php';

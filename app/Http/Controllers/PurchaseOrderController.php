@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Project;
+use App\Models\ProjectStock;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderDetail;
 use App\Models\PurchaseRequest;
@@ -102,11 +103,12 @@ class PurchaseOrderController extends Controller
         try {
             // Create purchase request first if not provided
             $purchaseRequestId = $request->purchase_request_id;
+            $currentUserId = Auth::id();
 
             if (empty($purchaseRequestId)) {
                 // Create a new purchase request since this is a direct PO creation
                 $purchaseRequest = PurchaseRequest::create([
-                    'supervisor_id' => Auth::id(),
+                    'supervisor_id' => $currentUserId, // Use current user as supervisor for new POs
                     'project_id' => $request->project_id,
                     'product_count' => count($request->products),
                     'remarks' => $request->remarks,
@@ -124,18 +126,24 @@ class PurchaseOrderController extends Controller
                 }
 
                 $purchaseRequestId = $purchaseRequest->id;
+                $supervisorId = $currentUserId;
+            } else {
+                // If converting from a purchase request, use that supervisor
+
+                // Update purchase request status
+                $purchaseRequest = PurchaseRequest::findOrFail($purchaseRequestId);
+                $supervisorId = $purchaseRequest->supervisor_id;
+                $purchaseRequest->status = 'Converted';
+                $purchaseRequest->save();
             }
-            $purchaseRequest = PurchaseRequest::findOrFail($purchaseRequestId);
-            // Create purchase order
+
+            // Create purchase order with current date
             $order = PurchaseOrder::create([
                 'purchase_request_id' => $purchaseRequestId,
-                'project_id' => $purchaseRequest->project_id,
-                'supervisor_id' => $purchaseRequest->supervisor_id,
-                'order_id' => 'PO-' . strtoupper(Str::random(6)),
-                'order_date' => now(),
+                'project_id' => $request->project_id,
+                'supervisor_id' => $supervisorId,
                 'remarks' => $request->remarks,
-                'status' => 'Pending' // Default status for new POs
-            ]);
+                ]);
 
             // Create purchase order details
             $totalAmount = 0;
@@ -146,9 +154,11 @@ class PurchaseOrderController extends Controller
                 $quantity = (float)$product['quantity'];
                 $rate = (float)$product['rate'];
                 $total = $quantity * $rate;
+                $productId = $product['product_id'];
+                $categoryId = $product['category_id'];
 
                 $gstApplicable = isset($product['gst_applicable']) && $product['gst_applicable'] == 1;
-                $gstPercentage = $gstApplicable ? floatval($product['gst_percentage']) : 0;
+                $gstPercentage = $gstApplicable ? (float)$product['gst_percentage'] : 0;
                 $gstValue = $gstApplicable ? ($total * $gstPercentage / 100) : 0;
                 $totalWithGstValue = $total + $gstValue;
 
@@ -159,8 +169,8 @@ class PurchaseOrderController extends Controller
 
                 PurchaseOrderDetail::create([
                     'purchase_order_id' => $order->id,
-                    'category_id' => $product['category_id'],
-                    'product_id' => $product['product_id'],
+                    'category_id' => $categoryId,
+                    'product_id' => $productId,
                     'quantity' => $quantity,
                     'rate' => $rate,
                     'gst_applicable' => $gstApplicable,
@@ -170,6 +180,16 @@ class PurchaseOrderController extends Controller
                     'total_amount_with_gst' => $totalWithGstValue,
                     'status' => 'Pending', // Default status for new items
                 ]);
+
+                // Update project stock
+                $this->updateProjectStock(
+                    $request->project_id,
+                    $productId,
+                    $categoryId,
+                    $quantity,
+                    $currentUserId,
+                    'PO Created'
+                );
             }
 
             DB::commit();
@@ -177,6 +197,35 @@ class PurchaseOrderController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Update project stock - add new stock or update existing
+     */
+    private function updateProjectStock($projectId, $productId, $categoryId, $quantity, $updatedBy, $transactionType)
+    {
+        // Try to find existing stock record
+        $stock = ProjectStock::where('project_id', $projectId)
+            ->where('product_id', $productId)
+            ->first();
+
+        if ($stock) {
+            // Update existing stock
+            $stock->quantity += $quantity;
+            $stock->last_updated_by = $updatedBy;
+            $stock->last_transaction_type = $transactionType;
+            $stock->save();
+        } else {
+            // Create new stock record
+            ProjectStock::create([
+                'project_id' => $projectId,
+                'product_id' => $productId,
+                'category_id' => $categoryId,
+                'quantity' => $quantity,
+                'last_updated_by' => $updatedBy,
+                'last_transaction_type' => $transactionType
+            ]);
         }
     }
 
@@ -189,7 +238,7 @@ class PurchaseOrderController extends Controller
         $detail = PurchaseOrderDetail::findOrFail($request->id);
 
         $detail->status = 'Delivered';
-        $detail->remarks = $request->remarks;
+        $detail->remarks = $request->remarks ?? '';
         $detail->delivery_date = Carbon::now();
 
         if ($request->hasFile('attachment')) {

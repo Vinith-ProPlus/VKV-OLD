@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Project;
+use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestDetail;
 use Exception;
@@ -39,14 +41,31 @@ class PurchaseRequestController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->editColumn('status', static fn($data) => $data->deleted_at ? 'Deleted' : ucfirst($data->status))
+                ->editColumn('status', static function($data) {
+                    if ($data->deleted_at) {
+                        return 'Deleted';
+                    } elseif ($data->status === 'converted') {
+                        return 'Converted to PO';
+                    } else {
+                        return ucfirst($data->status);
+                    }
+                })
                 ->addColumn('action', static function ($data) {
                     $button = '<div class="d-flex justify-content-center">';
                     if ($data->deleted_at) {
                         $button .= '<a onclick="commonRestore(\'' . route('purchase-requests.restore', $data->id) . '\')" class="btn btn-outline-warning"><i class="fa fa-undo"></i></a>';
                     } else {
                         $button .= '<a href="' . route('purchase-requests.edit', $data->id) . '" class="btn btn-outline-success btn-sm m-1"><i class="fa fa-pencil"></i></a>';
-                        $button .= '<a onclick="commonDelete(\'' . route('purchase-requests.destroy', $data->id) . '\')" class="btn btn-outline-danger btn-sm m-1"><i class="fa fa-trash" style="color: red"></i></a>';
+
+                        // Only allow deletion if not converted to PO
+                        if ($data->status !== 'converted') {
+                            $button .= '<a onclick="commonDelete(\'' . route('purchase-requests.destroy', $data->id) . '\')" class="btn btn-outline-danger btn-sm m-1"><i class="fa fa-trash" style="color: red"></i></a>';
+                        }
+
+                        // Only show convert button if not already converted
+                        if ($data->status !== 'converted') {
+                            $button .= '<a href="' . route('purchase-orders.create', ['request_id' => $data->id]) . '" class="btn btn-outline-primary btn-sm m-1" title="Convert to PO"><i class="fa fa-exchange"></i></a>';
+                        }
                     }
                     $button .= '</div>';
                     return $button;
@@ -65,9 +84,8 @@ class PurchaseRequestController extends Controller
     public function create(): View|Factory|\Illuminate\Foundation\Application
     {
         $this->authorize('Create Purchase Requests');
-        $categories = ProductCategory::whereIsActive(1)->get();
         $projects = Project::whereNot('status', COMPLETED)->get();
-        return view('admin.purchase_requests.data', ['purchaseRequest' => '', 'projects' => $projects, 'categories' => $categories]);
+        return view('admin.purchase_requests.data', ['purchaseRequest' => '', 'projects' => $projects]);
     }
 
     /**
@@ -104,10 +122,19 @@ class PurchaseRequestController extends Controller
             }
 
             DB::commit();
+
+            // Check if this is a quick conversion to PO (from AJAX)
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Purchase request created successfully.']);
+            }
+
             return redirect()->route('purchase-requests.index')
                 ->with('success', 'Purchase request created successfully.');
         } catch (Exception $e) {
             DB::rollBack();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to create purchase request. ' . $e->getMessage()], 422);
+            }
             return redirect()->back()
                 ->with('error', 'Failed to create purchase request. ' . $e->getMessage())->withInput();
         }
@@ -119,7 +146,7 @@ class PurchaseRequestController extends Controller
      */
     public function edit(PurchaseRequest $purchaseRequest): View|Factory|\Illuminate\Foundation\Application
     {
-        $purchaseRequest->load('details.category', 'details.product', 'project');
+        $purchaseRequest->load('details.category', 'details.product', 'project', 'supervisor');
         $projects = Project::all();
         return view('admin.purchase_requests.data', compact('purchaseRequest', 'projects'));
     }
@@ -127,9 +154,9 @@ class PurchaseRequestController extends Controller
     /**
      * @param Request $request
      * @param PurchaseRequest $purchaseRequest
-     * @return RedirectResponse
+     * @return RedirectResponse|JsonResponse
      */
-    public function update(Request $request, PurchaseRequest $purchaseRequest): RedirectResponse
+    public function update(Request $request, PurchaseRequest $purchaseRequest): RedirectResponse|JsonResponse
     {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
@@ -138,6 +165,16 @@ class PurchaseRequestController extends Controller
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.quantity' => 'required|numeric|min:0',
         ]);
+
+        // Don't allow updates if already converted to PO
+        if ($purchaseRequest->status === 'converted') {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Cannot update a purchase request that has been converted to a purchase order.'], 403);
+            }
+            return redirect()->back()
+                ->with('error', 'Cannot update a purchase request that has been converted to a purchase order.');
+        }
+
         DB::beginTransaction();
 
         try {
@@ -157,14 +194,43 @@ class PurchaseRequestController extends Controller
             }
             DB::commit();
 
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Purchase request updated successfully.']);
+            }
+
             return redirect()->route('purchase-requests.index')
                 ->with('success', 'Purchase request updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error updating purchase request: ' . $e->getMessage());
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to update purchase request. ' . $e->getMessage()], 422);
+            }
             return redirect()->back()
                 ->with('error', 'Failed to update purchase request. ' . $e->getMessage())
                 ->withInput();
+        }
+    }
+
+    /**
+     * Mark purchase request as converted to purchase order
+     *
+     * @param PurchaseRequest $purchaseRequest
+     * @return JsonResponse
+     */
+    public function markAsConverted(PurchaseRequest $purchaseRequest): JsonResponse
+    {
+        if ($purchaseRequest->status === 'converted') {
+            return response()->json(['success' => false, 'message' => 'Purchase request is already converted to a purchase order.'], 400);
+        }
+
+        try {
+            $purchaseRequest->update(['status' => 'converted']);
+            return response()->json(['success' => true, 'message' => 'Purchase request marked as converted successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error marking purchase request as converted: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to convert purchase request to PO. ' . $e->getMessage()], 422);
         }
     }
 

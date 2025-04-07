@@ -20,6 +20,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -38,7 +39,7 @@ class PurchaseOrderController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->editColumn('order_date', fn($data): string => Carbon::parse($data->order_date)->format('d-m-Y'))
+                ->editColumn('order_date', static fn($data): string => Carbon::parse($data->order_date)->format('d-m-Y'))
                 ->editColumn('product_count', static fn($data) => $data->details->count())
                 ->editColumn('status', static function ($data) {
                     $deliveredCount = $data->details->where('status', 'Delivered')->count();
@@ -90,8 +91,6 @@ class PurchaseOrderController extends Controller
     {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
-            'supervisor_id' => 'required|exists:users,id',
-            'order_date' => 'required|date',
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.category_id' => 'required|exists:product_categories,id',
@@ -107,7 +106,7 @@ class PurchaseOrderController extends Controller
             if (empty($purchaseRequestId)) {
                 // Create a new purchase request since this is a direct PO creation
                 $purchaseRequest = PurchaseRequest::create([
-                    'supervisor_id' => $request->supervisor_id,
+                    'supervisor_id' => Auth::id(),
                     'project_id' => $request->project_id,
                     'product_count' => count($request->products),
                     'remarks' => $request->remarks,
@@ -126,14 +125,14 @@ class PurchaseOrderController extends Controller
 
                 $purchaseRequestId = $purchaseRequest->id;
             }
-
+            $purchaseRequest = PurchaseRequest::findOrFail($purchaseRequestId);
             // Create purchase order
             $order = PurchaseOrder::create([
                 'purchase_request_id' => $purchaseRequestId,
-                'project_id' => $request->project_id,
-                'supervisor_id' => $request->supervisor_id,
+                'project_id' => $purchaseRequest->project_id,
+                'supervisor_id' => $purchaseRequest->supervisor_id,
                 'order_id' => 'PO-' . strtoupper(Str::random(6)),
-                'order_date' => $request->order_date,
+                'order_date' => now(),
                 'remarks' => $request->remarks,
                 'status' => 'Pending' // Default status for new POs
             ]);
@@ -144,8 +143,8 @@ class PurchaseOrderController extends Controller
             $totalWithGst = 0;
 
             foreach ($request->products as $product) {
-                $quantity = floatval($product['quantity']);
-                $rate = floatval($product['rate']);
+                $quantity = (float)$product['quantity'];
+                $rate = (float)$product['rate'];
                 $total = $quantity * $rate;
 
                 $gstApplicable = isset($product['gst_applicable']) && $product['gst_applicable'] == 1;
@@ -194,7 +193,7 @@ class PurchaseOrderController extends Controller
         $detail->delivery_date = Carbon::now();
 
         if ($request->hasFile('attachment')) {
-            $file = $request->file('attachment')->store('po_deliveries', 'public');
+            $file = $request->file('attachment')?->store('po_deliveries', 'public');
             $detail->attachment = $file;
         }
 

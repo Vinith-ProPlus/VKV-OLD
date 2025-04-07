@@ -42,54 +42,34 @@
                             <!-- Hidden field for purchase request ID -->
                             <input type="hidden" name="purchase_request_id" value="{{ $purchaseRequest ? $purchaseRequest->id : '' }}" required>
 
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="order_date" class="form-label">Order Date</label>
-                                        <input type="date" name="order_date" class="form-control" required value="{{ date('Y-m-d') }}">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="project_id" class="form-label">Project</label>
-                                        @if($purchaseRequest)
-                                            <input type="text" class="form-control" value="{{ $project->name ?? 'N/A' }}" readonly>
-                                            <input type="hidden" name="project_id" value="{{ $project->id }}">
-                                        @else
-                                            <select name="project_id" class="form-control" required>
-                                                <option value="">Select Project</option>
-                                                @foreach($projects as $proj)
-                                                    <option value="{{ $proj->id }}">{{ $proj->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="mb-3">
-                                        <label for="supervisor_id" class="form-label">Supervisor</label>
-                                        <select name="supervisor_id" class="form-control" required>
-                                            <option value="">Select Supervisor</option>
-                                            @foreach(App\Models\User::whereHas('roles', function($q) { $q->where('name', 'Supervisor'); })->get() as $supervisor)
-                                                <option value="{{ $supervisor->id }}" {{ $purchaseRequest && $purchaseRequest->supervisor_id == $supervisor->id ? 'selected' : '' }}>
-                                                    {{ $supervisor->name }}
-                                                </option>
+                            <div class="col-md-12">
+                                <div class="mb-5">
+                                    <label for="project_id" class="form-label">Project</label>
+                                    @if($purchaseRequest)
+                                        <input type="text" class="form-control" value="{{ $project->name ?? 'N/A' }}" readonly>
+                                        <input type="hidden" name="project_id" value="{{ $project->id }}">
+                                    @else
+                                        <select name="project_id" class="form-control" required>
+                                            <option value="">Select Project</option>
+                                            @foreach($projects as $proj)
+                                                <option value="{{ $proj->id }}" {{ (old('project_id', $purchaseRequest->project_id ?? '') == $proj->id) ? 'selected' : '' }}>{{ $proj->name }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
+                                    @endif
+                                    @error('project_id')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
+                            <div class="row mb-5">
                                 <div class="col-md-12">
                                     <label for="remarks" class="form-label">Remarks (Optional)</label>
-                                    <textarea name="remarks" class="form-control" rows="2">{{ $purchaseRequest->remarks ?? '' }}</textarea>
+                                    <textarea name="remarks" class="form-control" rows="2">{{ old('remarks', $purchaseRequest->remarks ?? '') }}</textarea>
                                 </div>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mt-10 mb-10">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h5>Products</h5>
                                     <button type="button" class="btn btn-sm btn-primary" id="addProductBtn">
@@ -130,13 +110,13 @@
                                                     <input type="number" step="1" class="form-control quantity" name="products[{{ $index }}][quantity]" value="{{ $item->quantity }}" min="1" required>
                                                 </td>
                                                 <td>
-                                                    <input type="number" step="0.01" class="form-control rate" name="products[{{ $index }}][rate]" min="0.01" required />
+                                                    <input type="number" step="1" class="form-control rate" name="products[{{ $index }}][rate]" min="1" required />
                                                 </td>
                                                 <td class="text-center">
                                                     <input type="checkbox" class="form-check-input gst-applicable" name="products[{{ $index }}][gst_applicable]" value="1" />
                                                 </td>
                                                 <td>
-                                                    <input type="number" step="0.1" class="form-control gst-percentage" name="products[{{ $index }}][gst_percentage]" disabled />
+                                                    <input type="number" step="1" class="form-control gst-percentage" name="products[{{ $index }}][gst_percentage]" disabled />
                                                 </td>
                                                 <td>
                                                     <input type="text" readonly class="form-control total-amount" name="products[{{ $index }}][total_amount]" />
@@ -160,8 +140,8 @@
                             </div>
 
                             <!-- Order Summary Section -->
-                            <div class="card mt-4 mb-4">
-                                <div class="card-header bg-light">
+                            <div class="card mt-15 mb-10">
+                                <div class="card-header bg-primary">
                                     <h5 class="mb-0">Order Summary</h5>
                                 </div>
                                 <div class="card-body">
@@ -216,7 +196,7 @@
 
     <!-- Product Selection Modal -->
     <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-sm" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="productModalLabel">Add Product</h5>
@@ -234,13 +214,13 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mt-15">
                         <label>Product</label>
                         <select class="form-control" id="productSelect" disabled>
                             <option value="">Select Product</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mt-15">
                         <label>Quantity</label>
                         <input type="number" class="form-control" id="productQuantity" min="1" value="1">
                     </div>
@@ -407,13 +387,13 @@
                             <input type="number" step="1" class="form-control quantity" name="products[${newProductIndex}][quantity]" value="${quantity}" min="1" required>
                         </td>
                         <td>
-                            <input type="number" step="0.01" class="form-control rate" name="products[${newProductIndex}][rate]" min="0.01" required>
+                            <input type="number" step="1" class="form-control rate" name="products[${newProductIndex}][rate]" min="1" required>
                         </td>
                         <td class="text-center">
                             <input type="checkbox" class="form-check-input gst-applicable" name="products[${newProductIndex}][gst_applicable]" value="1">
                         </td>
                         <td>
-                            <input type="number" step="0.1" class="form-control gst-percentage" name="products[${newProductIndex}][gst_percentage]" disabled>
+                            <input type="number" step="1" class="form-control gst-percentage" name="products[${newProductIndex}][gst_percentage]" disabled>
                         </td>
                         <td>
                             <input type="text" readonly class="form-control total-amount" name="products[${newProductIndex}][total_amount]">

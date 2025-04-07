@@ -5,7 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Project Report</title>
 
-        <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+        {{-- <link href="{{ asset('css/style.css') }}" rel="stylesheet"> --}}
+		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/style.css?r={{date('YmdHis')}}">
+
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/flag-icon.css?r={{date('YmdHis')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/fontawesome.css?r={{date('YmdHis')}}">
 		<link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/support/margin.css">
@@ -13,12 +15,15 @@
 
         {{-- bootstrap cdn--}}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-        <link href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 	   
         <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         
+        <link rel="stylesheet" type="text/css" href="{{url('/assets/plugins/pplDataTable/pplDataTable.min.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url('/assets/plugins/pplDataTable/pplDataTable.min.css')}}">
+        
+        <link rel="stylesheet" type="text/css" href="{{url('/')}}/assets/css/datatables.css?r={{date('YmdHis')}}">
         <!-- Leaflet CSS -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
@@ -124,9 +129,13 @@
             cursor: pointer;
             padding: 20px 30px;
             background-color: #cac9df73;
-            color: #7167f4 !important;
+            color: #7167f4;
             font-weight: bolder;
             font-size: medium;
+        }
+        .stage-box.active{
+          background-color: #7268f4;
+          color: #fff !important;
         }
     </style>
     <body class="">
@@ -365,7 +374,35 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="project-stages">
+                                <div class="tab-pane fade" id="project-stages"> 
+                                
+                                  <!-- 🪟 Modal -->
+                                  <div id="myModal" class="fixed inset-0 flex items-center justify-center hidden z-50">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                                      <h2 class="text-xl font-bold mb-4">Task Details</h2>
+                                      <img id="taskImage" src="" alt="task image" style="border-radius: 5px;">
+                                      <div class="mt-10 d-flex align-items-center">
+                                        <p class="text-sm text-gray-500">Name :&nbsp;</p>
+                                        <p class="font-medium" id="taskName"></p>
+                                      </div>
+                                      <div class="d-flex align-items-center mt-10">
+                                        <p class="text-sm text-gray-500">Date :&nbsp;</p>
+                                        <p class="font-medium" id="taskDate"></p>
+                                      </div>
+                                      <div class="d-flex align-items-center mt-10">
+                                        <p class="text-sm text-gray-500">Description :&nbsp;</p>
+                                        <p class="font-medium" id="taskDescription"></p>
+                                      </div>
+                                      <div class="d-flex align-items-center mt-10">
+                                        <p class="text-sm text-gray-500">Status :&nbsp;</p>
+                                        <p class="font-medium" id="taskStatus"></p>
+                                      </div>
+                                      <button id="closeModal" class="px-4 py-2 mt-15 bg-red-600 text-white rounded hover:bg-red-700">
+                                        Close
+                                      </button>
+                                    </div>
+                                  </div>
+                                
                                     {{-- <div class="row">
                                         <div class="col-3">
                                             @foreach($stages as $item)                                                
@@ -377,9 +414,9 @@
                                     </div> --}}
                                     <div class="row g-3">    
                                         <div class="col-xxl-3 col-xl-3 col-12">
-                                          <div class="nav flex-column header-vertical-wizard" id="wizard-tab" role="tablist" aria-orientation="vertical">
+                                          <div class="nav flex-column header-vertical-wizard rounded" id="wizard-tab" role="tablist" aria-orientation="vertical">
                                               @foreach($stages as $item)   
-                                                  <a class="stage-box nav-link active" id="{{$item->id}}" data-bs-toggle="pill"  role="tab" aria-controls="wizard-contact" aria-selected="true"> 
+                                                  <a class="stage-box nav-link" id="{{$item->id}}" data-bs-toggle="pill"  role="tab" aria-controls="wizard-contact" aria-selected="true"> 
                                                       <div class="vertical-wizard">
                                                         <div class="vertical-wizard-content"> 
                                                             <h6>{{$item->name}}</h6>
@@ -390,10 +427,10 @@
                                           </div>
                                         </div>
                                         <div class="col-xxl-9 col-xl-9 col-12">
-                                            <table>
+                                            {{-- <table id="tblTasks" class="table">
                                                 <thead>
                                                     <tr>
-                                                        <th>S.No</th>
+                                                        <th>#</th>
                                                         <th>Name</th>
                                                         <th>Date</th>
                                                         <th>Description</th>
@@ -401,8 +438,25 @@
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody id="tblTasks"></tbody>
-                                            </table>
+                                                <tbody id="tblTasksBody"></tbody>
+                                            </table>    --}}
+                                            <div class="card p-3">
+                                              <h5 class="text-center mt-10"><strong>Task List</strong></h5>
+                                              <table class="table table-bordered" id="tasksTable">
+                                                  <thead class="thead-light">
+                                                  <tr>
+                                                      <th>S.No</th>
+                                                      <th>Name</th>
+                                                      <th>Project</th>
+                                                      <th>Date</th>
+                                                      <th>Stage Name</th>
+                                                      <th>Status</th>
+                                                      <th>Action</th> 
+                                                  </tr>
+                                                  </thead>
+                                                  <tbody></tbody>
+                                              </table>
+                                            </div>                                         
                                         </div>
                                     </div>
                                 </div>
@@ -426,10 +480,17 @@
      
     <script src="{{url('/')}}/assets/js/bootstrap/bootstrap.bundle.min.js?r={{date('YmdHis')}}"></script>  
  
+    <script src="{{url('/assets/plugins/pplDataTable/pplDataTable.js')}}"></script>
+		<script src="{{url('/assets/plugins/pplDataTable/dataTable.min.js')}}"></script>
+
+
  
 </body>
 
     <script>
+
+        let stage_id =  $('.stage-box').attr('id');
+
         $(document).ready(function(){
             // ----------------animations
             gsap.from(".hero-title", {
@@ -465,25 +526,70 @@
 
                 let csrfToken = $('meta[name="_token"]').attr('content');
 
-                let stage_id = $(this).attr('id');
+                stage_id = $(this).attr('id');
+ 
+                $('#tasksTable').DataTable().ajax.reload();
+ 
+            });
+             
+          const modal = $('#myModal');
+          
+          $(document).on('click','#openModal',function(){
+            
+            const baseImageUrl = "{{ asset('storage') }}";
 
-                $.ajax({
-                    url: "{{ route('getProjectTasks') }}",
-                    type: "GET",
-                    data: {'stage_id': stage_id},
-                    contentType: "application/json",
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    success: function (response) {
-                        console.log(response);
-                    },
-                });
+            const rowData = $(this).attr('data-tdata');
+
+            let data = JSON.parse(rowData);
+
+            $('#taskImage').attr('src', `${baseImageUrl}/${data.image}`);
+            $('#taskName').text(data.name);
+            $('#taskDate').text(data.date);
+            $('#taskDescription').text(data.description);
+            $('#taskStatus').text(data.status); 
+ 
+            modal.removeClass('hidden');
+          })
+          $(document).on('click','#closeModal',function(){
+            $('#taskImage').attr('src', '');
+            $('#taskName').text('');
+            $('#taskDate').text('');
+            $('#taskDescription').text('');
+            $('#taskStatus').text(''); 
+
+            modal.addClass('hidden');
+          });
+          
+          // Initialize DataTable
+          $('#tasksTable').DataTable({
+                "columnDefs": [{"className": "dt-center", "targets": "_all"}],
+                serverSide: true,
+                iDisplayLength: 10,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                ajax: {
+                    url: '{{ route("tasksTableLists") }}',
+                    type: 'GET',
+                    data: function (d) {
+                        // d.project_id = $('#project_id').val();
+                        // d.stage_id = $('#stage_id').val();
+                        // d.status = $('#status').val();
+                        // d.date = $('#date_filter').val();
+                        d.stage_id = stage_id;
+                    }
+                },
+                columns: [
+                    {data: 'DT_RowIndex', orderable: false, searchable: false},
+                    {data: 'name'},
+                    {data: 'project_name'},
+                    {data: 'date'},
+                    {data: 'stage_name'},
+                    {data: 'status'},
+                    {data: 'action', orderable: false},
+                ]
             });
  
         })
-    </script>
+    </script> 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const project = "{{ $project->site->name ?? 'Site Location' }}";

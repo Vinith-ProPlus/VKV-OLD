@@ -35,6 +35,10 @@ class StockUsageLogController extends Controller
                 $query->where('category_id', $request->category_id);
             }
 
+            if ($request->has('product_id') && !empty($request->product_id)) {
+                $query->where('product_id', $request->product_id);
+            }
+
             if ($request->has('user_id') && !empty($request->user_id)) {
                 $query->where('taken_by', $request->user_id);
             }
@@ -56,6 +60,12 @@ class StockUsageLogController extends Controller
                 })
                 ->editColumn('quantity', function($row) {
                     return number_format($row->quantity, 2);
+                })
+                ->editColumn('previous_quantity', function($row) {
+                    return number_format($row->previous_quantity, 2);
+                })
+                ->editColumn('balance_quantity', function($row) {
+                    return number_format($row->balance_quantity, 2);
                 })
                 ->editColumn('taken_at', function($row) {
                     return $row->taken_at->format('d-m-Y H:i');
@@ -98,12 +108,20 @@ class StockUsageLogController extends Controller
                 throw new RuntimeException("Insufficient stock available.");
             }
 
+            // Get previous quantity before updating
+            $previousQuantity = $stock->quantity;
+
+            // Calculate balance quantity
+            $balanceQuantity = $previousQuantity - $request->quantity;
+
             // Create stock usage log
             $usage = new StockUsageLog([
                 'project_id' => $request->project_id,
                 'category_id' => $request->category_id,
                 'product_id' => $request->product_id,
+                'previous_quantity' => $previousQuantity,
                 'quantity' => $request->quantity,
+                'balance_quantity' => $balanceQuantity,
                 'taken_by' => $request->taken_by,
                 'taken_at' => $request->taken_at,
                 'remarks' => $request->remarks,
@@ -111,7 +129,7 @@ class StockUsageLogController extends Controller
             $usage->save();
 
             // Update project stock
-            $stock->quantity -= $request->quantity;
+            $stock->quantity = $balanceQuantity;
             $stock->last_updated_by = Auth::id();
             $stock->last_transaction_type = 'Used by labor: ' . $request->taken_by;
             $stock->save();

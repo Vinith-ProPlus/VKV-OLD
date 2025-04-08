@@ -17,7 +17,9 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('product_categories')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('taken_by')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
+            $table->decimal('previous_quantity', 10, 2)->default(0);
             $table->decimal('quantity', 10, 2);
+            $table->decimal('balance_quantity', 10, 2)->default(0);
             $table->datetime('taken_at');
             $table->string('remarks')->nullable();
             $table->timestamps();

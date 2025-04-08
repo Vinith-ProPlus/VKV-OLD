@@ -139,7 +139,10 @@ Route::group(['prefix'=>'admin'], static function (){
         Route::resource('purchase-orders', PurchaseOrderController::class);
         Route::post('purchase-orders/mark-delivered', [PurchaseOrderController::class, 'markAsDelivered'])->name('purchase-orders.mark-delivered');
 
-        Route::resource('project-stocks', ProjectStockController::class);
+        Route::resource('project-stocks', ProjectStockController::class)->except('show');
+        Route::get('project-stocks/get-categories', [ProjectStockController::class, 'getCategories'])->name('project-stocks.get-categories');
+        Route::get('project-stocks/get-products', [ProjectStockController::class, 'getProducts'])->name('project-stocks.get-products');
+        Route::get('project-stocks/get-stock', [ProjectStockController::class, 'getStock'])->name('project-stocks.get-stock');
         Route::post('project-stocks/adjust', [ProjectStockController::class, 'adjust'])->name('project-stocks.adjust');
 
         Route::resource('stock-usages', StockUsageLogController::class)->except(['show']);

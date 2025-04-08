@@ -122,7 +122,7 @@
                                 </div>
                             </div>
 
-                            <div class="row mt-4">
+                            <div class="row mt-4 d-none">
                                 <div class="col-12">
                                     <div class="alert alert-info" id="stock_alert" style="display: none;">
                                         <i class="fa fa-info-circle"></i> <span id="stock_message"></span>
@@ -151,6 +151,12 @@
 @section('script')
     <script>
         $(document).ready(function() {
+            $('#project_id, #category_id, #product_id').select2({
+                width: '100%',
+                placeholder: 'Select an option',
+                allowClear: true
+            });
+
             // When project or category changes, update product dropdown
             $('#project_id, #category_id').change(function() {
                 const projectId = $('#project_id').val();
@@ -178,6 +184,7 @@
                                 $('#available_stock').val('0');
                                 $('#stock_alert').hide();
                             }
+                            $('#product_id').trigger('change.select2');
                         },
                         error: function(xhr, status, error) {
                             console.error("Error loading products:", error);

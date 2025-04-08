@@ -25,28 +25,6 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-{{--                    <div class="card-header">--}}
-{{--                        <div class="row">--}}
-{{--                            <div class="col-md-6">--}}
-{{--                                <h5>{{ $PageTitle }}</h5>--}}
-{{--                            </div>--}}
-{{--                            <div class="col-md-6 text-right">--}}
-{{--                                <button type="button" class="btn btn-primary btn-sm" onclick="$('#adjustStockModal').modal('show');">--}}
-{{--                                    <i class="fa fa-edit"></i> Adjust Stock--}}
-{{--                                </button>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-{{--                        <div class="row mt-3">--}}
-{{--                            <div class="col-md-4">--}}
-{{--                                <select id="project_filter" class="form-control">--}}
-{{--                                    <option value="">All Projects</option>--}}
-{{--                                    @foreach($projects as $project)--}}
-{{--                                        <option value="{{ $project->id }}">{{ $project->name }}</option>--}}
-{{--                                    @endforeach--}}
-{{--                                </select>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
                     <div class="card-header text-center">
                         <div class="row">
                             <div class="col-sm-4"></div>
@@ -103,7 +81,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Adjust Stock</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" onclick="$('#adjustStockModal').modal('hide');">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -116,6 +94,13 @@
                                 @foreach($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                 @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group mt-15">
+                            <label>Category</label>
+                            <select name="category_id" class="form-control" required>
+                                <option value="">Select Category</option>
+                                <!-- Categories will be loaded via AJAX -->
                             </select>
                         </div>
                         <div class="form-group mt-15">
@@ -132,6 +117,10 @@
                                 <option value="subtract">Subtract Quantity</option>
                                 <option value="set">Set Exact Quantity</option>
                             </select>
+                        </div>
+                        <div class="form-group mt-15">
+                            <label>Current Quantity</label>
+                            <input type="text" id="current_quantity" class="form-control" readonly>
                         </div>
                         <div class="form-group mt-15">
                             <label>Quantity</label>
@@ -164,7 +153,10 @@
                     maxHeight: 250,
                 });
                 $('select[name="project_id"]').select2({ dropdownParent: $('#adjustStockModal') });
+                $('select[name="category_id"]').select2({ dropdownParent: $('#adjustStockModal') });
+                $('select[name="product_id"]').select2({ dropdownParent: $('#adjustStockModal') });
             }
+
             function clearFilter() {
                 $('#project_filter').val('').multiselect('refresh');
                 table.ajax.reload();
@@ -191,46 +183,114 @@
                 ]
             });
 
-            // Project filter
+            // Project filter for table
             $('#project_filter').change(function() {
                 table.ajax.reload();
             });
 
-            $('select[name="project_id"]').change(function () {
+            // When project is selected in modal, load categories
+            $('select[name="project_id"]').change(function() {
                 var projectId = $(this).val();
+                var $categorySelect = $('select[name="category_id"]');
                 var $productSelect = $('select[name="product_id"]');
 
-                if ($productSelect.hasClass("select2-hidden-accessible")) {
-                    $productSelect.select2('destroy');
-                }
+                // Reset category and product dropdowns
+                resetSelect($categorySelect);
+                resetSelect($productSelect);
+                $('#current_quantity').val('');
 
                 if (projectId) {
+                    // Fetch categories for the selected project
                     $.ajax({
-                        url: '/project-products', // You can change this to `/products?project_id=${projectId}` if needed
+                        url: "{{ route('project-stocks.get-categories') }}",
                         type: 'GET',
+                        data: { project_id: projectId },
                         dataType: 'json',
-                        success: function (data) {
-                            $productSelect.empty().append('<option value="">Select Product</option>');
+                        success: function(data) {
+                            $categorySelect.empty().append('<option value="">Select Category</option>');
 
-                            $.each(data, function (key, value) {
-                                $productSelect.append(
-                                    '<option value="' + value.id + '">' +
-                                    value.name + ' (' + value.category.name + ')' +
-                                    '</option>'
+                            $.each(data, function(key, category) {
+                                $categorySelect.append(
+                                    '<option value="' + category.id + '">' + category.name + '</option>'
                                 );
                             });
 
-                            // Re-initialize Select2 after updating options
-                            $productSelect.select2({ dropdownParent: $('#adjustStockModal') });
+                            // Re-initialize Select2
+                            $categorySelect.select2({ dropdownParent: $('#adjustStockModal') });
                         }
                     });
-                } else {
-                    $productSelect.empty().append('<option value="">Select Product</option>');
-                    $productSelect.select2({ dropdownParent: $('#adjustStockModal') });
                 }
             });
 
+            // When category is selected, load products
+            $('select[name="category_id"]').change(function() {
+                var projectId = $('select[name="project_id"]').val();
+                var categoryId = $(this).val();
+                var $productSelect = $('select[name="product_id"]');
 
+                // Reset product dropdown
+                resetSelect($productSelect);
+                $('#current_quantity').val('');
+
+                if (categoryId && projectId) {
+                    // Fetch products for the selected category and project
+                    $.ajax({
+                        url: "{{ route('project-stocks.get-products') }}",
+                        type: 'GET',
+                        data: {
+                            project_id: projectId,
+                            category_id: categoryId
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            $productSelect.empty().append('<option value="">Select Product</option>');
+
+                            $.each(data, function(key, product) {
+                                $productSelect.append(
+                                    '<option value="' + product.id + '">' + product.name + '</option>'
+                                );
+                            });
+
+                            // Re-initialize Select2
+                            $productSelect.select2({ dropdownParent: $('#adjustStockModal') });
+                        }
+                    });
+                }
+            });
+
+            // When product is selected, fetch current quantity
+            $('select[name="product_id"]').change(function() {
+                var projectId = $('select[name="project_id"]').val();
+                var productId = $(this).val();
+
+                if (projectId && productId) {
+                    // Fetch current stock quantity
+                    $.ajax({
+                        url: "{{ route('project-stocks.get-stock') }}",
+                        type: 'GET',
+                        data: {
+                            project_id: projectId,
+                            product_id: productId
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            $('#current_quantity').val(data.quantity);
+                        }
+                    });
+                } else {
+                    $('#current_quantity').val('');
+                }
+            });
+
+            // Helper function to reset select elements
+            function resetSelect($select) {
+                if ($select.hasClass("select2-hidden-accessible")) {
+                    $select.select2('destroy');
+                }
+
+                $select.empty().append('<option value="">Select</option>');
+                $select.select2({ dropdownParent: $('#adjustStockModal') });
+            }
 
             // Handle stock adjustment form
             $('#adjustStockForm').submit(function(e) {
@@ -259,6 +319,14 @@
                         }
                     }
                 });
+            });
+
+            // Reset form when modal is closed
+            $('#adjustStockModal').on('hidden.bs.modal', function() {
+                $('#adjustStockForm')[0].reset();
+                resetSelect($('select[name="category_id"]'));
+                resetSelect($('select[name="product_id"]'));
+                $('#current_quantity').val('');
             });
         });
     </script>

@@ -136,7 +136,7 @@
                         </div>
                         <div class="mb-3">
                             <label>Upload Image (Optional)</label>
-                            <input type="file" class="form-control" name="attachment">
+                            <input type="file" class="form-control" name="attachments" multiple>
                         </div>
                     </div>
                     <div class="modal-footer">

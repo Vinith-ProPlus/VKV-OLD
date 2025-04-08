@@ -13,7 +13,9 @@ class StockUsageLog extends Model
         'project_id',
         'category_id',
         'product_id',
+        'previous_quantity',
         'quantity',
+        'balance_quantity',
         'taken_by',
         'taken_at',
         'remarks'
@@ -21,7 +23,9 @@ class StockUsageLog extends Model
 
     protected $casts = [
         'taken_at' => 'datetime',
-        'quantity' => 'decimal:2'
+        'quantity' => 'decimal:2',
+        'previous_quantity' => 'decimal:2',
+        'balance_quantity' => 'decimal:2'
     ];
 
     public function project()

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
-use App\Models\ProjectStock;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use Exception;
+use App\Models\Project;
+use App\Models\ProjectStock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +19,7 @@ class ProjectStockController extends Controller
         $projects = Project::all();
 
         if ($request->ajax()) {
-            $query = ProjectStock::with(['project', 'product', 'category', 'updatedBy']);
+            $query = ProjectStock::with(['project', 'product', 'category']);
 
             if ($request->has('project_id') && !empty($request->project_id)) {
                 $query->where('project_id', $request->project_id);
@@ -29,13 +28,12 @@ class ProjectStockController extends Controller
             $data = $query->get();
 
             return DataTables::of($data)
-                ->addIndexColumn()
                 ->editColumn('quantity', function($row) {
                     return number_format($row->quantity, 2);
                 })
-                ->editColumn('last_updated', function($row) {
-                    return $row->updated_at->format('d-m-Y H:i') . ' by ' .
-                        ($row->updatedBy ? $row->updatedBy->name : 'System');
+                ->addColumn('last_updated', function($row) {
+                    return $row->updated_at->format('d-m-Y H:i') .
+                        ($row->last_transaction_type ? ' (' . $row->last_transaction_type . ')' : '');
                 })
                 ->make(true);
         }
@@ -43,12 +41,65 @@ class ProjectStockController extends Controller
         return view('admin.project_stocks.index', compact('projects'));
     }
 
+    /**
+     * Get categories for a project
+     */
+    public function getCategories(Request $request)
+    {
+        $projectId = $request->project_id;
+
+        // Get categories that have products with stock in this project
+        $categories = ProductCategory::whereHas('products.projectStocks', function($query) use ($projectId) {
+            $query->where('project_id', $projectId);
+        })->get();
+
+        return response()->json($categories);
+    }
+
+    /**
+     * Get products for a category within a project
+     */
+    public function getProducts(Request $request)
+    {
+        $projectId = $request->project_id;
+        $categoryId = $request->category_id;
+
+        $products = Product::where('category_id', $categoryId)
+            ->whereHas('projectStocks', function($query) use ($projectId) {
+                $query->where('project_id', $projectId);
+            })
+            ->get();
+
+        return response()->json($products);
+    }
+
+    /**
+     * Get current stock for a product in a project
+     */
+    public function getStock(Request $request)
+    {
+        $projectId = $request->project_id;
+        $productId = $request->product_id;
+
+        $stock = ProjectStock::where('project_id', $projectId)
+            ->where('product_id', $productId)
+            ->first();
+
+        $quantity = $stock ? number_format($stock->quantity, 2) : '0.00';
+
+        return response()->json(['quantity' => $quantity]);
+    }
+
+    /**
+     * Adjust stock quantity
+     */
     public function adjust(Request $request)
     {
         $request->validate([
             'project_id' => 'required|exists:projects,id',
+            'category_id' => 'required|exists:product_categories,id',
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|numeric',
+            'quantity' => 'required|numeric|min:0.01',
             'adjustment_type' => 'required|in:add,subtract,set',
             'reason' => 'required|string|max:255',
         ]);
@@ -70,7 +121,7 @@ class ProjectStockController extends Controller
                 $stock = new ProjectStock([
                     'project_id' => $request->project_id,
                     'product_id' => $request->product_id,
-                    'category_id' => $product->category_id,
+                    'category_id' => $request->category_id,
                     'quantity' => 0,
                 ]);
             }

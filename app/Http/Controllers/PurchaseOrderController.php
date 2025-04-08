@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Document;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Project;
@@ -241,9 +242,23 @@ class PurchaseOrderController extends Controller
         $detail->remarks = $request->remarks ?? '';
         $detail->delivery_date = Carbon::now();
 
-        if ($request->hasFile('attachment')) {
-            $file = $request->file('attachment')?->store('po_deliveries', 'public');
-            $detail->attachment = $file;
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) .
+                    '_' . now()->timestamp . '_' . random_int(1000, 9999) .
+                    '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('documents', $filename, 'public');
+
+                Document::create([
+                    'title' => 'Purchase Order Detail Attachment',
+                    'description' => '',
+                    'module_name' => 'Purchase Order Detail',
+                    'module_id' => $detail->id,
+                    'file_path' => $path,
+                    'file_name' => $filename,
+                    'uploaded_by' => auth()->id(),
+                ]);
+            }
         }
 
         $detail->save();

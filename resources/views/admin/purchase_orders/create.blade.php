@@ -243,6 +243,13 @@
             // Counter for new products
             let newProductIndex = {{ isset($products) ? $products->count() : 0 }};
 
+            $('#categorySelect, #productSelect').select2({
+                dropdownParent: $('#productModal'),
+                width: '100%',
+                placeholder: 'Select an option',
+                allowClear: true
+            });
+
             // Calculate totals on input change
             $(document).on('input change', '.quantity, .rate, .gst-applicable, .gst-percentage', function () {
                 let row = $(this).closest('tr');
@@ -316,13 +323,12 @@
 
             // Show add product modal
             $('#addProductBtn').click(function() {
-                $('#categorySelect').val('');
-                $('#productSelect').val('').prop('disabled', true);
+                $('#categorySelect').val('').trigger('change.select2');
+                $('#productSelect').val('').prop('disabled', true).trigger('change.select2');
                 $('#productQuantity').val(1);
                 $('#productModal').modal('show');
             });
 
-            // Load products when category is selected
             $('#categorySelect').change(function() {
                 let categoryId = $(this).val();
                 let productSelect = $('#productSelect');
@@ -351,6 +357,9 @@
                 } else {
                     productSelect.prop('disabled', true);
                 }
+
+                // Refresh select2 after changing options
+                productSelect.trigger('change.select2');
             });
 
             // Add product to table

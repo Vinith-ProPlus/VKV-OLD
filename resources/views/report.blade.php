@@ -376,26 +376,26 @@
                                 </div>
                                 <div class="tab-pane fade" id="project-stages"> 
                                 
-                                  <!-- 🪟 Modal -->
+                                  <!-- Modal -->
                                   <div id="myModal" class="fixed inset-0 flex items-center justify-center hidden z-50">
                                     <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
                                       <h2 class="text-xl font-bold mb-4">Task Details</h2>
                                       <img id="taskImage" src="" alt="task image" style="border-radius: 5px;">
-                                      <div class="mt-10 d-flex align-items-center">
+                                      <div class="mt-10 flex flex-wrap gap-1 items-center">
                                         <p class="text-sm text-gray-500">Name :&nbsp;</p>
-                                        <p class="font-medium" id="taskName"></p>
+                                        <p class="font-medium break-words" id="taskName"></p>
                                       </div>
-                                      <div class="d-flex align-items-center mt-10">
+                                      <div class="flex flex-wrap gap-1 items-center mt-4">
                                         <p class="text-sm text-gray-500">Date :&nbsp;</p>
-                                        <p class="font-medium" id="taskDate"></p>
+                                        <p class="font-medium break-words" id="taskDate"></p>
                                       </div>
-                                      <div class="d-flex align-items-center mt-10">
-                                        <p class="text-sm text-gray-500">Description :&nbsp;</p>
-                                        <p class="font-medium" id="taskDescription"></p>
-                                      </div>
-                                      <div class="d-flex align-items-center mt-10">
+                                      <div class="flex flex-wrap gap-1 items-center mt-4">
+                                        <p class="text-sm text-gray-500">Description:&nbsp;</p>
+                                        <p class="font-medium break-words" id="taskDescription"></p>
+                                      </div>                                      
+                                      <div class="flex flex-wrap gap-1 items-center mt-4">
                                         <p class="text-sm text-gray-500">Status :&nbsp;</p>
-                                        <p class="font-medium" id="taskStatus"></p>
+                                        <p class="font-medium break-words" id="taskStatus"></p>
                                       </div>
                                       <button id="closeModal" class="px-4 py-2 mt-15 bg-red-600 text-white rounded hover:bg-red-700">
                                         Close
@@ -439,7 +439,7 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody id="tblTasksBody"></tbody>
-                                            </table>    --}}
+                                            </table> --}}
                                             <div class="card p-3">
                                               <h5 class="text-center mt-10"><strong>Task List</strong></h5>
                                               <table class="table table-bordered" id="tasksTable">
@@ -460,7 +460,24 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="project-contractors">3</div>
+                                <div class="tab-pane fade" id="project-contractors">
+                                  <div class="row">
+                                    <div class="col-12">
+                                      <table class="table table-bordered" id="contractsTable">
+                                        <thead class="thead-light">
+                                          <tr>
+                                            <th>S.No</th>
+                                            <th>Contract Type</th>
+                                            <th>User</th>
+                                            <th>Amount</th>
+                                            <th>Action</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                </div>
                                 <div class="tab-pane fade" id="project-labors">4</div>
                                 <div class="tab-pane fade" id="project-purchases">5</div>
                             </div>
@@ -490,6 +507,7 @@
     <script>
 
         let stage_id =  $('.stage-box').attr('id');
+        $('.stage-box:first').addClass('active');
 
         $(document).ready(function(){
             // ----------------animations
@@ -544,7 +562,7 @@
 
             $('#taskImage').attr('src', `${baseImageUrl}/${data.image}`);
             $('#taskName').text(data.name);
-            $('#taskDate').text(data.date);
+            $('#taskDate').text(data.date.split(' ')[0]);
             $('#taskDescription').text(data.description);
             $('#taskStatus').text(data.status); 
  
@@ -570,10 +588,6 @@
                     url: '{{ route("tasksTableLists") }}',
                     type: 'GET',
                     data: function (d) {
-                        // d.project_id = $('#project_id').val();
-                        // d.stage_id = $('#stage_id').val();
-                        // d.status = $('#status').val();
-                        // d.date = $('#date_filter').val();
                         d.stage_id = stage_id;
                     }
                 },
@@ -584,6 +598,34 @@
                     {data: 'date'},
                     {data: 'stage_name'},
                     {data: 'status'},
+                    {data: 'action', orderable: false},
+                ]
+            });
+          
+          // Contracts DataTable
+          let project_id = "{{$project->id}}";
+          
+          $('#contractsTable').DataTable({
+                "columnDefs": [{"className": "dt-center", "targets": "_all"}],
+                serverSide: true,
+                iDisplayLength: 10,
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                ajax: {
+                    url: '{{ route("contractsTableLists") }}',
+                    type: 'GET',
+                    data: function (d) {
+                        d.project_id = project_id;
+                        // d.stage_id = $('#stage_id').val();
+                        // d.status = $('#status').val();
+                        // d.date = $('#date_filter').val();
+                        // d.stage_id = stage_id;
+                    }
+                },
+                columns: [
+                    {data: 'DT_RowIndex', orderable: false, searchable: false},
+                    {data: 'contract_type_id'},
+                    {data: 'user_id'},
+                    {data: 'amount'}, 
                     {data: 'action', orderable: false},
                 ]
             });

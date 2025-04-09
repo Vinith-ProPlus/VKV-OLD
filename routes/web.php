@@ -188,6 +188,7 @@ Route::group(['prefix' => 'project_reports'], static function () {
     Route::get('/create', [ProjectReportsController::class, 'create'])->name('project_reports.create');
     Route::get('/getProjectTasks', [ProjectReportsController::class, 'getProjectTasks'])->name('getProjectTasks');
     Route::get('/tasksTableLists', [ProjectReportsController::class, 'tasksTableLists'])->name('tasksTableLists');
+    Route::get('/contractsTableLists', [ProjectReportsController::class, 'contractsTableLists'])->name('contractsTableLists');
 });
 
 require __DIR__.'/auth.php';

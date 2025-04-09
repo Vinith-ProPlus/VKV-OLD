@@ -9,17 +9,21 @@ use App\Http\Controllers\Admin\Users\BlogController;
 use App\Http\Controllers\Admin\Users\SupportTicketController;
 use App\Http\Controllers\Admin\Users\SupportTicketMessageController;
 use App\Http\Controllers\Admin\Users\UserController;
+use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProjectStockController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\SqlImportController;
+use App\Http\Controllers\StockUsageLogController;
 use App\Http\Controllers\Admin\ProjectReports\ProjectReportsController;
 use App\Models\Admin\Master\City;
 use App\Models\Admin\Master\District;
 use App\Models\Admin\Master\Pincode;
 use App\Models\Admin\Master\State;
+use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Tax;
 use App\Models\UnitOfMeasurement;
@@ -136,8 +140,16 @@ Route::group(['prefix'=>'admin'], static function (){
 
         Route::resource('purchase-orders', PurchaseOrderController::class);
         Route::post('purchase-orders/mark-delivered', [PurchaseOrderController::class, 'markAsDelivered'])->name('purchase-orders.mark-delivered');
-        Route::get('purchase-orders/convert-request/Form', [PurchaseOrderController::class, 'convertRequestForm'])->name('purchase-orders.convertRequestForm');
 
+        Route::resource('project-stocks', ProjectStockController::class)->except('show');
+        Route::get('project-stocks/get-categories', [ProjectStockController::class, 'getCategories'])->name('project-stocks.get-categories');
+        Route::get('project-stocks/get-products', [ProjectStockController::class, 'getProducts'])->name('project-stocks.get-products');
+        Route::get('project-stocks/get-stock', [ProjectStockController::class, 'getStock'])->name('project-stocks.get-stock');
+        Route::post('project-stocks/adjust', [ProjectStockController::class, 'adjust'])->name('project-stocks.adjust');
+
+        Route::resource('stock-usages', StockUsageLogController::class)->except(['show']);
+        Route::get('stock-usages/get-products-by-category', [StockUsageLogController::class, 'getProductsByCategory'])->name('stock-usages.get-products-by-category');
+        Route::get('stock-usages/get-product-stock', [StockUsageLogController::class, 'getProductStock'])->name('stock-usages.get-product-stock');
 
         Route::prefix('payroll')->group(function () {
             Route::view('/', 'payroll.index')->name('payroll.index');
@@ -182,6 +194,14 @@ Route::get('/getProjectTasks', [GeneralController::class,'getProjectTasks'])->na
 Route::get('/getSupervisors', [GeneralController::class,'getSupervisors'])->name('getSupervisors');
 Route::get('/getCheckedInSupervisors', [GeneralController::class,'getCheckedInSupervisors'])->name('getCheckedInSupervisors');
 Route::get('/getLaborStatus', [GeneralController::class,'getLaborStatus'])->name('getLaborStatus');
+Route::get('/project-products', static function () {
+    return Product::with('category')->get();
+});
+
+Route::controller(SocialLoginController::class)->group(function () {
+    Route::get('/apple-login', 'loginWithApple')->name('login-with-apple');
+    Route::post('/apple-login-callback', 'loginWithAppleCallback')->name('apple-login-callback');
+});
 
 Route::group(['prefix' => 'project_reports'], static function () {
     Route::get('/', [ProjectReportsController::class, 'index'])->name('project_reports.index');

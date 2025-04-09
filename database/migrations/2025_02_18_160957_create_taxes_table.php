@@ -5,8 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up() {
-        Schema::create('taxes', function (Blueprint $table) {
+    public function up(): void
+    {
+        Schema::create('taxes', static function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->decimal('percentage', 5, 2);
@@ -16,7 +17,8 @@ return new class extends Migration {
         });
     }
 
-    public function down() {
+    public function down(): void
+    {
         Schema::dropIfExists('taxes');
     }
 };

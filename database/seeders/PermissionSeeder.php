@@ -56,6 +56,7 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'web', 'model' => 'Payrolls'],
             ['guard_name' => 'web', 'model' => 'Purchase Requests'],
             ['guard_name' => 'web', 'model' => 'Purchase Orders'],
+            ['guard_name' => 'web', 'model' => 'Project Stocks'],
             ['guard_name' => 'web', 'model' => 'Project Reports'],
         ];
 

@@ -34,5 +34,12 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'apple' => [
+        'client_id' => env('APPLE_CLIENT_ID', ''),
+        'client_secret' => env('APPLE_CLIENT_SECRET', ''),
+        'team_id' => env('APPLE_TEAM_ID', ''),
+        'key_id' => env('APPLE_KEY_ID', ''),
+        'private_key' => base_path(env('APPLE_PRIVATE_KEY_PATH', 'storage/oauth/apple/AuthKey_MZT6693Y9J.p8')),
+        'redirect' => env('APPLE_REDIRECT_URI', '')
+    ],
 ];

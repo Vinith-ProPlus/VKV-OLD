@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Users\BlogController;
 use App\Http\Controllers\Admin\Users\SupportTicketController;
 use App\Http\Controllers\Admin\Users\SupportTicketMessageController;
 use App\Http\Controllers\Admin\Users\UserController;
+use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\GeneralController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
@@ -195,6 +196,11 @@ Route::get('/getCheckedInSupervisors', [GeneralController::class,'getCheckedInSu
 Route::get('/getLaborStatus', [GeneralController::class,'getLaborStatus'])->name('getLaborStatus');
 Route::get('/project-products', static function () {
     return Product::with('category')->get();
+});
+
+Route::controller(SocialLoginController::class)->group(function () {
+    Route::get('/apple-login', 'loginWithApple')->name('login-with-apple');
+    Route::post('/apple-login-callback', 'loginWithAppleCallback')->name('apple-login-callback');
 });
 
 

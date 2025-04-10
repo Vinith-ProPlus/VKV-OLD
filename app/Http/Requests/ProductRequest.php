@@ -32,7 +32,7 @@ class ProductRequest extends FormRequest
             'is_active' => 'required|boolean',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'required|exists:product_categories,id',
-            'tax_id' => 'required|exists:taxes,id',
+//            'tax_id' => 'required|exists:taxes,id',
             'uom_id' => 'required|exists:unit_of_measurements,id',
         ];
     }

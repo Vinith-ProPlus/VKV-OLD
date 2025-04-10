@@ -244,6 +244,14 @@
                                     <a href="{{ route('purchase-orders.index') }}" data-active-name="Purchase-Orders" data-original-title="" title="">Purchase Orders</a>
                                 </li>
                             @endcan
+                            @can('View Project Stocks')
+                                <li class="">
+                                    <a href="{{ route('project-stocks.index') }}" data-active-name="Project-Stock-Management" data-original-title="" title="">Project Stock</a>
+                                </li>
+                                <li class="">
+                                    <a href="{{ route('stock-usages.index') }}" data-active-name="Stock-Usage" data-original-title="" title="">Stock Usage Log</a>
+                                </li>
+                            @endcan
                         </ul>
                     </li>
                     <li class="dropdown CMenus"><a class="nav-link menu-title" href="#">

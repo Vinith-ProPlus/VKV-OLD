@@ -79,7 +79,6 @@
                     { data: 'order_id' },
                     { data: 'project.name' },
                     { data: 'supervisor.name', defaultContent: '-' },
-                    { data: 'project.name', defaultContent: '-' },
                     { data: 'purchase_request_id' },
                     { data: 'order_date' },
                     { data: 'product_count' },

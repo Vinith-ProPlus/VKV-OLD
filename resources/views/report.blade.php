@@ -477,6 +477,32 @@
                                       </table>
                                     </div>
                                   </div>
+                                      <!-- Modal -->
+                                      <div id="myContractsModal" class="fixed inset-0 flex items-center justify-center hidden z-50">
+                                        <div class="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+                                          <h2 class="text-xl font-bold mb-4">Task Details</h2>
+                                          <img id="taskImage" src="" alt="task image" style="border-radius: 5px;">
+                                          <div class="mt-10 flex flex-wrap gap-1 items-center">
+                                            <p class="text-sm text-gray-500">Name :&nbsp;</p>
+                                            <p class="font-medium break-words" id="taskName"></p>
+                                          </div>
+                                          <div class="flex flex-wrap gap-1 items-center mt-4">
+                                            <p class="text-sm text-gray-500">Date :&nbsp;</p>
+                                            <p class="font-medium break-words" id="taskDate"></p>
+                                          </div>
+                                          <div class="flex flex-wrap gap-1 items-center mt-4">
+                                            <p class="text-sm text-gray-500">Description:&nbsp;</p>
+                                            <p class="font-medium break-words" id="taskDescription"></p>
+                                          </div>                                      
+                                          <div class="flex flex-wrap gap-1 items-center mt-4">
+                                            <p class="text-sm text-gray-500">Status :&nbsp;</p>
+                                            <p class="font-medium break-words" id="taskStatus"></p>
+                                          </div>
+                                          <button id="closeModal" class="px-4 py-2 mt-15 bg-red-600 text-white rounded hover:bg-red-700">
+                                            Close
+                                          </button>
+                                        </div>
+                                      </div>
                                 </div>
                                 <div class="tab-pane fade" id="project-labors">4</div>
                                 <div class="tab-pane fade" id="project-purchases">5</div>
@@ -576,6 +602,11 @@
             $('#taskStatus').text(''); 
 
             modal.addClass('hidden');
+          });
+
+          $(document).on('click','#openContractsModal',function(){
+            let data = $(this).data('tdata');
+            console.log(data);
           });
           
           // Initialize DataTable
